@@ -23,5 +23,16 @@ fi
 export AWS_PROFILE="${PROFILE}"
 
 cd "${PROJECT_ROOT}"
+
+# Initialize Terraform
 terraform init
+
+# Show current workspace
+echo ""
+echo "Current workspace: $(terraform workspace show)"
+echo ""
+echo "Available workspaces:"
+terraform workspace list
+echo ""
+echo "To switch workspace: terraform workspace select <environment>"
 

@@ -5,6 +5,10 @@
 *.tfstate
 *.tfstate.*
 
+# Terraform workspace state files
+.terraform.tfstate.d/
+terraform.tfstate.d/
+
 # Crash log files
 crash.log
 crash.*.log

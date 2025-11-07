@@ -47,6 +47,15 @@ if [ ! -d .terraform ]; then
   terraform init
 fi
 
+# Select workspace for this environment
+if ! terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
+  echo "Workspace '${ENVIRONMENT}' does not exist. Nothing to destroy." >&2
+  exit 1
+fi
+
+terraform workspace select "${ENVIRONMENT}"
+echo "Using workspace: $(terraform workspace show)"
+
 read -p "Destroy all resources for '${ENVIRONMENT}'? type the environment name to confirm: " CONFIRM
 if [ "${CONFIRM}" != "${ENVIRONMENT}" ]; then
   echo "Destruction cancelled."

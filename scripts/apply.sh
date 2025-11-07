@@ -48,6 +48,16 @@ if [ ! -d .terraform ]; then
   terraform init
 fi
 
+# Select or create workspace for this environment
+if ! terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
+  echo "Creating new workspace: ${ENVIRONMENT}"
+  terraform workspace new "${ENVIRONMENT}"
+else
+  terraform workspace select "${ENVIRONMENT}"
+fi
+
+echo "Using workspace: $(terraform workspace show)"
+
 if [ "${ENVIRONMENT}" = "prod" ] && [ "${AUTO_APPROVE}" = false ]; then
   read -p "Apply changes to production? type 'yes' to continue: " CONFIRM
   if [ "${CONFIRM}" != "yes" ]; then

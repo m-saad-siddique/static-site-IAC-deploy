@@ -48,6 +48,11 @@ if [ ! -d .terraform ]; then
   terraform init >/dev/null
 fi
 
+# Select workspace for this environment
+if terraform workspace list | grep -q "^\s*${env_name}$"; then
+  terraform workspace select "${env_name}" >/dev/null 2>&1
+fi
+
 bucket_name=$(terraform output -raw s3_bucket_id 2>/dev/null || true)
 if [ -z "${bucket_name}" ]; then
   echo "Unable to determine S3 bucket name from Terraform state." >&2

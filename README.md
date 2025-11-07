@@ -1,12 +1,13 @@
 # WebGL Deployment with Terraform
 
-This Terraform configuration deploys a WebGL application to AWS S3 with CloudFront distribution, using Origin Access Control (OAC) for secure access.
+This Terraform configuration deploys a WebGL application to AWS S3 with CloudFront distribution, using Origin Access Control (OAC) for secure access. Supports multiple environments (dev, staging, prod) with independent state management using Terraform workspaces.
 
 ## Architecture
 
 - **S3 Bucket**: Private bucket storing WebGL build files (not publicly accessible)
 - **CloudFront**: CDN distribution with OAC to securely access S3 bucket
-- **IAM**: Optional roles and policies for deployment automation
+- **IAM**: Optional roles and policies for automated deployments (GitHub Actions, EC2)
+- **Workspaces**: Separate state files for each environment (dev, staging, prod)
 
 ## Directory Structure
 
@@ -15,26 +16,24 @@ This Terraform configuration deploys a WebGL application to AWS S3 with CloudFro
 ├── main.tf                 # Root Terraform configuration
 ├── variables.tf            # Root variables
 ├── outputs.tf             # Root outputs
+├── versions.tf             # Terraform version constraints
 ├── modules/
 │   ├── s3/                # S3 bucket module
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
 │   ├── cloudfront/        # CloudFront distribution module
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
 │   └── iam/               # IAM roles and policies module
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
-└── environments/
-    ├── dev/               # Development environment
-    │   └── terraform.tfvars
-    ├── staging/           # Staging environment
-    │   └── terraform.tfvars
-    └── prod/              # Production environment
-        └── terraform.tfvars
+├── environments/
+│   ├── dev/               # Development environment
+│   ├── staging/           # Staging environment
+│   └── prod/              # Production environment
+├── scripts/               # Deployment helper scripts
+│   ├── init.sh           # Initialize Terraform
+│   ├── plan.sh           # Plan deployment
+│   ├── apply.sh          # Apply deployment
+│   ├── destroy.sh        # Destroy resources
+│   ├── outputs.sh        # View outputs
+│   └── upload.sh         # Upload files to S3
+└── sample/                # Sample files
+    └── index.html         # Tutorial/placeholder page
 ```
 
 ## Prerequisites
@@ -47,207 +46,362 @@ This Terraform configuration deploys a WebGL application to AWS S3 with CloudFro
 
 This project uses a specific AWS profile named `deploy-config` for authentication. You must configure this profile before running any deployment scripts.
 
-### Step 1: Configure AWS Profile
-
-You can configure the AWS profile using one of the following methods:
-
-#### Method 1: Interactive Configuration (Recommended)
+### Quick Setup
 
 ```bash
 aws configure --profile deploy-config
 ```
 
-You will be prompted to enter:
-- **AWS Access Key ID**: Your AWS access key
-- **AWS Secret Access Key**: Your AWS secret key
-- **Default region name**: e.g., `us-east-1`
-- **Default output format**: `json` (recommended)
+Enter your:
+- AWS Access Key ID
+- AWS Secret Access Key
+- Default region (e.g., `us-east-1`)
+- Default output format (`json`)
 
-#### Method 2: Non-Interactive Configuration
-
-```bash
-aws configure set aws_access_key_id YOUR_ACCESS_KEY --profile deploy-config
-aws configure set aws_secret_access_key YOUR_SECRET_KEY --profile deploy-config
-aws configure set region us-east-1 --profile deploy-config
-aws configure set output json --profile deploy-config
-```
-
-#### Method 3: Manual Configuration
-
-Edit the AWS credentials and config files directly:
-
-**~/.aws/credentials:**
-```ini
-[deploy-config]
-aws_access_key_id = YOUR_ACCESS_KEY
-aws_secret_access_key = YOUR_SECRET_KEY
-```
-
-**~/.aws/config:**
-```ini
-[profile deploy-config]
-region = us-east-1
-output = json
-```
-
-### Step 2: Verify Profile Configuration
-
-Verify that the profile is configured correctly:
+### Verify Configuration
 
 ```bash
-# List all profiles
-aws configure list-profiles
-
-# Verify the profile exists
-aws configure list-profiles | grep deploy-config
-
-# Test the profile
 aws sts get-caller-identity --profile deploy-config
 ```
 
-### Step 3: Using a Different Profile Name
-
-If you want to use a different profile name, set the `AWS_PROFILE_NAME` environment variable:
-
-```bash
-export AWS_PROFILE_NAME=my-custom-profile
-./scripts/plan.sh dev
-```
-
-### Important Notes
-
-- **All deployment scripts automatically check for the AWS profile** and will show an error if it's not configured
-- The profile must have valid credentials with permissions to create S3 buckets, CloudFront distributions, and IAM resources
-- The scripts validate the profile before running any Terraform commands
-- If the profile is missing or invalid, the scripts will display helpful error messages with setup instructions
+See [AWS_PROFILE_SETUP.md](AWS_PROFILE_SETUP.md) for detailed instructions.
 
 ## Quick Start
 
-### Option 1: Using Helper Scripts (Recommended)
-
-The easiest way to deploy is using the provided scripts:
+### 1. Initialize Terraform
 
 ```bash
-# 1. Initialize Terraform
 ./scripts/init.sh
+```
 
-# 2. Plan deployment
+### 2. Deploy to Development
+
+```bash
 ./scripts/plan.sh dev
-
-# 3. Apply deployment
 ./scripts/apply.sh dev
+```
 
-# 4. View outputs
+### 3. Upload Your Build
+
+```bash
+./scripts/upload.sh dev ./WebGLBuild
+```
+
+### 4. View Outputs
+
+```bash
 ./scripts/outputs.sh dev
 ```
 
-See [scripts/README.md](scripts/README.md) for detailed script documentation.
+## Multiple Environments
 
-### Option 2: Using Terraform Directly
+This project uses **Terraform workspaces** to manage multiple environments independently. Each environment has its own state file, allowing you to deploy and destroy them separately.
 
-#### 1. Initialize Terraform
-
-```bash
-terraform init
-```
-
-#### 2. Deploy to Development Environment
+### Deploy All Environments
 
 ```bash
-# From the root directory
-terraform plan -var-file=environments/dev/terraform.tfvars
-terraform apply -var-file=environments/dev/terraform.tfvars
+# Deploy dev
+./scripts/plan.sh dev
+./scripts/apply.sh dev
+
+# Deploy staging (independent from dev)
+./scripts/plan.sh staging
+./scripts/apply.sh staging
+
+# Deploy prod (independent from dev and staging)
+./scripts/plan.sh prod
+./scripts/apply.sh prod
 ```
 
-#### 3. Deploy to Other Environments
+### Destroy Specific Environment
 
 ```bash
-# Staging
-terraform plan -var-file=environments/staging/terraform.tfvars
-terraform apply -var-file=environments/staging/terraform.tfvars
+# Destroy only staging (dev and prod remain untouched)
+./scripts/destroy.sh staging
 
-# Production
-terraform plan -var-file=environments/prod/terraform.tfvars
-terraform apply -var-file=environments/prod/terraform.tfvars
+# Destroy only dev
+./scripts/destroy.sh dev
 ```
+
+**Benefits:**
+- ✅ Separate state files per environment
+- ✅ Safe to destroy any environment independently
+- ✅ No conflicts between environments
+- ✅ Automatic workspace management
+
+See [WORKSPACES_GUIDE.md](WORKSPACES_GUIDE.md) for detailed workspace documentation.
+
+## Deployment Methods
+
+### Method 1: Manual Deployment (Development)
+
+**Best for:** Development, testing, small teams
+
+```bash
+# Configure AWS profile
+aws configure --profile deploy-config
+
+# Deploy
+./scripts/init.sh
+./scripts/plan.sh dev
+./scripts/apply.sh dev
+./scripts/upload.sh dev ./build
+```
+
+**Pros:**
+- Simple setup
+- Works immediately
+- Good for learning
+
+**Cons:**
+- Manual process
+- Requires AWS keys
+
+### Method 2: GitHub Actions with OIDC (Recommended for Production)
+
+**Best for:** Automated CI/CD, production deployments
+
+**Setup:**
+
+1. **Configure OIDC in Terraform** - Edit `environments/prod/terraform.tfvars`:
+   ```hcl
+   create_iam_resources = true
+   create_deployment_role = true
+   github_actions_oidc = {
+     account_id        = "123456789012"  # Your AWS Account ID
+     repository_filter = "repo:your-username/your-repo:*"
+   }
+   ```
+
+2. **Apply Terraform:**
+   ```bash
+   ./scripts/apply.sh prod
+   ```
+
+3. **Get Role ARN:**
+   ```bash
+   ./scripts/outputs.sh prod | grep deployment_role_arn
+   ```
+
+4. **Create GitHub Actions Workflow** - See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)
+
+**Pros:**
+- ✅ No AWS keys stored in GitHub
+- ✅ Temporary credentials (auto-expire)
+- ✅ Fully automated
+- ✅ Secure and auditable
+
+### Method 3: EC2 Instance with IAM Role
+
+**Best for:** Long-running build servers
+
+**Setup:**
+
+1. **Configure for EC2** - Edit `environments/prod/terraform.tfvars`:
+   ```hcl
+   create_deployment_role = true
+   assume_role_services = ["ec2.amazonaws.com"]
+   ```
+
+2. **Apply Terraform:**
+   ```bash
+   ./scripts/apply.sh prod
+   ```
+
+3. **Attach Role to EC2 Instance:**
+   - AWS Console → EC2 → Instances
+   - Select instance → Actions → Security → Modify IAM role
+   - Select: `webgl-prod-deployment-role`
+
+4. **Deploy from EC2** (no keys needed):
+   ```bash
+   aws s3 sync ./build s3://bucket-name
+   ```
+
+See [IAM_ROLE_GUIDE.md](IAM_ROLE_GUIDE.md) for detailed IAM setup instructions.
+
+## Available Scripts
+
+All scripts automatically handle workspaces and AWS profile validation.
+
+| Script | Description |
+|--------|-------------|
+| `init.sh` | Initialize Terraform and show workspaces |
+| `plan.sh <env>` | Create deployment plan for environment |
+| `apply.sh <env>` | Deploy infrastructure for environment |
+| `destroy.sh <env>` | Destroy resources for environment |
+| `outputs.sh <env>` | View Terraform outputs |
+| `upload.sh <env> <dir>` | Upload files to S3 and invalidate CloudFront |
+
+See [scripts/README.md](scripts/README.md) for detailed documentation.
 
 ## Configuration
 
-### Environment Variables
+### Environment Configuration
 
-Edit the `terraform.tfvars` files in the `environments/` directory to configure:
+Edit the `terraform.tfvars` files in `environments/` directory:
 
-- **AWS Region**: Where resources will be created
+**Development (`environments/dev/terraform.tfvars`):**
+- Manual deployment only
+- IAM resources disabled
+- Lower cache TTL
+
+**Staging (`environments/staging/terraform.tfvars`):**
+- GitHub Actions OIDC enabled
+- IAM role for automated deployment
+- Medium cache TTL
+
+**Production (`environments/prod/terraform.tfvars`):**
+- GitHub Actions OIDC enabled
+- IAM role for automated deployment
+- Long cache TTL
+- Global CloudFront distribution
+
+### Key Configuration Options
+
+- **AWS Region**: Where resources are created
 - **Project Name**: Used for resource naming
 - **CloudFront Settings**: Cache policies, TTL, price class
 - **S3 Settings**: Versioning, CORS configuration
-- **IAM Settings**: Whether to create deployment policies/roles
+- **IAM Settings**: Enable/disable deployment roles and policies
+- **GitHub Actions OIDC**: Configure for automated deployments
+
+See [environments/README.md](environments/README.md) for environment-specific configuration.
 
 ### Custom Domain Setup
-
-To use a custom domain:
 
 1. Request an ACM certificate in `us-east-1` region
 2. Update `acm_certificate_arn` in your environment's `terraform.tfvars`
 3. Update `cloudfront_aliases` with your domain names
-4. Create a CNAME record in your DNS pointing to the CloudFront distribution domain
+4. Create a CNAME record pointing to CloudFront distribution domain
 
-## Deployment
+## Uploading Files
 
-After Terraform creates the infrastructure:
-
-1. Upload your WebGL build files to the S3 bucket
-   - Use the helper script: `./scripts/upload.sh dev path/to/build` (also issues a CloudFront invalidation)
-   - A placeholder build is available in `sample/index.html` for testing
-2. Use the CloudFront distribution URL from the outputs to access your application
-
-### Upload Script Example
+### Using the Upload Script (Recommended)
 
 ```bash
-#!/bin/bash
-BUCKET_NAME=$(terraform output -raw s3_bucket_id)
-LOCAL_DIR="./WebGLBuild"
+# Upload and invalidate CloudFront cache
+./scripts/upload.sh dev ./WebGLBuild
 
-aws s3 sync "$LOCAL_DIR" "s3://$BUCKET_NAME/" \
-  --delete \
-  --cache-control "max-age=31536000" \
-  --exclude "*.html" \
-  --exclude "*.json"
+# Upload to subfolder
+./scripts/upload.sh dev ./build webgl/
+```
 
-# Upload HTML files with shorter cache
-aws s3 sync "$LOCAL_DIR" "s3://$BUCKET_NAME/" \
-  --cache-control "max-age=3600" \
-  --include "*.html" \
-  --include "*.json"
+The script automatically:
+- Syncs files to S3
+- Creates CloudFront invalidation
+- Uses correct AWS profile
+
+### Manual Upload
+
+```bash
+# Get bucket name
+BUCKET=$(./scripts/outputs.sh dev | grep s3_bucket_id)
+
+# Upload files
+aws s3 sync ./build s3://$BUCKET --delete --profile deploy-config
+
+# Invalidate CloudFront
+DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*" --profile deploy-config
 ```
 
 ## Outputs
 
-After deployment, Terraform will output:
+After deployment, view outputs:
 
+```bash
+./scripts/outputs.sh dev
+```
+
+**Key Outputs:**
 - `s3_bucket_id`: S3 bucket name
 - `cloudfront_distribution_domain_name`: CloudFront URL
-- `deployment_url`: Full HTTPS URL to access your WebGL build
+- `deployment_url`: Full HTTPS URL
+- `deployment_role_arn`: IAM role ARN (if enabled)
 
 ## Security Features
 
-- **Private S3 Bucket**: Bucket is not publicly accessible
-- **OAC (Origin Access Control)**: Only CloudFront can access S3 bucket
+- **Private S3 Bucket**: Not publicly accessible
+- **OAC (Origin Access Control)**: Only CloudFront can access S3
 - **HTTPS Only**: CloudFront redirects HTTP to HTTPS
 - **Encryption**: S3 bucket uses server-side encryption
+- **IAM Roles**: Temporary credentials for automated deployments
+- **Workspace Isolation**: Separate state files per environment
 
 ## Cleanup
 
-To destroy all resources:
+### Destroy Specific Environment
 
 ```bash
-terraform destroy -var-file=environments/dev/terraform.tfvars
+# Destroy staging only
+./scripts/destroy.sh staging
+
+# Destroy dev only
+./scripts/destroy.sh dev
+
+# Destroy prod (with confirmation)
+./scripts/destroy.sh prod
 ```
 
-## Notes
+Each environment is destroyed independently - other environments remain untouched.
 
-- S3 bucket names must be globally unique (a random suffix is added)
-- CloudFront distributions can take 15-20 minutes to deploy
-- ACM certificates for CloudFront must be in `us-east-1` region
-- The S3 bucket policy is automatically configured to allow CloudFront OAC access
+## Documentation
 
+- **[scripts/README.md](scripts/README.md)** - Script usage and examples
+- **[WORKSPACES_GUIDE.md](WORKSPACES_GUIDE.md)** - Workspace management
+- **[GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)** - CI/CD setup
+- **[IAM_ROLE_GUIDE.md](IAM_ROLE_GUIDE.md)** - IAM roles explained
+- **[environments/README.md](environments/README.md)** - Environment configuration
+- **[GIT_SETUP.md](GIT_SETUP.md)** - Git repository setup
+- **[AWS_PROFILE_SETUP.md](AWS_PROFILE_SETUP.md)** - AWS profile configuration
+
+## Important Notes
+
+- **S3 bucket names** must be globally unique (random suffix added automatically)
+- **CloudFront distributions** take 15-20 minutes to deploy
+- **ACM certificates** for CloudFront must be in `us-east-1` region
+- **Workspaces** are managed automatically by scripts
+- **State files** are stored locally in `.terraform/terraform.tfstate.d/` (excluded from git)
+
+## Troubleshooting
+
+### Workspace Issues
+
+```bash
+# List all workspaces
+terraform workspace list
+
+# Show current workspace
+terraform workspace show
+
+# Select workspace manually
+terraform workspace select staging
+```
+
+### AWS Profile Issues
+
+```bash
+# Verify profile exists
+aws configure list-profiles | grep deploy-config
+
+# Test profile
+aws sts get-caller-identity --profile deploy-config
+```
+
+### Common Errors
+
+- **"Workspace doesn't exist"** - Run `./scripts/plan.sh <env>` first (creates workspace)
+- **"Profile not configured"** - Run `aws configure --profile deploy-config`
+- **"No outputs found"** - Run `./scripts/apply.sh <env>` first
+
+## Contributing
+
+1. Review `.gitignore` before committing
+2. Never commit `.tfvars` files with real values
+3. Use `terraform.tfvars.example` as template
+4. See [GIT_SETUP.md](GIT_SETUP.md) for details
+
+## License
+
+This project is provided as-is for deploying WebGL applications to AWS.

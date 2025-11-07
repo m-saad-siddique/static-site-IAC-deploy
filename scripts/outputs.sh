@@ -40,6 +40,14 @@ if [ ! -d .terraform ]; then
   terraform init >/dev/null
 fi
 
+# Select workspace for this environment
+if ! terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
+  echo "Workspace '${ENVIRONMENT}' does not exist. Run './scripts/apply.sh ${ENVIRONMENT}' first." >&2
+  exit 1
+fi
+
+terraform workspace select "${ENVIRONMENT}"
+
 if ! terraform output >/dev/null 2>&1; then
   echo "No Terraform outputs found. Run './scripts/apply.sh ${ENVIRONMENT}' first." >&2
   exit 1
