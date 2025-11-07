@@ -1,0 +1,44 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and customize for your needs
+# Or use environment-specific files in the environments/ directory
+
+# Environment name (dev, staging, prod)
+environment = "dev"
+
+# AWS region
+aws_region = "us-east-1"
+
+# Project name
+project_name = "webgl"
+
+# Common tags
+common_tags = {
+  Project     = "WebGL Deployment"
+  ManagedBy   = "Terraform"
+  Environment = "dev"
+}
+
+# CloudFront Configuration
+default_root_object = "index.html"
+enable_ipv6         = true
+price_class         = "PriceClass_100"
+
+# Cache settings
+min_ttl     = 0
+default_ttl = 86400
+max_ttl     = 31536000
+
+# SSL/Certificate (leave empty for CloudFront default)
+acm_certificate_arn = ""
+cloudfront_aliases  = []
+
+# S3 Configuration
+enable_s3_versioning = false
+enable_cors         = true
+cors_allowed_origins = ["*"]
+
+# IAM Configuration
+create_iam_resources     = false
+create_deployment_policy = false
+create_deployment_role   = false
+

@@ -1,0 +1,9 @@
+# Ensure terraform files use LF line endings
+*.tf text eol=lf
+*.tfvars text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+
+# Shell scripts should be executable
+*.sh text eol=lf
+
