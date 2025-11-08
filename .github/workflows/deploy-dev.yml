@@ -1,0 +1,105 @@
+name: Deploy to Development
+
+# Trigger on push to dev branch
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:  # Allow manual trigger
+
+# Permissions required for OIDC and repository access
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read    # Required to checkout code
+
+jobs:
+  deploy:
+    name: Deploy to Dev Environment
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout code from repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Step 2: Configure AWS credentials using OIDC
+      # This uses the IAM role created by Terraform (no AWS keys needed)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Role ARN from GitHub Secrets (set this in repository settings)
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: us-east-1
+      
+      # Step 3: Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      # Step 4: Initialize Terraform
+      # This downloads providers and sets up backend
+      - name: Terraform Init
+        run: terraform init
+        working-directory: .
+      
+      # Step 5: Select or create dev workspace
+      # Workspaces keep state files separate per environment
+      - name: Select Terraform Workspace
+        run: |
+          terraform workspace select dev || terraform workspace new dev
+      
+      # Step 6: Validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
+      
+      # Step 7: Create deployment plan
+      # Shows what changes will be made
+      - name: Terraform Plan
+        run: terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan-dev.out
+      
+      # Step 8: Apply Terraform changes
+      # Creates/updates infrastructure in dev environment
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan-dev.out
+      
+      # Step 9: Get S3 bucket name from Terraform outputs
+      - name: Get S3 Bucket Name
+        id: get-bucket
+        run: |
+          BUCKET=$(terraform output -raw s3_bucket_id)
+          echo "bucket=$BUCKET" >> $GITHUB_OUTPUT
+      
+      # Step 10: Upload build files to S3
+      # Replace './build' with your actual build directory
+      - name: Upload to S3
+        run: |
+          if [ -d "./build" ]; then
+            aws s3 sync ./build s3://${{ steps.get-bucket.outputs.bucket }}/ --delete
+            echo "✅ Files uploaded to S3"
+          else
+            echo "⚠️ Build directory not found. Skipping upload."
+          fi
+      
+      # Step 11: Get CloudFront distribution ID
+      - name: Get CloudFront Distribution ID
+        id: get-distribution
+        run: |
+          DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+          echo "distribution_id=$DIST_ID" >> $GITHUB_OUTPUT
+      
+      # Step 12: Invalidate CloudFront cache
+      # Ensures users get the latest version immediately
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.get-distribution.outputs.distribution_id }} \
+            --paths "/*"
+          echo "✅ CloudFront cache invalidated"
+      
+      # Step 13: Display deployment URL
+      - name: Deployment URL
+        run: |
+          URL=$(terraform output -raw deployment_url)
+          echo "🚀 Deployment URL: $URL"
+          echo "✅ Dev environment deployed successfully!"
+

@@ -1,0 +1,108 @@
+name: Deploy to Production
+
+# Trigger on push to main branch
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+# Permissions required for OIDC and repository access
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read    # Required to checkout code
+
+jobs:
+  deploy:
+    name: Deploy to Production Environment
+    # Use GitHub Environment for manual approval (optional but recommended)
+    environment: production
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout code from repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Step 2: Configure AWS credentials using OIDC
+      # Uses production IAM role (no AWS keys stored in GitHub)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Role ARN from GitHub Secrets (set this in repository settings)
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: us-east-1
+      
+      # Step 3: Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      # Step 4: Initialize Terraform
+      # Downloads providers and configures S3 backend
+      - name: Terraform Init
+        run: terraform init
+        working-directory: .
+      
+      # Step 5: Select or create prod workspace
+      # Workspaces keep state files separate per environment
+      - name: Select Terraform Workspace
+        run: |
+          terraform workspace select prod || terraform workspace new prod
+      
+      # Step 6: Validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
+      
+      # Step 7: Create deployment plan
+      # Shows what infrastructure changes will be made
+      - name: Terraform Plan
+        run: terraform plan -var-file=environments/prod/terraform.tfvars -out=tfplan-prod.out
+      
+      # Step 8: Apply Terraform changes
+      # Creates/updates infrastructure in production environment
+      # This step requires approval if GitHub Environment protection is enabled
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan-prod.out
+      
+      # Step 9: Get S3 bucket name from Terraform outputs
+      - name: Get S3 Bucket Name
+        id: get-bucket
+        run: |
+          BUCKET=$(terraform output -raw s3_bucket_id)
+          echo "bucket=$BUCKET" >> $GITHUB_OUTPUT
+      
+      # Step 10: Upload build files to S3
+      # Replace './build' with your actual WebGL build directory
+      - name: Upload to S3
+        run: |
+          if [ -d "./build" ]; then
+            aws s3 sync ./build s3://${{ steps.get-bucket.outputs.bucket }}/ --delete
+            echo "✅ Files uploaded to S3"
+          else
+            echo "⚠️ Build directory not found. Skipping upload."
+          fi
+      
+      # Step 11: Get CloudFront distribution ID
+      - name: Get CloudFront Distribution ID
+        id: get-distribution
+        run: |
+          DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+          echo "distribution_id=$DIST_ID" >> $GITHUB_OUTPUT
+      
+      # Step 12: Invalidate CloudFront cache
+      # Ensures users get the latest version immediately
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.get-distribution.outputs.distribution_id }} \
+            --paths "/*"
+          echo "✅ CloudFront cache invalidated"
+      
+      # Step 13: Display deployment URL
+      - name: Deployment URL
+        run: |
+          URL=$(terraform output -raw deployment_url)
+          echo "🚀 Deployment URL: $URL"
+          echo "✅ Production environment deployed successfully!"
+

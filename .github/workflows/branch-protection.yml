@@ -1,0 +1,98 @@
+name: Enforce Branch Protection Rules
+
+# Run on pull requests to staging and main branches
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [staging, main]
+
+permissions:
+  contents: read
+  pull-requests: write  # To add comments
+
+jobs:
+  validate-branch-rules:
+    name: Validate Branch Protection Rules
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Step 2: Get branch information
+      - name: Get Branch Info
+        id: branch-info
+        run: |
+          BASE_BRANCH="${{ github.base_ref }}"
+          HEAD_BRANCH="${{ github.head_ref }}"
+          echo "base=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "head=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+          echo "Base branch: $BASE_BRANCH"
+          echo "Head branch: $HEAD_BRANCH"
+      
+      # Step 3: Validate branch rules
+      - name: Validate Branch Rules
+        id: validate
+        run: |
+          BASE_BRANCH="${{ steps.branch-info.outputs.base }}"
+          HEAD_BRANCH="${{ steps.branch-info.outputs.head }}"
+          VALIDATION_FAILED=false
+          ERROR_MESSAGE=""
+          
+          # Rule 1: Prevent creating branches from staging or main
+          if [[ "$HEAD_BRANCH" == staging-* ]] || [[ "$HEAD_BRANCH" == main-* ]] || [[ "$HEAD_BRANCH" == prod-* ]]; then
+            ERROR_MESSAGE="❌ **Branch Naming Violation**\n\nCannot create branches with prefix 'staging-', 'main-', or 'prod-'.\n\n✅ **Solution:** Create branches from 'dev' branch with a different naming pattern (e.g., 'feature-*', 'fix-*')."
+            VALIDATION_FAILED=true
+          fi
+          
+          # Rule 2: Only allow merging 'dev' branch to 'staging'
+          if [[ "$BASE_BRANCH" == "staging" ]] && [[ "$HEAD_BRANCH" != "dev" ]]; then
+            ERROR_MESSAGE="❌ **Invalid Merge to Staging**\n\nOnly the 'dev' branch can be merged to 'staging'.\n\n✅ **Solution:** Merge your changes to 'dev' first, then create a PR from 'dev' to 'staging'."
+            VALIDATION_FAILED=true
+          fi
+          
+          # Rule 3: Only allow merging 'staging' branch to 'main'
+          if [[ "$BASE_BRANCH" == "main" ]] && [[ "$HEAD_BRANCH" != "staging" ]]; then
+            ERROR_MESSAGE="❌ **Invalid Merge to Main**\n\nOnly the 'staging' branch can be merged to 'main'.\n\n✅ **Solution:** Merge your changes to 'staging' first, then create a PR from 'staging' to 'main'."
+            VALIDATION_FAILED=true
+          fi
+          
+          # Rule 4: Prevent direct PRs from feature branches to main
+          if [[ "$BASE_BRANCH" == "main" ]] && [[ "$HEAD_BRANCH" != "staging" ]]; then
+            ERROR_MESSAGE="❌ **Direct PR to Main Blocked**\n\nDirect pull requests to 'main' are not allowed.\n\n✅ **Workflow:**\n1. Create PR to 'dev'\n2. After merge, create PR from 'dev' to 'staging'\n3. After merge, create PR from 'staging' to 'main'"
+            VALIDATION_FAILED=true
+          fi
+          
+          if [ "$VALIDATION_FAILED" = true ]; then
+            echo "validation_failed=true" >> $GITHUB_OUTPUT
+            echo "error_message<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$ERROR_MESSAGE" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ Branch rules validated successfully"
+            echo "validation_failed=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # Step 4: Comment on PR if validation fails
+      - name: Comment on PR
+        if: steps.validate.outputs.validation_failed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.validate.outputs.error_message }}\n\n---\n\n**Branch Protection Rules:**\n- ✅ All work must start from 'dev' branch\n- ✅ Only 'dev' → 'staging' merges allowed\n- ✅ Only 'staging' → 'main' merges allowed\n- ❌ No direct merges to 'staging' or 'main'`
+            })
+      
+      # Step 5: Fail the workflow if validation fails
+      - name: Fail if validation failed
+        if: steps.validate.outputs.validation_failed == 'true'
+        run: |
+          echo "❌ Branch protection rules violated. See PR comment for details."
+          exit 1
+
