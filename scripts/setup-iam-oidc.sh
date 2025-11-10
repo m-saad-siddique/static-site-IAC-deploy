@@ -251,7 +251,7 @@ if [ "$POLICY_EXISTS" = false ]; then
         "dynamodb:DescribeTable"
       ],
       "Resource": [
-        "arn:aws:dynamodb:*:*:table/terraform-state-lock"
+        "arn:aws:dynamodb:*:${AWS_ACCOUNT_ID}:table/terraform-state-lock-*"
       ]
     },
     {
