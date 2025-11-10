@@ -56,8 +56,22 @@ jobs:
       
       # Step 7: Create deployment plan
       # Shows what infrastructure changes will be made
+      # Note: Creating temporary tfvars file since original is not committed (contains sensitive data)
       - name: Terraform Plan
-        run: terraform plan -var-file=environments/prod/terraform.tfvars -out=tfplan-prod.out
+        run: |
+          # Create temporary tfvars file with environment-specific values
+          cat > /tmp/prod.tfvars <<EOF
+          environment = "prod"
+          create_iam_resources = true
+          create_deployment_policy = true
+          create_deployment_role = true
+          assume_role_services = []
+          github_actions_oidc = {
+            account_id = "${{ secrets.AWS_ACCOUNT_ID }}"
+            repository_filter = "repo:${{ github.repository }}:*"
+          }
+          EOF
+          terraform plan -var-file=/tmp/prod.tfvars -out=tfplan-prod.out
       
       # Step 8: Apply Terraform changes
       # Creates/updates infrastructure in production environment

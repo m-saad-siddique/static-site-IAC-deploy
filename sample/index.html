@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebGL Deployment Guide - Terraform + S3 + CloudFront</title>
+  <title>WebGL Deployment - Complete Guide</title>
   <style>
     * {
       margin: 0;
@@ -52,8 +52,42 @@
       padding: 2rem;
     }
 
+    .toc {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 6px;
+    }
+
+    .toc h2 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .toc ul {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .toc li {
+      margin: 0.5rem 0;
+    }
+
+    .toc a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
     section {
       margin-bottom: 3rem;
+      scroll-margin-top: 2rem;
     }
 
     h2 {
@@ -70,137 +104,10 @@
       margin: 1.5rem 0 1rem;
     }
 
-    .flow-diagram {
-      background: #f8f9fa;
-      border-left: 4px solid #667eea;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-      border-radius: 4px;
-    }
-
-    .flow-step {
-      display: flex;
-      align-items: center;
-      margin: 1rem 0;
-      padding: 0.5rem;
-    }
-
-    .flow-step::before {
-      content: "→";
-      color: #667eea;
-      font-size: 1.5rem;
-      margin-right: 1rem;
-      font-weight: bold;
-    }
-
-    .flow-step:first-child::before {
-      content: "1.";
-    }
-
-    .method-card {
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .method-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .method-card h3 {
-      margin-top: 0;
-      color: #667eea;
-    }
-
-    .method-card .badge {
-      display: inline-block;
-      background: #667eea;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
-
-    .code-block {
-      background: #2d2d2d;
-      color: #f8f8f2;
-      padding: 1rem;
-      border-radius: 6px;
-      overflow-x: auto;
-      margin: 1rem 0;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-    }
-
-    .code-block code {
-      color: #f8f8f2;
-    }
-
-    .pros-cons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-
-    .pros, .cons {
-      padding: 1rem;
-      border-radius: 6px;
-    }
-
-    .pros {
-      background: #d4edda;
-      border-left: 4px solid #28a745;
-    }
-
-    .cons {
-      background: #f8d7da;
-      border-left: 4px solid #dc3545;
-    }
-
-    .pros h4, .cons h4 {
-      margin-bottom: 0.5rem;
-    }
-
-    ul {
-      margin-left: 1.5rem;
-      margin-top: 0.5rem;
-    }
-
-    li {
-      margin: 0.5rem 0;
-    }
-
-    .setup-steps {
-      counter-reset: step-counter;
-    }
-
-    .setup-steps li {
-      counter-increment: step-counter;
-      list-style: none;
-      margin: 1rem 0;
-      padding-left: 2.5rem;
-      position: relative;
-    }
-
-    .setup-steps li::before {
-      content: counter(step-counter);
-      position: absolute;
-      left: 0;
-      background: #667eea;
-      color: white;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
+    h4 {
+      color: #555;
+      font-size: 1.1rem;
+      margin: 1rem 0 0.5rem;
     }
 
     .info-box {
@@ -219,6 +126,116 @@
       border-radius: 4px;
     }
 
+    .success-box {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .code-block code {
+      color: #f8f8f2;
+    }
+
+    .step-list {
+      counter-reset: step-counter;
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .step-list li {
+      counter-increment: step-counter;
+      margin: 1rem 0;
+      padding-left: 2.5rem;
+      position: relative;
+    }
+
+    .step-list li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      background: #667eea;
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    table th {
+      background: #667eea;
+      color: white;
+      padding: 1rem;
+      text-align: left;
+    }
+
+    table td {
+      padding: 1rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .flow-diagram {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+    }
+
+    .flow-step::before {
+      content: "→";
+      color: #667eea;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      font-weight: bold;
+    }
+
+    .flow-step:first-child::before {
+      content: "1.";
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
     footer {
       background: #f8f9fa;
       padding: 2rem;
@@ -232,10 +249,6 @@
         font-size: 1.8rem;
       }
 
-      .pros-cons {
-        grid-template-columns: 1fr;
-      }
-
       .content {
         padding: 1rem;
       }
@@ -246,321 +259,669 @@
   <div class="container">
     <header>
       <h1>🚀 WebGL Deployment Guide</h1>
-      <p>Terraform + S3 + CloudFront with OAC</p>
+      <p>Complete Tutorial - Terraform + S3 + CloudFront with CI/CD</p>
     </header>
 
     <div class="content">
-      <!-- Overview Section -->
-      <section>
-        <h2>📋 Overview</h2>
-        <p>This deployment system uses Terraform to provision AWS infrastructure for hosting WebGL applications:</p>
+      <!-- Table of Contents -->
+      <section id="toc" class="toc">
+        <h2>📑 Table of Contents</h2>
         <ul>
-          <li><strong>S3 Bucket</strong> - Private bucket storing your WebGL build files</li>
-          <li><strong>CloudFront Distribution</strong> - CDN for fast global delivery</li>
-          <li><strong>Origin Access Control (OAC)</strong> - Secure access (S3 bucket is private, only CloudFront can access)</li>
-          <li><strong>IAM Roles/Policies</strong> - For automated deployments (optional)</li>
+          <li><a href="#about-project">1. About the Project</a></li>
+          <li><a href="#about-services">2. About the Services</a></li>
+          <li><a href="#local-setup">3. Local Setup & AWS Keys</a></li>
+          <li><a href="#deploy-local">4. Deploy to Dev (Local)</a></li>
+          <li><a href="#cicd-setup">5. CI/CD Setup (GitHub Actions)</a></li>
+          <li><a href="#workflows">6. Workflows & Environments</a></li>
+          <li><a href="#troubleshooting">7. Troubleshooting</a></li>
         </ul>
       </section>
 
-      <!-- Architecture Flow -->
-      <section>
-        <h2>🏗️ Architecture Flow</h2>
+      <!-- About the Project -->
+      <section id="about-project">
+        <h2>1. About the Project</h2>
+        
+        <p>This project provides a complete infrastructure-as-code solution for deploying WebGL applications to AWS using Terraform. It automates the creation and management of:</p>
+        
+        <ul>
+          <li><strong>Private S3 Buckets</strong> - Secure storage for WebGL build files</li>
+          <li><strong>CloudFront Distributions</strong> - Global CDN for fast content delivery</li>
+          <li><strong>IAM Roles & Policies</strong> - Secure access for automated deployments</li>
+          <li><strong>Multiple Environments</strong> - Dev, Staging, and Production with isolated state</li>
+        </ul>
+
+        <h3>Key Features</h3>
+        <ul>
+          <li>✅ <strong>Infrastructure as Code</strong> - Everything defined in Terraform</li>
+          <li>✅ <strong>Secure by Default</strong> - Private S3 buckets with OAC (Origin Access Control)</li>
+          <li>✅ <strong>Multi-Environment</strong> - Separate dev, staging, and prod environments</li>
+          <li>✅ <strong>CI/CD Ready</strong> - GitHub Actions workflows included</li>
+          <li>✅ <strong>Workspace Isolation</strong> - Each environment has separate state</li>
+          <li>✅ <strong>Automated Deployment</strong> - Upload and CloudFront invalidation in one command</li>
+        </ul>
+
+        <h3>Project Structure</h3>
+        <div class="code-block">
+<code>webgl-deploy/
+├── main.tf              # Root Terraform configuration
+├── variables.tf          # Variable definitions
+├── outputs.tf           # Output values
+├── modules/             # Reusable modules
+│   ├── s3/              # S3 bucket module
+│   ├── cloudfront/      # CloudFront module
+│   └── iam/             # IAM roles/policies module
+├── environments/        # Environment configurations
+│   ├── dev/
+│   ├── staging/
+│   └── prod/
+├── scripts/             # Deployment helper scripts
+└── .github/workflows/   # CI/CD workflows</code>
+        </div>
+      </section>
+
+      <!-- About the Services -->
+      <section id="about-services">
+        <h2>2. About the Services</h2>
+
+        <h3>Amazon S3 (Simple Storage Service)</h3>
+        <p><strong>Purpose:</strong> Stores your WebGL build files (HTML, JS, WASM, assets)</p>
+        <ul>
+          <li><strong>Private Bucket</strong> - Not publicly accessible</li>
+          <li><strong>Server-Side Encryption</strong> - AES256 encryption enabled</li>
+          <li><strong>Versioning</strong> - Optional (enabled in staging/prod)</li>
+          <li><strong>CORS</strong> - Configured for WebGL applications</li>
+        </ul>
+
+        <div class="info-box">
+          <strong>🔒 Security:</strong> The S3 bucket is completely private. Users cannot access files directly. Only CloudFront can access the bucket using OAC (Origin Access Control).
+        </div>
+
+        <h3>Amazon CloudFront</h3>
+        <p><strong>Purpose:</strong> Global CDN that serves your WebGL application to users worldwide</p>
+        <ul>
+          <li><strong>Global Distribution</strong> - Content cached at edge locations</li>
+          <li><strong>HTTPS Only</strong> - Automatic HTTP to HTTPS redirect</li>
+          <li><strong>OAC Integration</strong> - Securely accesses private S3 bucket</li>
+          <li><strong>Custom Error Pages</strong> - Handles SPA routing (403/404 → index.html)</li>
+          <li><strong>Automatic Compression</strong> - Gzip compression enabled</li>
+        </ul>
+
+        <h3>Origin Access Control (OAC)</h3>
+        <p><strong>Purpose:</strong> Modern security mechanism replacing OAI (Origin Access Identity)</p>
+        <ul>
+          <li><strong>Secure Access</strong> - Only CloudFront can access S3</li>
+          <li><strong>No Public Access</strong> - S3 bucket remains completely private</li>
+          <li><strong>Automatic</strong> - Configured automatically by Terraform</li>
+        </ul>
+
+        <h3>IAM Roles & Policies</h3>
+        <p><strong>Purpose:</strong> Secure access for automated deployments (CI/CD)</p>
+        <ul>
+          <li><strong>Deployment Policy</strong> - Permissions for S3 upload and CloudFront invalidation</li>
+          <li><strong>IAM Role</strong> - Can be assumed by GitHub Actions (OIDC) or EC2</li>
+          <li><strong>Temporary Credentials</strong> - No permanent keys stored</li>
+        </ul>
+
+        <h3>Architecture Flow</h3>
         <div class="flow-diagram">
           <div class="flow-step"><strong>Developer</strong> - Creates WebGL build</div>
           <div class="flow-step"><strong>Upload</strong> - Files synced to S3 bucket (private)</div>
           <div class="flow-step"><strong>CloudFront</strong> - Serves files via OAC (secure connection)</div>
           <div class="flow-step"><strong>Users</strong> - Access via CloudFront URL (fast, global)</div>
         </div>
-        <div class="info-box">
-          <strong>🔒 Security:</strong> The S3 bucket is completely private. Users can only access files through CloudFront, which uses OAC (Origin Access Control) for secure authentication.
+      </section>
+
+      <!-- Local Setup -->
+      <section id="local-setup">
+        <h2>3. Local Setup & AWS Keys</h2>
+
+        <h3>Prerequisites</h3>
+        <ol class="step-list">
+          <li><strong>AWS CLI</strong> - Install from <a href="https://aws.amazon.com/cli/" target="_blank">aws.amazon.com/cli</a></li>
+          <li><strong>Terraform</strong> - Install from <a href="https://www.terraform.io/downloads" target="_blank">terraform.io/downloads</a></li>
+          <li><strong>AWS Account</strong> - With appropriate permissions</li>
+        </ol>
+
+        <h3>Step 1: Configure AWS Profile</h3>
+        <p>This project uses an AWS profile named <code>deploy-config</code> for authentication.</p>
+
+        <h4>Interactive Setup (Recommended)</h4>
+        <div class="code-block">
+<code>aws configure --profile deploy-config</code>
+        </div>
+
+        <p>You will be prompted for:</p>
+        <ul>
+          <li><strong>AWS Access Key ID</strong> - Your AWS access key</li>
+          <li><strong>AWS Secret Access Key</strong> - Your AWS secret key</li>
+          <li><strong>Default region</strong> - e.g., <code>us-east-1</code></li>
+          <li><strong>Default output format</strong> - <code>json</code> (recommended)</li>
+        </ul>
+
+        <h4>Non-Interactive Setup</h4>
+        <div class="code-block">
+<code>aws configure set aws_access_key_id YOUR_ACCESS_KEY --profile deploy-config
+aws configure set aws_secret_access_key YOUR_SECRET_KEY --profile deploy-config
+aws configure set region us-east-1 --profile deploy-config
+aws configure set output json --profile deploy-config</code>
+        </div>
+
+        <h3>Step 2: Verify Profile Configuration</h3>
+        <div class="code-block">
+<code># List all profiles
+aws configure list-profiles
+
+# Verify profile exists
+aws configure list-profiles | grep deploy-config
+
+# Test the profile
+aws sts get-caller-identity --profile deploy-config</code>
+        </div>
+
+        <div class="success-box">
+          <strong>✅ Success:</strong> If the last command returns your AWS account ID, the profile is configured correctly.
+        </div>
+
+        <h3>Step 3: Clone Repository</h3>
+        <div class="code-block">
+<code>git clone https://github.com/your-username/webgl-deploy.git
+cd webgl-deploy</code>
+        </div>
+
+        <h3>Step 4: Initialize Terraform</h3>
+        <div class="code-block">
+<code>./scripts/init.sh</code>
+        </div>
+
+        <p>This will:</p>
+        <ul>
+          <li>Download required Terraform providers</li>
+          <li>Initialize the backend (if configured)</li>
+          <li>Show available workspaces</li>
+        </ul>
+      </section>
+
+      <!-- Deploy to Dev (Local) -->
+      <section id="deploy-local">
+        <h2>4. Deploy to Dev Environment (Local)</h2>
+
+        <h3>Step 1: Plan Deployment</h3>
+        <p>Review what will be created before applying:</p>
+        <div class="code-block">
+<code>./scripts/plan.sh dev</code>
+        </div>
+
+        <p>This will:</p>
+        <ul>
+          <li>Select/create <code>dev</code> workspace</li>
+          <li>Show planned infrastructure changes</li>
+          <li>Save plan to <code>tfplan-dev.out</code></li>
+        </ul>
+
+        <h3>Step 2: Apply Deployment</h3>
+        <p>Create the infrastructure:</p>
+        <div class="code-block">
+<code>./scripts/apply.sh dev</code>
+        </div>
+
+        <p>This will:</p>
+        <ul>
+          <li>Create S3 bucket (private)</li>
+          <li>Create CloudFront distribution</li>
+          <li>Configure OAC for secure access</li>
+          <li>Display outputs (bucket name, CloudFront URL)</li>
+        </ul>
+
+        <div class="warning-box">
+          <strong>⏱️ Note:</strong> CloudFront distributions take 15-20 minutes to fully deploy. The URL will be available immediately but may show "Distribution not ready" until deployment completes.
+        </div>
+
+        <h3>Step 3: Upload Your WebGL Build</h3>
+        <p>Upload your build files to S3:</p>
+        <div class="code-block">
+<code>./scripts/upload.sh dev ./WebGLBuild</code>
+        </div>
+
+        <p>This will:</p>
+        <ul>
+          <li>Sync files to S3 bucket</li>
+          <li>Create CloudFront invalidation</li>
+          <li>Clear cache so users get latest version</li>
+        </ul>
+
+        <h3>Step 4: View Outputs</h3>
+        <p>Get deployment information:</p>
+        <div class="code-block">
+<code>./scripts/outputs.sh dev</code>
+        </div>
+
+        <p>Key outputs:</p>
+        <ul>
+          <li><strong>s3_bucket_id</strong> - S3 bucket name</li>
+          <li><strong>cloudfront_distribution_domain_name</strong> - CloudFront URL</li>
+          <li><strong>deployment_url</strong> - Full HTTPS URL to access your app</li>
+        </ul>
+
+        <h3>Complete Local Deployment Workflow</h3>
+        <div class="code-block">
+<code># 1. Initialize (first time only)
+./scripts/init.sh
+
+# 2. Plan deployment
+./scripts/plan.sh dev
+
+# 3. Apply infrastructure
+./scripts/apply.sh dev
+
+# 4. Upload build files
+./scripts/upload.sh dev ./WebGLBuild
+
+# 5. Get deployment URL
+./scripts/outputs.sh dev</code>
         </div>
       </section>
 
-      <!-- Deployment Methods -->
-      <section>
-        <h2>🔧 Deployment Methods</h2>
-        <p>Choose the deployment method that fits your workflow:</p>
+      <!-- CI/CD Setup -->
+      <section id="cicd-setup">
+        <h2>5. CI/CD Setup (GitHub Actions)</h2>
 
-        <!-- Method 1: Manual Deployment -->
-        <div class="method-card">
-          <span class="badge">Method 1</span>
-          <h3>Manual Deployment (AWS Profile)</h3>
-          <p><strong>Best for:</strong> Development, testing, small teams</p>
-          
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Pros</h4>
-              <ul>
-                <li>Simple setup</li>
-                <li>No additional configuration</li>
-                <li>Works immediately</li>
-                <li>Good for learning</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Cons</h4>
-              <ul>
-                <li>Requires AWS keys</li>
-                <li>Manual process</li>
-                <li>Not suitable for CI/CD</li>
-              </ul>
-            </div>
-          </div>
+        <h3>Overview</h3>
+        <p>CI/CD allows automatic deployment when you push code to GitHub. No manual deployment needed!</p>
 
-          <h4>Setup Steps:</h4>
-          <ol class="setup-steps">
-            <li>Configure AWS profile: <code>aws configure --profile deploy-config</li>
-            <li>Initialize Terraform: <code>./scripts/init.sh</code></li>
-            <li>Plan deployment: <code>./scripts/plan.sh dev</code></li>
-            <li>Apply infrastructure: <code>./scripts/apply.sh dev</code></li>
-            <li>Upload files: <code>./scripts/upload.sh dev ./build</code></li>
-          </ol>
-
-          <div class="code-block">
-<code># Example workflow
-aws configure --profile deploy-config
-./scripts/init.sh
-./scripts/plan.sh dev
-./scripts/apply.sh dev
-./scripts/upload.sh dev ./WebGLBuild</code>
-          </div>
+        <div class="info-box">
+          <strong>🔐 Security:</strong> CI/CD uses IAM roles (OIDC) instead of AWS keys. No secrets stored in GitHub!
         </div>
 
-        <!-- Method 2: GitHub Actions OIDC -->
-        <div class="method-card">
-          <span class="badge">Method 2</span>
-          <h3>GitHub Actions with OIDC</h3>
-          <p><strong>Best for:</strong> Automated CI/CD, production deployments, team collaboration</p>
-          
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Pros</h4>
-              <ul>
-                <li>No AWS keys stored in GitHub</li>
-                <li>Temporary credentials (auto-expire)</li>
-                <li>Fully automated</li>
-                <li>Secure and auditable</li>
-                <li>Scoped to specific repositories</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Cons</h4>
-              <ul>
-                <li>Requires initial setup</li>
-                <li>GitHub repository required</li>
-              </ul>
-            </div>
-          </div>
+        <h3>Step 1: Configure IAM Roles in Terraform</h3>
+        <p>First, enable IAM roles for staging and production environments.</p>
 
-          <h4>How It Works:</h4>
-          <div class="flow-diagram">
-            <div class="flow-step">GitHub Actions workflow triggers</div>
-            <div class="flow-step">Requests OIDC token from GitHub</div>
-            <div class="flow-step">Assumes IAM role in AWS</div>
-            <div class="flow-step">Gets temporary credentials (1 hour)</div>
-            <div class="flow-step">Deploys to S3 and invalidates CloudFront</div>
-          </div>
+        <h4>Edit <code>environments/staging/terraform.tfvars</code>:</h4>
+        <div class="code-block">
+<code># IAM Configuration
+create_iam_resources     = true
+create_deployment_policy = true
+create_deployment_role   = true
 
-          <h4>Setup Steps:</h4>
-          <ol class="setup-steps">
-            <li>Get AWS Account ID: <code>aws sts get-caller-identity --query Account</code></li>
-            <li>Edit <code>environments/prod/terraform.tfvars</code>:
-              <div class="code-block">
-<code>github_actions_oidc = {
-  account_id        = "123456789012"
+# GitHub Actions OIDC Configuration
+github_actions_oidc = {
+  account_id        = "123456789012"  # Your AWS Account ID
   repository_filter = "repo:your-username/your-repo:*"
 }</code>
-              </div>
-            </li>
-            <li>Apply Terraform: <code>./scripts/apply.sh prod</code></li>
-            <li>Get role ARN: <code>./scripts/outputs.sh prod | grep deployment_role_arn</code></li>
-            <li>Create <code>.github/workflows/deploy.yml</code>:
-              <div class="code-block">
-<code>name: Deploy
-on: [push]
-permissions:
-  id-token: write
-  contents: read
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::ACCOUNT:role/webgl-prod-deployment-role
-          aws-region: us-east-1
-      - run: aws s3 sync ./build s3://$(terraform output -raw s3_bucket_id)</code>
-              </div>
-            </li>
-          </ol>
-
-          <div class="info-box">
-            <strong>📚 See:</strong> <code>GITHUB_ACTIONS_SETUP.md</code> for complete workflow examples
-          </div>
         </div>
 
-        <!-- Method 3: EC2 Instance -->
-        <div class="method-card">
-          <span class="badge">Method 3</span>
-          <h3>EC2 Instance with IAM Role</h3>
-          <p><strong>Best for:</strong> Long-running deployment servers, automated build systems</p>
-          
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Pros</h4>
-              <ul>
-                <li>No keys needed on EC2</li>
-                <li>Automatic credential rotation</li>
-                <li>Secure (credentials never stored)</li>
-                <li>Good for build servers</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Cons</h4>
-              <ul>
-                <li>Requires EC2 instance</li>
-                <li>Ongoing EC2 costs</li>
-              </ul>
-            </div>
-          </div>
+        <h4>Edit <code>environments/prod/terraform.tfvars</code>:</h4>
+        <div class="code-block">
+<code># IAM Configuration
+create_iam_resources     = true
+create_deployment_policy = true
+create_deployment_role   = true
 
-          <h4>How It Works:</h4>
-          <div class="flow-diagram">
-            <div class="flow-step">EC2 instance starts</div>
-            <div class="flow-step">Automatically gets IAM role credentials</div>
-            <div class="flow-step">Uses credentials to deploy (no keys needed)</div>
-            <div class="flow-step">Credentials auto-refresh</div>
-          </div>
+# GitHub Actions OIDC Configuration
+github_actions_oidc = {
+  account_id        = "123456789012"  # Your AWS Account ID
+  repository_filter = "repo:your-username/your-repo:*"
+}</code>
+        </div>
 
-          <h4>Setup Steps:</h4>
-          <ol class="setup-steps">
-            <li>Edit <code>environments/prod/terraform.tfvars</code>:
-              <div class="code-block">
-<code>create_deployment_role = true
-assume_role_services = ["ec2.amazonaws.com"]
-github_actions_oidc = null  # Not needed for EC2</code>
-              </div>
-            </li>
-            <li>Apply Terraform: <code>./scripts/apply.sh prod</code></li>
-            <li>Launch EC2 instance (via AWS Console or CLI)</li>
-            <li>Attach IAM role to EC2:
-              <div class="code-block">
-<code># In AWS Console:
-# EC2 → Instances → Select instance
-# Actions → Security → Modify IAM role
-# Select: webgl-prod-deployment-role</code>
-              </div>
-            </li>
-            <li>SSH into EC2 and deploy:
-              <div class="code-block">
-<code># On EC2 instance (no AWS keys needed!)
-aws s3 sync ./build s3://bucket-name
-aws cloudfront create-invalidation --distribution-id DIST_ID --paths "/*"</code>
-              </div>
-            </li>
-          </ol>
+        <h3>Step 2: Get Your AWS Account ID</h3>
+        <div class="code-block">
+<code>aws sts get-caller-identity --query Account --output text</code>
+        </div>
 
-          <div class="warning-box">
-            <strong>⚠️ Note:</strong> The EC2 instance automatically gets credentials from the attached IAM role. No AWS keys need to be stored on the instance.
-          </div>
+        <h3>Step 3: Apply Terraform to Create Roles</h3>
+        <div class="code-block">
+<code># Deploy staging infrastructure with IAM roles
+./scripts/plan.sh staging
+./scripts/apply.sh staging
+
+# Deploy production infrastructure with IAM roles
+./scripts/plan.sh prod
+./scripts/apply.sh prod</code>
+        </div>
+
+        <h3>Step 4: Get IAM Role ARNs</h3>
+        <p>Get the role ARNs that GitHub Actions will use:</p>
+        <div class="code-block">
+<code># Staging role ARN
+./scripts/outputs.sh staging | grep deployment_role_arn
+
+# Production role ARN
+./scripts/outputs.sh prod | grep deployment_role_arn</code>
+        </div>
+
+        <h3>Step 5: Add GitHub Secrets</h3>
+        <ol class="step-list">
+          <li>Go to your GitHub repository</li>
+          <li>Click <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong></li>
+          <li>Click <strong>New repository secret</strong></li>
+          <li>Add these secrets:
+            <ul>
+              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_DEV</code><br>
+                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-dev-deployment-role</code></li>
+              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_STAGING</code><br>
+                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-staging-deployment-role</code></li>
+              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_PROD</code><br>
+                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-prod-deployment-role</code></li>
+            </ul>
+          </li>
+        </ol>
+
+        <h3>Step 6: Workflows Are Already Configured!</h3>
+        <p>The CI/CD workflows are already in <code>.github/workflows/</code>:</p>
+        <ul>
+          <li><code>deploy-dev.yml</code> - Deploys on push to <code>dev</code> branch</li>
+          <li><code>deploy-staging.yml</code> - Deploys on push to <code>staging</code> branch</li>
+          <li><code>deploy-prod.yml</code> - Deploys on push to <code>main</code> branch</li>
+        </ul>
+
+        <h3>Step 7: Test CI/CD</h3>
+        <p>Push code to trigger deployment:</p>
+        <div class="code-block">
+<code># Push to dev branch
+git push origin dev
+# → Triggers dev deployment workflow
+
+# Merge dev to staging
+git checkout staging
+git merge dev
+git push origin staging
+# → Triggers staging deployment workflow
+
+# Merge staging to main
+git checkout main
+git merge staging
+git push origin main
+# → Triggers production deployment workflow</code>
+        </div>
+
+        <h3>How CI/CD Works</h3>
+        <div class="flow-diagram">
+          <div class="flow-step"><strong>Push to GitHub</strong> - Code pushed to branch</div>
+          <div class="flow-step"><strong>GitHub Actions Triggers</strong> - Workflow starts automatically</div>
+          <div class="flow-step"><strong>OIDC Authentication</strong> - GitHub requests token from AWS</div>
+          <div class="flow-step"><strong>Assume IAM Role</strong> - Gets temporary credentials</div>
+          <div class="flow-step"><strong>Terraform Deploys</strong> - Creates/updates infrastructure</div>
+          <div class="flow-step"><strong>Upload to S3</strong> - Build files uploaded</div>
+          <div class="flow-step"><strong>Invalidate CloudFront</strong> - Cache cleared</div>
+          <div class="flow-step"><strong>Deployment Complete</strong> - Your app is live!</div>
         </div>
       </section>
 
-      <!-- Comparison Table -->
-      <section>
-        <h2>📊 Method Comparison</h2>
-        <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+      <!-- Workflows & Environments -->
+      <section id="workflows">
+        <h2>6. Workflows & Different Environments</h2>
+
+        <h3>Branch Strategy</h3>
+        <p>This project uses a three-branch workflow:</p>
+        <table>
           <thead>
-            <tr style="background: #667eea; color: white;">
-              <th style="padding: 1rem; text-align: left;">Feature</th>
-              <th style="padding: 1rem;">Manual (Profile)</th>
-              <th style="padding: 1rem;">GitHub Actions</th>
-              <th style="padding: 1rem;">EC2 Role</th>
+            <tr>
+              <th>Branch</th>
+              <th>Environment</th>
+              <th>Deployment</th>
+              <th>Purpose</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #dee2e6;">
-              <td style="padding: 1rem;"><strong>Setup Complexity</strong></td>
-              <td style="padding: 1rem;">⭐ Easy</td>
-              <td style="padding: 1rem;">⭐⭐ Medium</td>
-              <td style="padding: 1rem;">⭐⭐ Medium</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #dee2e6;">
-              <td style="padding: 1rem;"><strong>Security</strong></td>
-              <td style="padding: 1rem;">⚠️ Keys stored</td>
-              <td style="padding: 1rem;">✅ No keys</td>
-              <td style="padding: 1rem;">✅ No keys</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #dee2e6;">
-              <td style="padding: 1rem;"><strong>Automation</strong></td>
-              <td style="padding: 1rem;">❌ Manual</td>
-              <td style="padding: 1rem;">✅ Full</td>
-              <td style="padding: 1rem;">✅ Full</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #dee2e6;">
-              <td style="padding: 1rem;"><strong>Cost</strong></td>
-              <td style="padding: 1rem;">💰 Free</td>
-              <td style="padding: 1rem;">💰 Free</td>
-              <td style="padding: 1rem;">💰 EC2 costs</td>
+            <tr>
+              <td><code>dev</code></td>
+              <td>Development</td>
+              <td>Auto (on push)</td>
+              <td>Fast iteration, testing</td>
             </tr>
             <tr>
-              <td style="padding: 1rem;"><strong>Best For</strong></td>
-              <td style="padding: 1rem;">Dev/Testing</td>
-              <td style="padding: 1rem;">CI/CD</td>
-              <td style="padding: 1rem;">Build servers</td>
+              <td><code>staging</code></td>
+              <td>Staging</td>
+              <td>Auto (on push)</td>
+              <td>Pre-production testing</td>
+            </tr>
+            <tr>
+              <td><code>main</code></td>
+              <td>Production</td>
+              <td>Auto (with optional approval)</td>
+              <td>Live production environment</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Deployment Workflow</h3>
+        <div class="flow-diagram">
+          <div class="flow-step"><strong>Local Development</strong> - Test on dev locally</div>
+          <div class="flow-step"><strong>Push to dev</strong> - <code>git push origin dev</code></div>
+          <div class="flow-step"><strong>Auto-deploy dev</strong> - CI/CD deploys to dev environment</div>
+          <div class="flow-step"><strong>Merge to staging</strong> - Create PR: dev → staging</div>
+          <div class="flow-step"><strong>Auto-deploy staging</strong> - CI/CD deploys to staging</div>
+          <div class="flow-step"><strong>Merge to main</strong> - Create PR: staging → main</div>
+          <div class="flow-step"><strong>Auto-deploy prod</strong> - CI/CD deploys to production</div>
+        </div>
+
+        <h3>Terraform Workspaces</h3>
+        <p>Each environment uses a separate Terraform workspace for state isolation:</p>
+        <ul>
+          <li><strong>dev workspace</strong> - Manages dev environment state</li>
+          <li><strong>staging workspace</strong> - Manages staging environment state</li>
+          <li><strong>prod workspace</strong> - Manages production environment state</li>
+        </ul>
+
+        <div class="info-box">
+          <strong>🔒 State Isolation:</strong> Each environment has its own state file. Destroying one environment doesn't affect others.
+        </div>
+
+        <h3>Managing Multiple Environments</h3>
+
+        <h4>Deploy to Specific Environment</h4>
+        <div class="code-block">
+<code># Deploy dev
+./scripts/plan.sh dev
+./scripts/apply.sh dev
+
+# Deploy staging
+./scripts/plan.sh staging
+./scripts/apply.sh staging
+
+# Deploy prod
+./scripts/plan.sh prod
+./scripts/apply.sh prod</code>
+        </div>
+
+        <h4>View Environment Outputs</h4>
+        <div class="code-block">
+<code>./scripts/outputs.sh dev      # Dev environment
+./scripts/outputs.sh staging    # Staging environment
+./scripts/outputs.sh prod      # Production environment</code>
+        </div>
+
+        <h4>Destroy Specific Environment</h4>
+        <div class="code-block">
+<code># Destroy only staging (dev and prod remain)
+./scripts/destroy.sh staging
+
+# Destroy only dev
+./scripts/destroy.sh dev</code>
+        </div>
+
+        <h3>Branch Protection Rules</h3>
+        <p>To enforce the workflow, set up branch protection in GitHub:</p>
+        <ol class="step-list">
+          <li>Go to <strong>Repository Settings</strong> → <strong>Branches</strong></li>
+          <li>Add rule for <code>staging</code>:
+            <ul>
+              <li>Require pull request before merging</li>
+              <li>Do not allow deleting this branch</li>
+              <li>Restrict direct pushes</li>
+            </ul>
+          </li>
+          <li>Add rule for <code>main</code>:
+            <ul>
+              <li>Require pull request before merging</li>
+              <li>Require approvals (optional)</li>
+              <li>Do not allow deleting this branch</li>
+              <li>Restrict direct pushes</li>
+            </ul>
+          </li>
+          <li>Add rule for <code>dev</code>:
+            <ul>
+              <li>Do not allow deleting this branch</li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="warning-box">
+          <strong>⚠️ Important:</strong> The <code>branch-protection.yml</code> workflow automatically validates PR rules. It blocks invalid merges (e.g., direct PR to main from feature branch).
+        </div>
+
+        <h3>Environment Configuration</h3>
+        <p>Each environment has its own configuration file:</p>
+        <ul>
+          <li><code>environments/dev/terraform.tfvars</code> - Dev settings</li>
+          <li><code>environments/staging/terraform.tfvars</code> - Staging settings</li>
+          <li><code>environments/prod/terraform.tfvars</code> - Production settings</li>
+        </ul>
+
+        <p>Key differences:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Setting</th>
+              <th>Dev</th>
+              <th>Staging</th>
+              <th>Prod</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>IAM Roles</td>
+              <td>Disabled</td>
+              <td>Enabled (OIDC)</td>
+              <td>Enabled (OIDC)</td>
+            </tr>
+            <tr>
+              <td>Cache TTL</td>
+              <td>1 hour</td>
+              <td>1 day</td>
+              <td>1 year</td>
+            </tr>
+            <tr>
+              <td>Price Class</td>
+              <td>US/Europe</td>
+              <td>US/Europe</td>
+              <td>Global</td>
+            </tr>
+            <tr>
+              <td>Versioning</td>
+              <td>Disabled</td>
+              <td>Enabled</td>
+              <td>Enabled</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Quick Start -->
-      <section>
-        <h2>🚀 Quick Start</h2>
-        <div class="info-box">
-          <h3>For Development (Manual):</h3>
-          <div class="code-block">
-<code># 1. Configure AWS
-aws configure --profile deploy-config
+      <!-- Troubleshooting -->
+      <section id="troubleshooting">
+        <h2>7. Troubleshooting</h2>
 
-# 2. Deploy infrastructure
-./scripts/init.sh
-./scripts/plan.sh dev
-./scripts/apply.sh dev
+        <h3>Common Issues</h3>
 
-# 3. Upload your build
-./scripts/upload.sh dev ./WebGLBuild
-
-# 4. Get your URL
-./scripts/outputs.sh dev</code>
-          </div>
+        <h4>Issue: "AWS profile 'deploy-config' is not configured"</h4>
+        <p><strong>Solution:</strong></p>
+        <div class="code-block">
+<code>aws configure --profile deploy-config</code>
         </div>
 
-        <div class="info-box">
-          <h3>For Production (GitHub Actions):</h3>
-          <div class="code-block">
-<code># 1. Configure OIDC in terraform.tfvars
-# 2. Apply: ./scripts/apply.sh prod
-# 3. Create GitHub Actions workflow
-# 4. Push to GitHub - automatic deployment!</code>
-          </div>
+        <h4>Issue: "Workspace doesn't exist"</h4>
+        <p><strong>Solution:</strong> Workspace is created automatically on first plan/apply. Just run:</p>
+        <div class="code-block">
+<code>./scripts/plan.sh dev</code>
+        </div>
+
+        <h4>Issue: "Unable to determine S3 bucket name"</h4>
+        <p><strong>Solution:</strong> Make sure you've run <code>terraform apply</code> first:</p>
+        <div class="code-block">
+<code>./scripts/apply.sh dev</code>
+        </div>
+
+        <h4>Issue: CI/CD workflow fails with "Role not found"</h4>
+        <p><strong>Solution:</strong></p>
+        <ol>
+          <li>Verify IAM roles are created: <code>./scripts/outputs.sh staging</code></li>
+          <li>Check GitHub Secrets are set correctly</li>
+          <li>Verify OIDC is configured in <code>terraform.tfvars</code></li>
+        </ol>
+
+        <h4>Issue: CloudFront shows "Distribution not ready"</h4>
+        <p><strong>Solution:</strong> Wait 15-20 minutes. CloudFront distributions take time to deploy globally.</p>
+
+        <h3>Useful Commands</h3>
+        <div class="code-block">
+<code># List all workspaces
+terraform workspace list
+
+# Show current workspace
+terraform workspace show
+
+# Switch workspace manually
+terraform workspace select staging
+
+# View Terraform state
+terraform state list
+
+# Check AWS profile
+aws sts get-caller-identity --profile deploy-config</code>
         </div>
       </section>
 
-      <!-- Resources -->
+      <!-- Quick Reference -->
       <section>
-        <h2>📚 Additional Resources</h2>
+        <h2>📚 Quick Reference</h2>
+        
+        <h3>Local Deployment Commands</h3>
+        <div class="code-block">
+<code>./scripts/init.sh              # Initialize Terraform
+./scripts/plan.sh dev            # Plan dev deployment
+./scripts/apply.sh dev           # Deploy to dev
+./scripts/upload.sh dev ./build  # Upload files
+./scripts/outputs.sh dev         # View outputs
+./scripts/destroy.sh dev         # Destroy dev</code>
+        </div>
+
+        <h3>Git Workflow</h3>
+        <div class="code-block">
+<code># Work on feature
+git checkout -b feature/my-feature dev
+# ... make changes ...
+git push origin feature/my-feature
+
+# Merge to dev
+git checkout dev
+git merge feature/my-feature
+git push origin dev  # → Auto-deploys to dev
+
+# Merge to staging
+git checkout staging
+git merge dev
+git push origin staging  # → Auto-deploys to staging
+
+# Merge to main
+git checkout main
+git merge staging
+git push origin main  # → Auto-deploys to prod</code>
+        </div>
+
+        <h3>Documentation Files</h3>
         <ul>
           <li><code>README.md</code> - Main documentation</li>
-          <li><code>GITHUB_ACTIONS_SETUP.md</code> - Complete GitHub Actions guide</li>
-          <li><code>IAM_ROLE_GUIDE.md</code> - Detailed IAM role explanation</li>
-          <li><code>environments/README.md</code> - Environment configuration</li>
+          <li><code>WORKSPACES_GUIDE.md</code> - Workspace management</li>
+          <li><code>GITHUB_ACTIONS_SETUP.md</code> - CI/CD setup</li>
+          <li><code>IAM_ROLE_GUIDE.md</code> - IAM roles explained</li>
+          <li><code>.github/BRANCH_PROTECTION_SETUP.md</code> - Branch protection</li>
         </ul>
       </section>
     </div>
 
     <footer>
-      <p>This page is served from S3 via CloudFront with OAC security</p>
+      <p><strong>WebGL Deployment Infrastructure</strong></p>
+      <p>Served from Amazon S3 + CloudFront via Terraform</p>
       <p>Replace this file with your actual WebGL build after deployment</p>
     </footer>
   </div>

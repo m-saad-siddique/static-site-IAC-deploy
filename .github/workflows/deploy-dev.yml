@@ -54,8 +54,18 @@ jobs:
       
       # Step 7: Create deployment plan
       # Shows what changes will be made
+      # Note: Creating temporary tfvars file since original is not committed
+      # Dev environment uses minimal IAM resources (deployed locally)
       - name: Terraform Plan
-        run: terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan-dev.out
+        run: |
+          # Create temporary tfvars file with environment-specific values
+          cat > /tmp/dev.tfvars <<EOF
+          environment = "dev"
+          create_iam_resources = false
+          create_deployment_policy = false
+          create_deployment_role = false
+          EOF
+          terraform plan -var-file=/tmp/dev.tfvars -out=tfplan-dev.out
       
       # Step 8: Apply Terraform changes
       # Creates/updates infrastructure in dev environment
