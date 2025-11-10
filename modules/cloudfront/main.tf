@@ -4,8 +4,9 @@
 
 # Create Origin Access Control (OAC) for secure S3 access
 # OAC is the modern replacement for OAI (Origin Access Identity)
+# Name includes unique suffix to avoid conflicts with existing OACs
 resource "aws_cloudfront_origin_access_control" "webgl_oac" {
-  name                              = "${var.distribution_name}-oac"
+  name                              = "${var.distribution_name}-oac-${var.unique_suffix}"
   description                       = "OAC for ${var.distribution_name} to access S3 bucket"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"

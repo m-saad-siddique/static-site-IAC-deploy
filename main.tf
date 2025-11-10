@@ -74,6 +74,7 @@ module "cloudfront" {
   # Distribution configuration
   distribution_name                = "${var.project_name}-${var.environment}"
   environment                     = var.environment
+  unique_suffix                   = random_id.bucket_suffix.hex
   s3_bucket_regional_domain_name  = module.s3.bucket_regional_domain_name
   distribution_comment             = "WebGL Build Distribution for ${var.environment}"
   default_root_object              = var.default_root_object

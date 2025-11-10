@@ -12,6 +12,12 @@ variable "environment" {
   type        = string
 }
 
+# Unique suffix for resource naming (to avoid conflicts)
+variable "unique_suffix" {
+  description = "Unique suffix for resource naming (e.g., from random_id)"
+  type        = string
+}
+
 # S3 bucket regional domain name (for origin)
 variable "s3_bucket_regional_domain_name" {
   description = "Regional domain name of the S3 bucket"
