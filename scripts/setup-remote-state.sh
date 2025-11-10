@@ -1,0 +1,214 @@
+#!/bin/bash
+
+# Script to create S3 bucket and DynamoDB table for Terraform remote state
+# Run this ONCE before using remote state for staging/prod
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+print_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Check if environment argument is provided
+if [ $# -lt 1 ]; then
+    print_error "Usage: $0 <environment> [bucket-name] [table-name]"
+    echo ""
+    echo "Example:"
+    echo "  $0 staging"
+    echo "  $0 staging my-terraform-state-bucket my-terraform-locks"
+    echo ""
+    echo "Arguments:"
+    echo "  environment  - Environment name (staging or prod)"
+    echo "  bucket-name  - Optional: S3 bucket name (auto-generated if not provided)"
+    echo "  table-name   - Optional: DynamoDB table name (auto-generated if not provided)"
+    exit 1
+fi
+
+ENVIRONMENT="$1"
+BUCKET_NAME="${2:-}"
+TABLE_NAME="${3:-}"
+PROFILE="${AWS_PROFILE_NAME:-deploy-config}"
+REGION="us-east-1"
+
+# Validate environment
+if [[ ! "$ENVIRONMENT" =~ ^(staging|prod)$ ]]; then
+    print_error "Environment must be: staging or prod"
+    exit 1
+fi
+
+# Check AWS CLI
+if ! command -v aws >/dev/null 2>&1; then
+    print_error "AWS CLI is not installed"
+    exit 1
+fi
+
+# Check AWS profile
+if ! aws configure list-profiles 2>/dev/null | grep -qx "${PROFILE}"; then
+    print_error "AWS profile '${PROFILE}' is not configured"
+    echo "Run: aws configure --profile ${PROFILE}"
+    exit 1
+fi
+
+export AWS_PROFILE="${PROFILE}"
+
+# Get AWS Account ID
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+print_info "AWS Account: ${AWS_ACCOUNT_ID}"
+print_info "Region: ${REGION}"
+echo ""
+
+# Generate default names if not provided
+if [ -z "$BUCKET_NAME" ]; then
+    BUCKET_NAME="terraform-state-${AWS_ACCOUNT_ID}-${ENVIRONMENT}"
+    print_info "Using auto-generated bucket name: ${BUCKET_NAME}"
+fi
+
+if [ -z "$TABLE_NAME" ]; then
+    TABLE_NAME="terraform-state-lock-${ENVIRONMENT}"
+    print_info "Using auto-generated table name: ${TABLE_NAME}"
+fi
+
+# Step 1: Create S3 bucket
+print_info "Step 1: Creating S3 bucket for Terraform state..."
+
+if aws s3 ls "s3://${BUCKET_NAME}" 2>/dev/null; then
+    print_warning "Bucket '${BUCKET_NAME}' already exists"
+else
+    # Create bucket
+    if [ "$REGION" = "us-east-1" ]; then
+        # us-east-1 doesn't need LocationConstraint
+        aws s3api create-bucket \
+            --bucket "${BUCKET_NAME}" \
+            --region "${REGION}"
+    else
+        aws s3api create-bucket \
+            --bucket "${BUCKET_NAME}" \
+            --region "${REGION}" \
+            --create-bucket-configuration LocationConstraint="${REGION}"
+    fi
+    
+    print_info "✅ Bucket created: ${BUCKET_NAME}"
+    
+    # Enable versioning
+    aws s3api put-bucket-versioning \
+        --bucket "${BUCKET_NAME}" \
+        --versioning-configuration Status=Enabled
+    
+    print_info "✅ Versioning enabled"
+    
+    # Enable encryption
+    aws s3api put-bucket-encryption \
+        --bucket "${BUCKET_NAME}" \
+        --server-side-encryption-configuration '{
+            "Rules": [{
+                "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "AES256"
+                }
+            }]
+        }'
+    
+    print_info "✅ Encryption enabled"
+    
+    # Block public access
+    aws s3api put-public-access-block \
+        --bucket "${BUCKET_NAME}" \
+        --public-access-block-configuration \
+            "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+    
+    print_info "✅ Public access blocked"
+fi
+
+# Step 2: Create DynamoDB table
+print_info "Step 2: Creating DynamoDB table for state locking..."
+
+if aws dynamodb describe-table --table-name "${TABLE_NAME}" --region "${REGION}" 2>/dev/null; then
+    print_warning "Table '${TABLE_NAME}' already exists"
+else
+    aws dynamodb create-table \
+        --table-name "${TABLE_NAME}" \
+        --attribute-definitions AttributeName=LockID,AttributeType=S \
+        --key-schema AttributeName=LockID,KeyType=HASH \
+        --billing-mode PAY_PER_REQUEST \
+        --region "${REGION}"
+    
+    print_info "✅ Table created: ${TABLE_NAME}"
+    
+    # Wait for table to be active
+    print_info "Waiting for table to become active..."
+    aws dynamodb wait table-exists --table-name "${TABLE_NAME}" --region "${REGION}"
+    print_info "✅ Table is active"
+fi
+
+# Step 3: Update backend config file
+print_info "Step 3: Updating backend configuration file..."
+
+BACKEND_FILE="backend/${ENVIRONMENT}.hcl"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BACKEND_PATH="${PROJECT_ROOT}/${BACKEND_FILE}"
+
+# Create backend directory if it doesn't exist
+mkdir -p "${PROJECT_ROOT}/backend"
+
+# Update backend config
+cat > "${BACKEND_PATH}" <<EOF
+# Terraform backend configuration for ${ENVIRONMENT} environment
+# Auto-generated by setup-remote-state.sh
+bucket         = "${BUCKET_NAME}"
+key            = "webgl-deploy/${ENVIRONMENT}/terraform.tfstate"
+region         = "${REGION}"
+dynamodb_table = "${TABLE_NAME}"
+encrypt        = true
+EOF
+
+print_info "✅ Backend config updated: ${BACKEND_FILE}"
+
+# Step 4: Verify IAM permissions
+print_info "Step 4: Verifying IAM permissions..."
+
+# Check if current user/role can access the bucket
+if aws s3 ls "s3://${BUCKET_NAME}" >/dev/null 2>&1; then
+    print_info "✅ S3 bucket access verified"
+else
+    print_warning "⚠️  Cannot access S3 bucket. Check IAM permissions."
+fi
+
+# Check if current user/role can access the table
+if aws dynamodb describe-table --table-name "${TABLE_NAME}" --region "${REGION}" >/dev/null 2>&1; then
+    print_info "✅ DynamoDB table access verified"
+else
+    print_warning "⚠️  Cannot access DynamoDB table. Check IAM permissions."
+fi
+
+echo ""
+print_info "✅ Remote state setup complete!"
+echo ""
+print_info "Summary:"
+echo "  S3 Bucket:     ${BUCKET_NAME}"
+echo "  DynamoDB Table: ${TABLE_NAME}"
+echo "  Backend Config: ${BACKEND_FILE}"
+echo ""
+print_info "Next steps:"
+echo "1. Commit the backend config file:"
+echo "   git add ${BACKEND_FILE}"
+echo "   git commit -m 'Add remote state backend for ${ENVIRONMENT}'"
+echo ""
+echo "2. Initialize Terraform with remote state:"
+echo "   ./scripts/init.sh ${ENVIRONMENT}"
+echo ""
+echo "3. If migrating from local state, run:"
+echo "   terraform init -migrate-state -backend-config=${BACKEND_FILE}"
+

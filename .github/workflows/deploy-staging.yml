@@ -39,7 +39,7 @@ jobs:
       # Step 4: Initialize Terraform
       # Downloads providers and configures S3 backend
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config=backend/staging.hcl
         working-directory: .
       
       # Step 5: Select or create staging workspace

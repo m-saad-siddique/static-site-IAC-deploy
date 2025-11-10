@@ -54,6 +54,15 @@ Sync a local directory (your WebGL build) into the environment's S3 bucket, then
 ./scripts/upload.sh dev path/to/build [subfolder]
 ```
 
+### `setup-remote-state.sh`
+Create S3 bucket and DynamoDB table for Terraform remote state (one-time setup for staging/prod).
+
+```bash
+./scripts/setup-remote-state.sh staging
+./scripts/setup-remote-state.sh prod
+./scripts/setup-remote-state.sh staging my-bucket-name my-table-name
+```
+
 ## What Each Script Checks
 
 - Terraform CLI is installed
