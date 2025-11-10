@@ -63,14 +63,7 @@ jobs:
           cat > /tmp/prod.tfvars <<EOF
           environment = "prod"
           aws_profile = ""  # Empty in CI/CD - uses OIDC credentials from environment
-          create_iam_resources = true
-          create_deployment_policy = true
-          create_deployment_role = true
-          assume_role_services = []
-          github_actions_oidc = {
-            account_id = "${{ secrets.AWS_ACCOUNT_ID }}"
-            repository_filter = "repo:${{ github.repository }}:*"
-          }
+          # IAM resources are created by setup-iam-oidc.sh script, not by Terraform
           EOF
           terraform plan -var-file=/tmp/prod.tfvars -out=tfplan-prod.out
       

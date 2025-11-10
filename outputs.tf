@@ -37,18 +37,8 @@ output "cloudfront_distribution_hosted_zone_id" {
   value       = module.cloudfront.distribution_hosted_zone_id
 }
 
-# IAM outputs (if created)
-output "deployment_policy_arn" {
-  description = "ARN of the deployment IAM policy"
-  value       = var.create_iam_resources ? module.iam[0].deployment_policy_arn : null
-}
-
-output "deployment_role_arn" {
-  description = "ARN of the deployment IAM role"
-  value       = var.create_iam_resources && var.create_deployment_role ? module.iam[0].deployment_role_arn : null
-}
-
 # Deployment URL
+# Note: IAM role ARN is available from setup-iam-oidc.sh script output
 output "deployment_url" {
   description = "URL to access the deployed WebGL build"
   value       = "https://${module.cloudfront.distribution_domain_name}"

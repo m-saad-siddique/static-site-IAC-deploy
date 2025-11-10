@@ -1,5 +1,6 @@
 # Main Terraform configuration for WebGL deployment
-# This file orchestrates the S3, CloudFront, and IAM modules
+# This file orchestrates the S3 and CloudFront modules
+# Note: IAM roles and policies are created separately by setup-iam-oidc.sh script
 
 # Terraform configuration is in versions.tf
 # Optional: Configure backend for state management
@@ -101,26 +102,7 @@ module "cloudfront" {
   common_tags = var.common_tags
 }
 
-# Module: IAM (Optional)
-# Create IAM roles and policies for deployment
-module "iam" {
-  source = "./modules/iam"
-  count  = var.create_iam_resources ? 1 : 0
-
-  # IAM configuration
-  s3_bucket_arn              = module.s3.bucket_arn
-  cloudfront_distribution_arn = module.cloudfront.distribution_arn
-  environment                = var.environment
-  policy_name_prefix         = "${var.project_name}-${var.environment}"
-  role_name_prefix           = "${var.project_name}-${var.environment}"
-
-  # IAM resource creation flags
-  create_deployment_policy = var.create_deployment_policy
-  create_deployment_role  = var.create_deployment_role
-  assume_role_services    = var.assume_role_services
-  github_actions_oidc     = var.github_actions_oidc
-
-  # Common tags
-  common_tags = var.common_tags
-}
+# IAM roles and policies are created separately by setup-iam-oidc.sh script
+# This keeps IAM setup separate from infrastructure deployment
+# Run: ./scripts/setup-iam-oidc.sh <environment> <account_id> <github_repo>
 

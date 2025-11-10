@@ -141,6 +141,7 @@ if [ "$POLICY_EXISTS" = false ]; then
         "s3:CreateBucket",
         "s3:DeleteBucket",
         "s3:GetBucketLocation",
+        "s3:GetBucketAcl",
         "s3:GetBucketVersioning",
         "s3:ListBucket",
         "s3:ListBucketVersions",

@@ -175,36 +175,38 @@ variable "error_document" {
 }
 
 # IAM Configuration
-variable "create_iam_resources" {
-  description = "Whether to create IAM resources (policies and roles)"
-  type        = bool
-  default     = false
-}
-
-variable "create_deployment_policy" {
-  description = "Whether to create the deployment IAM policy"
-  type        = bool
-  default     = true
-}
-
-variable "create_deployment_role" {
-  description = "Whether to create the deployment IAM role"
-  type        = bool
-  default     = false
-}
-
-variable "assume_role_services" {
-  description = "List of AWS services that can assume the deployment role (e.g., ['ec2.amazonaws.com']). Leave empty if using GitHub Actions OIDC."
-  type        = list(string)
-  default     = []
-}
-
-variable "github_actions_oidc" {
-  description = "GitHub Actions OIDC configuration. Set to null to disable. Format: { account_id = '123456789', repository_filter = 'repo:owner/repo:*' }"
-  type = object({
-    account_id        = string
-    repository_filter = string
-  })
-  default = null
-}
+# Note: IAM roles and policies are now created by setup-iam-oidc.sh script
+# These variables are kept for backward compatibility but are no longer used
+# variable "create_iam_resources" {
+#   description = "Whether to create IAM resources (policies and roles) - DEPRECATED: Use setup-iam-oidc.sh instead"
+#   type        = bool
+#   default     = false
+# }
+#
+# variable "create_deployment_policy" {
+#   description = "Whether to create the deployment IAM policy - DEPRECATED: Use setup-iam-oidc.sh instead"
+#   type        = bool
+#   default     = true
+# }
+#
+# variable "create_deployment_role" {
+#   description = "Whether to create the deployment IAM role - DEPRECATED: Use setup-iam-oidc.sh instead"
+#   type        = bool
+#   default     = false
+# }
+#
+# variable "assume_role_services" {
+#   description = "List of AWS services that can assume the deployment role - DEPRECATED: Use setup-iam-oidc.sh instead"
+#   type        = list(string)
+#   default     = []
+# }
+#
+# variable "github_actions_oidc" {
+#   description = "GitHub Actions OIDC configuration - DEPRECATED: Use setup-iam-oidc.sh instead"
+#   type = object({
+#     account_id        = string
+#     repository_filter = string
+#   })
+#   default = null
+# }
 

@@ -49,11 +49,12 @@ if [ ! -d .terraform ]; then
 fi
 
 # Select or create workspace for this environment
-if ! terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
-  echo "Creating new workspace: ${ENVIRONMENT}"
-  terraform workspace new "${ENVIRONMENT}"
-else
+if terraform workspace list | grep -qE "^\s*\*?\s*${ENVIRONMENT}$"; then
+  echo "Selecting existing workspace: ${ENVIRONMENT}"
   terraform workspace select "${ENVIRONMENT}"
+else
+  echo "Creating new workspace: ${ENVIRONMENT}"
+  terraform workspace new "${ENVIRONMENT}" || terraform workspace select "${ENVIRONMENT}"
 fi
 
 echo "Using workspace: $(terraform workspace show)"
