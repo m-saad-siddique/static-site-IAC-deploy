@@ -1,420 +1,202 @@
-# WebGL Deployment with Terraform
+# Static Site Deployment with Terraform
 
-This Terraform configuration deploys a WebGL application to AWS S3 with CloudFront distribution, using Origin Access Control (OAC) for secure access. Supports multiple environments (dev, staging, prod) with independent state management using Terraform workspaces.
+Infrastructure-as-code templates for hosting static sites on AWS. Terraform creates a private S3 bucket, secures it behind CloudFront using Origin Access Control (OAC), and provides automation scripts plus CI/CD pipelines for staging and production deployments.
 
-## Architecture
+---
 
-- **S3 Bucket**: Private bucket storing WebGL build files (not publicly accessible)
-- **CloudFront**: CDN distribution with OAC to securely access S3 bucket
-- **IAM (via scripts)**: Deployment roles and policies created with `./scripts/setup-iam-oidc.sh`
-- **Workspaces**: Separate state files for each environment (dev, staging, prod)
+## About the Project
 
-## Directory Structure
+- **S3 + CloudFront** – private bucket for static site assets fronted by a global CDN.
+- **Origin Access Control (OAC)** – only CloudFront can read from S3; no public bucket access.
+- **Workspaces** – `dev`, `staging`, and `prod` environments kept isolated.
+- **Automation scripts** – helper shell scripts wrap Terraform actions.
+- **CI/CD ready** – GitHub Actions workflows deploy staging and production using OIDC roles.
+
+Directory snapshot:
 
 ```
 .
 ├── main.tf                 # Root Terraform configuration
-├── variables.tf            # Root variables
-├── outputs.tf             # Root outputs
-├── versions.tf             # Terraform version constraints
-├── backend/               # Remote state backend configuration (per environment)
-├── modules/
-│   ├── s3/                # S3 bucket module
-│   ├── cloudfront/        # CloudFront distribution module
-│   └── iam/               # IAM roles and policies module
-├── environments/
-│   ├── dev/               # Development environment
-│   ├── staging/           # Staging environment
-│   └── prod/              # Production environment
-├── scripts/               # Deployment helper scripts
-│   ├── init.sh           # Initialize Terraform
-│   ├── plan.sh           # Plan deployment
-│   ├── apply.sh          # Apply deployment
-│   ├── destroy.sh        # Destroy resources
-│   ├── outputs.sh        # View outputs
-│   └── upload.sh         # Upload files to S3
-└── sample/                # Sample files
-    └── index.html         # Tutorial/placeholder page
+├── variables.tf            # Shared variables
+├── modules/                # Re-usable modules (s3, cloudfront, iam)
+├── environments/           # Environment specific tfvars
+├── backend/                # Remote state backend configs (staging/prod)
+├── scripts/                # Helper scripts (init, plan, apply, destroy, etc.)
+└── sample/index.html       # Tutorial landing page
 ```
 
-## Prerequisites
+---
 
-1. **AWS CLI** installed and configured
-2. **Terraform** installed (version >= 1.0)
-3. **AWS Account** with appropriate permissions
+## Local AWS Setup (Development)
 
-## AWS Profile Configuration
+1. **Install tools**
+   - Terraform ≥ 1.0
+   - AWS CLI
 
-This project uses a specific AWS profile named `deploy-config` for authentication. You must configure this profile before running any deployment scripts.
+2. **Configure an AWS profile** (`deploy-config` is the default the scripts expect):
+   ```bash
+   aws configure --profile deploy-config
+   aws sts get-caller-identity --profile deploy-config
+   ```
 
-### Quick Setup
+3. **Clone & install dependencies**
+   ```bash
+git clone <repo>
+cd static-site-deploy
+   ```
 
-```bash
-aws configure --profile deploy-config
-```
+4. **(Optional) customise `environments/dev/terraform.tfvars`** for cache TTL, naming, etc.
 
-Enter your:
-- AWS Access Key ID
-- AWS Secret Access Key
-- Default region (e.g., `us-east-1`)
-- Default output format (`json`)
+---
 
-### Verify Configuration
+## Local Development Workflow
 
-```bash
-aws sts get-caller-identity --profile deploy-config
-```
-
-See [AWS_PROFILE_SETUP.md](AWS_PROFILE_SETUP.md) for detailed instructions.
-
-## Quick Start
-
-### 1. Initialize Terraform
+All commands run from the project root. The scripts automatically set the workspace, validate your AWS profile, and call `terraform init` as needed.
 
 ```bash
+# Initialise Terraform (local state for dev)
 ./scripts/init.sh
-```
 
-### 2. Deploy to Development
-
-```bash
+# Create a plan
 ./scripts/plan.sh dev
+
+# Apply infrastructure
 ./scripts/apply.sh dev
-```
 
-### 3. Upload Your Build
+# Upload a static site build and invalidate CloudFront
+./scripts/upload.sh dev ./path/to/static-site-build
 
-```bash
-./scripts/upload.sh dev ./WebGLBuild
-```
-
-### 4. View Outputs
-
-```bash
+# View important outputs (bucket name, CloudFront URL, etc.)
 ./scripts/outputs.sh dev
-```
 
-## Remote State (staging & prod)
-
-Staging and production environments store their Terraform state in S3 for safe collaboration and CI/CD support.
-
-1. **Create an S3 bucket and DynamoDB table** (one-time):
-   ```bash
-   aws s3api create-bucket --bucket <state-bucket-name> --region us-east-1
-   aws dynamodb create-table \
-     --table-name <lock-table-name> \
-     --attribute-definitions AttributeName=LockID,AttributeType=S \
-     --key-schema AttributeName=LockID,KeyType=HASH \
-     --billing-mode PAY_PER_REQUEST
-   ```
-   > Replace the bucket and table names with values that match your naming standards. Buckets must be globally unique.
-
-2. **Update backend configuration files:**
-   - `backend/staging.hcl`
-   - `backend/prod.hcl`
-
-   Set `bucket`, `key`, `region`, and `dynamodb_table` to the resources you created. Leave `encrypt = true`.
-
-3. **Run Terraform scripts normally.** The helper scripts detect the backend files and automatically pass `-backend-config` during `terraform init`.
-
-4. **Developer workflow:**
-   ```bash
-   ./scripts/plan.sh staging   # Uses remote state backend/staging.hcl
-   ./scripts/apply.sh staging
-   ./scripts/plan.sh prod
-   ./scripts/apply.sh prod
-   ```
-
-> Development (`dev`) continues to use local state by default. Add a `backend/dev.hcl` if you prefer remote state for dev as well.
-
-## Multiple Environments
-
-This project uses **Terraform workspaces** to manage multiple environments independently. Each environment has its own state file, allowing you to deploy and destroy them separately.
-
-### Deploy All Environments
-
-```bash
-# Deploy dev
-./scripts/plan.sh dev
-./scripts/apply.sh dev
-
-# Deploy staging (independent from dev)
-./scripts/plan.sh staging
-./scripts/apply.sh staging
-
-# Deploy prod (independent from dev and staging)
-./scripts/plan.sh prod
-./scripts/apply.sh prod
-```
-
-### Destroy Specific Environment
-
-```bash
-# Destroy only staging (dev and prod remain untouched)
-./scripts/destroy.sh staging
-
-# Destroy only dev
+# Destroy dev resources when finished
 ./scripts/destroy.sh dev
 ```
 
-**Benefits:**
-- ✅ Separate state files per environment
-- ✅ Safe to destroy any environment independently
-- ✅ No conflicts between environments
-- ✅ Automatic workspace management
+> Development keeps state locally (`.terraform/terraform.tfstate.d/dev/`). Feel free to add `backend/dev.hcl` if you want dev to use remote state too.
 
-See [WORKSPACES_GUIDE.md](WORKSPACES_GUIDE.md) for detailed workspace documentation.
+---
 
-## Deployment Methods
+## Staging & Production CI/CD
 
-### Method 1: Manual Deployment (Development)
+### How the pipeline works
+- GitHub Actions runs on pushes to the `staging` or `main` branches.
+- OIDC allows GitHub to assume a short-lived AWS IAM role (no static keys).
+- Terraform uses the remote state backend (S3 + DynamoDB) to plan/apply.
+- Workflow uploads the static-site bundle and invalidates CloudFront.
 
-**Best for:** Development, testing, small teams
-
-```bash
-# Configure AWS profile
-aws configure --profile deploy-config
-
-# Deploy
-./scripts/init.sh
-./scripts/plan.sh dev
-./scripts/apply.sh dev
-./scripts/upload.sh dev ./build
-```
-
-**Pros:**
-- Simple setup
-- Works immediately
-- Good for learning
-
-**Cons:**
-- Manual process
-- Requires AWS keys
-
-### Method 2: GitHub Actions with OIDC (Recommended for Production)
-
-**Best for:** Automated CI/CD, production deployments
-
-**Setup:**
-
-1. **Configure remote state:** Update `backend/prod.hcl` with your Terraform state bucket and DynamoDB lock table.
-2. **Create IAM role & policy:**  
+### Requirements
+1. **Remote state bucket & lock table** – use the helper script:
    ```bash
-   ./scripts/setup-iam-oidc.sh prod <aws_account_id> <github_owner/repo>
+   ./scripts/setup-remote-state.sh staging
+   ./scripts/setup-remote-state.sh prod
    ```
-   The script prints the role ARN and reminds you to add `AWS_ACCOUNT_ID` + `AWS_ROLE_ARN_PROD` to GitHub secrets.
-3. **Deploy infrastructure:**  
+   This creates the S3 bucket + DynamoDB table and writes `backend/<env>.hcl`.
+
+2. **OIDC IAM role and policy** – run once per environment:
    ```bash
-   ./scripts/plan.sh prod
-   ./scripts/apply.sh prod
+   ./scripts/setup-iam-oidc.sh staging <aws_account_id> <github_owner/repo>
+   ./scripts/setup-iam-oidc.sh prod     <aws_account_id> <github_owner/repo>
    ```
-4. **Reference workflow template:** See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md) for GitHub Actions configuration.
+   The script outputs role ARNs and prompts you to add GitHub secrets (`AWS_ACCOUNT_ID`, `AWS_ROLE_ARN_STAGING`, `AWS_ROLE_ARN_PROD`).
 
-**Pros:**
-- ✅ No AWS keys stored in GitHub
-- ✅ Temporary credentials (auto-expire)
-- ✅ Fully automated
-- ✅ Secure and auditable
+3. **Commit backend configs** – `backend/staging.hcl` and `backend/prod.hcl` must live in the repo so the workflow can read them.
 
-### Method 3: EC2 Instance with IAM Role
+4. **Review workflows** – `.github/workflows/deploy-staging.yml` and `deploy-prod.yml` run the standard Terraform sequence (`init`, `plan`, `apply`, upload build, invalidate cache).
 
-**Best for:** Long-running build servers
-
-**Setup:**
-
-1. **Create a deployment IAM role** (custom trust policy for EC2). You can adapt `scripts/setup-iam-oidc.sh` or create the role manually via IAM.
-2. **Configure remote state:** Update `backend/prod.hcl` to point at your state bucket/table.
-3. **Deploy infrastructure:**  
-   ```bash
-   ./scripts/plan.sh prod
-   ./scripts/apply.sh prod
-   ```
-4. **Attach the IAM role to your EC2 instance** so Terraform/CLI commands can run without long-lived credentials.
-
-See [IAM_ROLE_GUIDE.md](IAM_ROLE_GUIDE.md) for detailed IAM setup instructions.
-
-## Available Scripts
-
-All scripts automatically handle workspaces and AWS profile validation.
-
-| Script | Description |
-|--------|-------------|
-| `init.sh` | Initialize Terraform and show workspaces |
-| `plan.sh <env>` | Create deployment plan for environment |
-| `apply.sh <env>` | Deploy infrastructure for environment |
-| `destroy.sh <env>` | Destroy resources for environment |
-| `outputs.sh <env>` | View Terraform outputs |
-| `upload.sh <env> <dir>` | Upload files to S3 and invalidate CloudFront |
-
-See [scripts/README.md](scripts/README.md) for detailed documentation.
-
-## Configuration
-
-### Environment Configuration
-
-Edit the `terraform.tfvars` files in `environments/` directory:
-
-**Development (`environments/dev/terraform.tfvars`):**
-- Manual deployment only
-- IAM resources disabled
-- Lower cache TTL
-
-**Staging (`environments/staging/terraform.tfvars`):**
-- Remote state configured via `backend/staging.hcl`
-- IAM role created with `./scripts/setup-iam-oidc.sh staging ...`
-- Medium cache TTL
-
-**Production (`environments/prod/terraform.tfvars`):**
-- Remote state configured via `backend/prod.hcl`
-- IAM role created with `./scripts/setup-iam-oidc.sh prod ...`
-- Long cache TTL
-- Global CloudFront distribution
-
-### Key Configuration Options
-
-- **AWS Region**: Where resources are created
-- **Project Name**: Used for resource naming
-- **CloudFront Settings**: Cache policies, TTL, price class
-- **S3 Settings**: Versioning, CORS configuration
-- **IAM Settings**: Enable/disable deployment roles and policies
-- **GitHub Actions OIDC**: Configure for automated deployments
-
-See [environments/README.md](environments/README.md) for environment-specific configuration.
-
-### Custom Domain Setup
-
-1. Request an ACM certificate in `us-east-1` region
-2. Update `acm_certificate_arn` in your environment's `terraform.tfvars`
-3. Update `cloudfront_aliases` with your domain names
-4. Create a CNAME record pointing to CloudFront distribution domain
-
-## Uploading Files
-
-### Using the Upload Script (Recommended)
-
+### Triggering the pipeline
 ```bash
-# Upload and invalidate CloudFront cache
-./scripts/upload.sh dev ./WebGLBuild
-
-# Upload to subfolder
-./scripts/upload.sh dev ./build webgl/
+git push origin staging  # deploys staging
+git push origin main     # deploys production
 ```
 
-The script automatically:
-- Syncs files to S3
-- Creates CloudFront invalidation
-- Uses correct AWS profile
+Need changes? Update Terraform files, commit, and push for the pipeline to run with the new state.
 
-### Manual Upload
+---
 
-```bash
-# Get bucket name
-BUCKET=$(./scripts/outputs.sh dev | grep s3_bucket_id)
+## State File Management
 
-# Upload files
-aws s3 sync ./build s3://$BUCKET --delete --profile deploy-config
+### Remote state (staging/prod)
+- State is stored in S3 (`static-site-deploy/<env>/terraform.tfstate`).
+- DynamoDB provides state locking to prevent concurrent operations.
+- AWS S3 versioning retains history, so you can restore earlier states if needed.
+- Scripts automatically detect `backend/<env>.hcl` and run `terraform init -backend-config=...`.
 
-# Invalidate CloudFront
-DIST_ID=$(terraform output -raw cloudfront_distribution_id)
-aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*" --profile deploy-config
-```
+### Local state (dev)
+- Dev defaults to local state for quick iteration.
+- To convert dev to remote state, copy one of the backend templates:
+  ```bash
+  cp backend/staging.hcl backend/dev.hcl   # update bucket/table names
+  ./scripts/init.sh dev                    # reinitialise with remote backend
+  ```
 
-## Outputs
+### Restoring previous state
+If you need to roll back:
+1. Use S3 versioning to retrieve a previous `terraform.tfstate`.
+2. Upload the desired version back to the S3 key.
+3. Run `terraform apply` to reconcile resources with the restored state.
 
-After deployment, view outputs:
+---
 
-```bash
-./scripts/outputs.sh dev
-```
+## Working Without Remote State
 
-**Key Outputs:**
-- `s3_bucket_id`: S3 bucket name
-- `cloudfront_distribution_domain_name`: CloudFront URL
-- `deployment_url`: Full HTTPS URL
-- `deployment_role_arn`: IAM role ARN (if enabled)
+Prefer not to use remote state for staging/prod? You can, but it requires a few adjustments:
 
-## Security Features
+1. **Remove backend configs**
+   - Delete `backend/staging.hcl` and `backend/prod.hcl`.
+   - Edit the GitHub workflows to run plain `terraform init` (without `-backend-config`).
 
-- **Private S3 Bucket**: Not publicly accessible
-- **OAC (Origin Access Control)**: Only CloudFront can access S3
-- **HTTPS Only**: CloudFront redirects HTTP to HTTPS
-- **Encryption**: S3 bucket uses server-side encryption
-- **IAM Roles**: Temporary credentials for automated deployments
-- **Workspace Isolation**: Separate state files per environment
+2. **Ensure only one runner modifies state**
+   - Without DynamoDB locking, concurrent runs can corrupt state.
+   - Use a single runner or manual coordination to avoid overlap.
 
-## Cleanup
+3. **Share the state manually**
+   - Commit `.terraform` state is **not** recommended (contains secrets). Instead, consider storing state in a protected artifact or a shared filesystem.
 
-### Destroy Specific Environment
+4. **Update helper scripts (optional)**
+   - Scripts already fall back to local state when the backend file is missing, so no extra edits are required locally.
 
-```bash
-# Destroy staging only
-./scripts/destroy.sh staging
+Remote state is strongly recommended for team workflows because it provides locking, backups, and consistency in CI/CD. Use local-only state only for simple/dev scenarios.
 
-# Destroy dev only
-./scripts/destroy.sh dev
+---
 
-# Destroy prod (with confirmation)
-./scripts/destroy.sh prod
-```
+## Helpful Scripts & Docs
 
-Each environment is destroyed independently - other environments remain untouched.
+| Script | Purpose |
+| --- | --- |
+| `setup-remote-state.sh` | Creates S3 bucket + DynamoDB table, writes backend config |
+| `setup-iam-oidc.sh` | Creates IAM policy + role for GitHub OIDC deployments |
+| `init.sh`, `plan.sh`, `apply.sh`, `destroy.sh` | Wrap Terraform commands per environment |
+| `upload.sh` | Syncs build artifacts to S3 and invalidates CloudFront |
 
-## Documentation
+Further reading:
+- `scripts/README.md` – details for every helper script
+- `WORKSPACES_GUIDE.md` – how workspaces isolate environments
+- `GITHUB_ACTIONS_SETUP.md` – deeper dive into CI/CD configuration
+- `IAM_ROLE_GUIDE.md` – background on IAM roles and trust policies
+- `AWS_PROFILE_SETUP.md` – step-by-step for configuring AWS CLI profiles
 
-- **[scripts/README.md](scripts/README.md)** - Script usage and examples
-- **[WORKSPACES_GUIDE.md](WORKSPACES_GUIDE.md)** - Workspace management
-- **[GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)** - CI/CD setup
-- **[IAM_ROLE_GUIDE.md](IAM_ROLE_GUIDE.md)** - IAM roles explained
-- **[environments/README.md](environments/README.md)** - Environment configuration
-- **[GIT_SETUP.md](GIT_SETUP.md)** - Git repository setup
-- **[AWS_PROFILE_SETUP.md](AWS_PROFILE_SETUP.md)** - AWS profile configuration
+---
 
-## Important Notes
+## Troubleshooting Quick Reference
 
-- **S3 bucket names** must be globally unique (random suffix added automatically)
-- **CloudFront distributions** take 15-20 minutes to deploy
-- **ACM certificates** for CloudFront must be in `us-east-1` region
-- **Workspaces** are managed automatically by scripts
-- **State files** are stored locally in `.terraform/terraform.tfstate.d/` (excluded from git)
+| Issue | Fix |
+| --- | --- |
+| Workspace not found | Run `./scripts/plan.sh <env>` to create it |
+| Access denied to state bucket/table | Re-run `setup-iam-oidc.sh` to update policy with correct permissions |
+| Destroy fails: bucket not empty | Re-run `./scripts/apply.sh` (adds `force_destroy = true`) then destroy, or manually empty bucket |
+| GitHub workflow fails at init | Ensure `backend/<env>.hcl` exists with real bucket/table names |
+| Need rollback | Restore previous state version from S3, then re-apply |
 
-## Troubleshooting
+---
 
-### Workspace Issues
+## License & Contributions
 
-```bash
-# List all workspaces
-terraform workspace list
+The project is provided as-is to help you deploy static sites securely to AWS. Feel free to fork and adapt to your use case.
 
-# Show current workspace
-terraform workspace show
+When contributing:
+1. Keep secrets out of git (`.tfvars`, real backend values, etc.).
+2. Use `terraform fmt` and `terraform validate` before committing.
+3. Open PRs with a clear description of infrastructure changes.
 
-# Select workspace manually
-terraform workspace select staging
-```
-
-### AWS Profile Issues
-
-```bash
-# Verify profile exists
-aws configure list-profiles | grep deploy-config
-
-# Test profile
-aws sts get-caller-identity --profile deploy-config
-```
-
-### Common Errors
-
-- **"Workspace doesn't exist"** - Run `./scripts/plan.sh <env>` first (creates workspace)
-- **"Profile not configured"** - Run `aws configure --profile deploy-config`
-- **"No outputs found"** - Run `./scripts/apply.sh <env>` first
-
-## Contributing
-
-1. Review `.gitignore` before committing
-2. Never commit `.tfvars` files with real values
-3. Use `terraform.tfvars.example` as template
-4. See [GIT_SETUP.md](GIT_SETUP.md) for details
-
-## License
-
-This project is provided as-is for deploying WebGL applications to AWS.
+Happy deploying! 🎮🚀

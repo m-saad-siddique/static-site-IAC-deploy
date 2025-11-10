@@ -115,7 +115,7 @@ git push -u origin main
 ## Repository Structure
 
 ```
-webgl-deploy/
+static-site-deploy/
 ├── .gitignore          ✅ Committed
 ├── .gitattributes      ✅ Committed
 ├── main.tf             ✅ Committed
@@ -139,8 +139,8 @@ webgl-deploy/
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-org/webgl-deploy.git
-cd webgl-deploy
+git clone https://github.com/your-org/static-site-deploy.git
+cd static-site-deploy
 
 # 2. Create your own tfvars (not committed)
 cp terraform.tfvars.example environments/dev/terraform.tfvars

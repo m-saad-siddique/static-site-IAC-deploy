@@ -23,10 +23,10 @@ Creates OIDC provider, IAM policy, and IAM role for GitHub Actions.
 **Example:**
 ```bash
 # For staging
-./scripts/setup-iam-oidc.sh staging 123456789012 myusername/webgl-deploy
+./scripts/setup-iam-oidc.sh staging 123456789012 myusername/static-site-deploy
 
 # For production
-./scripts/setup-iam-oidc.sh prod 123456789012 myusername/webgl-deploy
+./scripts/setup-iam-oidc.sh prod 123456789012 myusername/static-site-deploy
 ```
 
 **What it does:**

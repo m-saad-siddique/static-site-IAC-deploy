@@ -94,8 +94,8 @@ Each environment is completely independent!
 ## State Storage Locations
 
 - **dev** → Local file: `.terraform/terraform.tfstate.d/dev/terraform.tfstate`
-- **staging** → Remote S3 object: `s3://<state-bucket>/webgl-deploy/staging/terraform.tfstate`
-- **prod** → Remote S3 object: `s3://<state-bucket>/webgl-deploy/prod/terraform.tfstate`
+- **staging** → Remote S3 object: `s3://<state-bucket>/static-site-deploy/staging/terraform.tfstate`
+- **prod** → Remote S3 object: `s3://<state-bucket>/static-site-deploy/prod/terraform.tfstate`
 
 Remote backends also use DynamoDB for state locking (see `backend/*.hcl`).
 

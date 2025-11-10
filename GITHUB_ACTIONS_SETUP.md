@@ -23,7 +23,7 @@ aws sts get-caller-identity --query Account --output text
 
 Update `backend/prod.hcl` with:
 - `bucket` → your Terraform state bucket (must exist and be unique)
-- `key` → `webgl-deploy/prod/terraform.tfstate` (or any structure you prefer)
+- `key` → `static-site-deploy/prod/terraform.tfstate` (or any structure you prefer)
 - `dynamodb_table` → table used for state locking
 
 ### Step 3: Create IAM role and OIDC provider

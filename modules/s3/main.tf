@@ -7,6 +7,10 @@ resource "aws_s3_bucket" "webgl_bucket" {
   # Bucket name with environment prefix
   bucket = var.bucket_name
 
+  # Force destroy allows bucket deletion even when it contains objects
+  # This is useful for dev/staging environments where you want to clean up easily
+  force_destroy = true
+
   # Tags for resource management
   tags = merge(
     var.common_tags,

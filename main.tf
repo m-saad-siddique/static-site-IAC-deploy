@@ -8,7 +8,7 @@
 # terraform {
 #   backend "s3" {
 #     bucket = "your-terraform-state-bucket"
-#     key    = "webgl-deploy/${var.environment}/terraform.tfstate"
+#     key    = "static-site-deploy/${var.environment}/terraform.tfstate"
 #     region = var.aws_region
 #   }
 # }
