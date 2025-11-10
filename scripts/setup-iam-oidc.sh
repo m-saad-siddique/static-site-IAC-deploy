@@ -106,6 +106,9 @@ print_info "Step 2: Creating IAM Policy..."
 POLICY_NAME="webgl-${ENVIRONMENT}-deployment-policy"
 POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${POLICY_NAME}"
 
+# Initialize variable
+POLICY_EXISTS=false
+
 # Check if policy exists
 if aws iam get-policy --policy-arn "${POLICY_ARN}" &>/dev/null; then
     print_warning "Policy ${POLICY_NAME} already exists"
@@ -125,21 +128,40 @@ else
 fi
 
 if [ "$POLICY_EXISTS" = false ]; then
-    # Create policy document
-    # Note: This is a template - you'll need to update with actual S3 bucket and CloudFront ARNs after Terraform creates them
+    # Create policy document with full Terraform deployment permissions
+    # This includes permissions for creating S3, CloudFront, IAM resources, and uploading files
     POLICY_DOC=$(cat <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "AllowS3Upload",
+      "Sid": "AllowS3FullAccess",
       "Effect": "Allow",
       "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetBucketLocation",
+        "s3:GetBucketVersioning",
+        "s3:ListBucket",
+        "s3:ListBucketVersions",
+        "s3:PutBucketVersioning",
+        "s3:PutBucketPolicy",
+        "s3:GetBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:PutBucketCors",
+        "s3:GetBucketCors",
+        "s3:GetBucketTagging",
+        "s3:PutBucketTagging",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetEncryptionConfiguration",
+        "s3:PutEncryptionConfiguration",
         "s3:PutObject",
         "s3:PutObjectAcl",
         "s3:GetObject",
         "s3:DeleteObject",
-        "s3:ListBucket"
+        "s3:ListMultipartUploadParts",
+        "s3:AbortMultipartUpload"
       ],
       "Resource": [
         "arn:aws:s3:::webgl-${ENVIRONMENT}-*",
@@ -147,12 +169,121 @@ if [ "$POLICY_EXISTS" = false ]; then
       ]
     },
     {
-      "Sid": "AllowCloudFrontInvalidation",
+      "Sid": "AllowCloudFrontFullAccess",
       "Effect": "Allow",
       "Action": [
+        "cloudfront:CreateDistribution",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:DeleteDistribution",
+        "cloudfront:GetDistribution",
+        "cloudfront:ListDistributions",
+        "cloudfront:CreateOriginAccessControl",
+        "cloudfront:UpdateOriginAccessControl",
+        "cloudfront:DeleteOriginAccessControl",
+        "cloudfront:GetOriginAccessControl",
+        "cloudfront:ListOriginAccessControls",
         "cloudfront:CreateInvalidation",
         "cloudfront:GetInvalidation",
-        "cloudfront:ListInvalidations"
+        "cloudfront:ListInvalidations",
+        "cloudfront:TagResource",
+        "cloudfront:UntagResource",
+        "cloudfront:ListTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowIAMRoleManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:ListRoles",
+        "iam:UpdateRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:PutRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:ListRoleTags",
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::${AWS_ACCOUNT_ID}:role/webgl-${ENVIRONMENT}-*"
+      ]
+    },
+    {
+      "Sid": "AllowIAMPolicyManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreatePolicy",
+        "iam:DeletePolicy",
+        "iam:GetPolicy",
+        "iam:ListPolicies",
+        "iam:ListPolicyVersions",
+        "iam:CreatePolicyVersion",
+        "iam:DeletePolicyVersion",
+        "iam:SetDefaultPolicyVersion",
+        "iam:TagPolicy",
+        "iam:UntagPolicy",
+        "iam:ListPolicyTags"
+      ],
+      "Resource": [
+        "arn:aws:iam::${AWS_ACCOUNT_ID}:policy/webgl-${ENVIRONMENT}-*"
+      ]
+    },
+    {
+      "Sid": "AllowOIDCProviderManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateOpenIDConnectProvider",
+        "iam:DeleteOpenIDConnectProvider",
+        "iam:GetOpenIDConnectProvider",
+        "iam:ListOpenIDConnectProviders",
+        "iam:TagOpenIDConnectProvider",
+        "iam:UntagOpenIDConnectProvider",
+        "iam:ListOpenIDConnectProviderTags"
+      ],
+      "Resource": [
+        "arn:aws:iam::${AWS_ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
+      ]
+    },
+    {
+      "Sid": "AllowTerraformStateAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::terraform-state-*",
+        "arn:aws:s3:::terraform-state-*/*"
+      ]
+    },
+    {
+      "Sid": "AllowDynamoDBStateLocking",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/terraform-state-lock"
+      ]
+    },
+    {
+      "Sid": "AllowRandomResourceCreation",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
       ],
       "Resource": "*"
     }
@@ -169,13 +300,16 @@ EOF
         --tags Key=Environment,Value=${ENVIRONMENT} Key=ManagedBy,Value=Script
     
     print_info "✅ Policy created: ${POLICY_ARN}"
-    print_warning "⚠️  Note: Update policy with actual S3 bucket and CloudFront ARNs after Terraform deployment"
+    print_info "Policy includes full Terraform deployment permissions for S3, CloudFront, and IAM"
 fi
 
 # Step 3: Create IAM Role with OIDC trust
 print_info "Step 3: Creating IAM Role with OIDC trust..."
 
 ROLE_NAME="webgl-${ENVIRONMENT}-deployment-role"
+
+# Initialize variable
+ROLE_EXISTS=false
 
 # Trust policy for GitHub Actions OIDC
 TRUST_POLICY=$(cat <<EOF
@@ -256,8 +390,12 @@ echo "1. Add this to GitHub Secrets:"
 echo "   Name: AWS_ROLE_ARN_$(echo ${ENVIRONMENT} | tr '[:lower:]' '[:upper:]')"
 echo "   Value: ${ROLE_ARN}"
 echo ""
-echo "2. After Terraform creates S3 bucket and CloudFront, update the policy:"
-echo "   aws iam create-policy-version --policy-arn ${POLICY_ARN} --policy-document file://updated-policy.json --set-as-default"
+echo "2. Add AWS_ACCOUNT_ID to GitHub Secrets:"
+echo "   Name: AWS_ACCOUNT_ID"
+echo "   Value: ${AWS_ACCOUNT_ID}"
 echo ""
-print_warning "⚠️  Remember to update the IAM policy with actual S3 bucket and CloudFront ARNs after Terraform deployment!"
+echo "3. The policy includes full Terraform deployment permissions."
+echo "   You can now run Terraform in CI/CD to create infrastructure."
+echo ""
+print_info "✅ Ready for CI/CD deployment!"
 

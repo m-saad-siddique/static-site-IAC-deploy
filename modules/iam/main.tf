@@ -1,30 +1,7 @@
 # IAM Module - Creates IAM roles and policies for WebGL deployment
 # This module can be used to create roles for CI/CD pipelines or deployment scripts
 # Note: Provider requirements are defined in the root module (versions.tf)
-
-# Create OIDC provider for GitHub Actions (if configured)
-resource "aws_iam_openid_connect_provider" "github_actions" {
-  count = var.create_deployment_role && var.github_actions_oidc != null ? 1 : 0
-
-  url = "https://token.actions.githubusercontent.com"
-
-  client_id_list = [
-    "sts.amazonaws.com"
-  ]
-
-  thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea1",
-    "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
-  ]
-
-  tags = merge(
-    var.common_tags,
-    {
-      Name        = "github-actions-oidc"
-      Environment = var.environment
-    }
-  )
-}
+# Note: OIDC provider is created separately by setup-iam-oidc.sh script
 
 # IAM policy document for S3 upload access
 # Allows uploading files to the S3 bucket

@@ -31,10 +31,12 @@ Creates OIDC provider, IAM policy, and IAM role for GitHub Actions.
 
 **What it does:**
 1. Creates OIDC provider for GitHub Actions (if not exists)
-2. Creates IAM policy (with placeholder resources)
+2. Creates IAM policy with **full Terraform deployment permissions** (S3, CloudFront, IAM)
 3. Creates IAM role with OIDC trust policy
 4. Attaches policy to role
 5. Outputs role ARN for GitHub Secrets
+
+**Note:** The policy includes all permissions needed for Terraform to create and manage infrastructure. No policy updates needed after deployment.
 
 ### 2. `update-iam-policy.sh` - Update Policy with Real ARNs
 
@@ -88,19 +90,24 @@ The script outputs the role ARN. Add to GitHub:
 ./scripts/apply.sh prod
 ```
 
-### Step 4: Update IAM Policy with Real ARNs
+### Step 4: Update IAM Policy (Optional - for tighter security)
+
+The policy created in Step 1 uses wildcards and includes full permissions. After Terraform creates resources, you can optionally tighten the policy:
 
 ```bash
 ./scripts/update-iam-policy.sh staging
 ./scripts/update-iam-policy.sh prod
 ```
 
+**Note:** This step is optional. The initial policy works for all deployments. Update only if you want to restrict permissions to specific resource ARNs.
+
 ## Notes
 
-- The initial policy uses wildcard resources (`webgl-${ENV}-*`)
-- After Terraform deployment, update the policy with actual ARNs
+- The policy includes **full Terraform deployment permissions** for S3, CloudFront, and IAM
+- Uses wildcard resources (`webgl-${ENV}-*`) for flexibility
 - The role ARN is available immediately (before Terraform)
 - OIDC provider is created once per AWS account (shared)
+- Optional: Use `update-iam-policy.sh` to tighten permissions after deployment
 
 ## Troubleshooting
 
@@ -112,7 +119,8 @@ The script outputs the role ARN. Add to GitHub:
 - Script will ask if you want to recreate
 - Or update manually with `update-iam-policy.sh`
 
-**Policy needs updating**
-- Always run `update-iam-policy.sh` after Terraform deployment
-- This ensures policy has correct S3 and CloudFront ARNs
+**Policy needs updating (optional)**
+- The initial policy works for all deployments
+- Run `update-iam-policy.sh` only if you want to restrict permissions to specific ARNs
+- This is a security best practice but not required for functionality
 
