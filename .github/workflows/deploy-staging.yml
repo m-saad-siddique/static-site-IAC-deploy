@@ -81,7 +81,7 @@ jobs:
       # Replace './build' with your actual WebGL build directory
       - name: Upload to S3
         run: |
-          if [ -d "./build" ]; then
+          if [ -d "./sample" ]; then
             aws s3 sync ./sample s3://${{ steps.get-bucket.outputs.bucket }}/ --delete
             echo "✅ Files uploaded to S3"
           else
