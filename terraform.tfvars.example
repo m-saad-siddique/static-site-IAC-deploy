@@ -37,8 +37,3 @@ enable_s3_versioning = false
 enable_cors         = true
 cors_allowed_origins = ["*"]
 
-# IAM Configuration
-create_iam_resources     = false
-create_deployment_policy = false
-create_deployment_role   = false
-

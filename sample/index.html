@@ -532,43 +532,29 @@ cd webgl-deploy</code>
           <strong>🔐 Security:</strong> CI/CD uses IAM roles (OIDC) instead of AWS keys. No secrets stored in GitHub!
         </div>
 
-        <h3>Step 1: Configure IAM Roles in Terraform</h3>
-        <p>First, enable IAM roles for staging and production environments.</p>
-
-        <h4>Edit <code>environments/staging/terraform.tfvars</code>:</h4>
+        <h3>Step 1: Configure Remote State & IAM</h3>
+        <p>Update the backend files and create IAM roles with the helper script.</p>
         <div class="code-block">
-<code># IAM Configuration
-create_iam_resources     = true
-create_deployment_policy = true
-create_deployment_role   = true
+<code># 1. Edit backend/staging.hcl and backend/prod.hcl
+#    - bucket: your Terraform state bucket
+#    - dynamodb_table: your lock table
 
-# GitHub Actions OIDC Configuration
-github_actions_oidc = {
-  account_id        = "123456789012"  # Your AWS Account ID
-  repository_filter = "repo:your-username/your-repo:*"
-}</code>
+# 2. Create IAM role + policy for GitHub Actions (one-time)
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-org/your-repo
+./scripts/setup-iam-oidc.sh prod     $AWS_ACCOUNT_ID your-org/your-repo
+</code>
         </div>
 
-        <h4>Edit <code>environments/prod/terraform.tfvars</code>:</h4>
-        <div class="code-block">
-<code># IAM Configuration
-create_iam_resources     = true
-create_deployment_policy = true
-create_deployment_role   = true
+        <h3>Step 2: Add GitHub Secrets</h3>
+        <p>Create repository secrets for:</p>
+        <ul>
+          <li><code>AWS_ACCOUNT_ID</code></li>
+          <li><code>AWS_ROLE_ARN_STAGING</code></li>
+          <li><code>AWS_ROLE_ARN_PROD</code></li>
+        </ul>
 
-# GitHub Actions OIDC Configuration
-github_actions_oidc = {
-  account_id        = "123456789012"  # Your AWS Account ID
-  repository_filter = "repo:your-username/your-repo:*"
-}</code>
-        </div>
-
-        <h3>Step 2: Get Your AWS Account ID</h3>
-        <div class="code-block">
-<code>aws sts get-caller-identity --query Account --output text</code>
-        </div>
-
-        <h3>Step 3: Apply Terraform to Create Roles</h3>
+        <h3>Step 3: Apply Terraform</h3>
         <div class="code-block">
 <code># Deploy staging infrastructure with IAM roles
 ./scripts/plan.sh staging
@@ -579,15 +565,8 @@ github_actions_oidc = {
 ./scripts/apply.sh prod</code>
         </div>
 
-        <h3>Step 4: Get IAM Role ARNs</h3>
-        <p>Get the role ARNs that GitHub Actions will use:</p>
-        <div class="code-block">
-<code># Staging role ARN
-./scripts/outputs.sh staging | grep deployment_role_arn
-
-# Production role ARN
-./scripts/outputs.sh prod | grep deployment_role_arn</code>
-        </div>
+        <h3>Step 4: Capture the Role ARNs</h3>
+        <p>The setup script prints the role ARNs. Copy them when <code>setup-iam-oidc.sh</code> finishes or retrieve them later from the IAM console.</p>
 
         <h3>Step 5: Add GitHub Secrets</h3>
         <ol class="step-list">
@@ -596,8 +575,8 @@ github_actions_oidc = {
           <li>Click <strong>New repository secret</strong></li>
           <li>Add these secrets:
             <ul>
-              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_DEV</code><br>
-                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-dev-deployment-role</code></li>
+              <li><strong>Name:</strong> <code>AWS_ACCOUNT_ID</code><br>
+                  <strong>Value:</strong> <code>123456789012</code> (your AWS account ID)</li>
               <li><strong>Name:</strong> <code>AWS_ROLE_ARN_STAGING</code><br>
                   <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-staging-deployment-role</code></li>
               <li><strong>Name:</strong> <code>AWS_ROLE_ARN_PROD</code><br>

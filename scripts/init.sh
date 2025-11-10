@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+ENVIRONMENT="${1:-}"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROFILE="${AWS_PROFILE_NAME:-deploy-config}"
 
@@ -24,8 +25,12 @@ export AWS_PROFILE="${PROFILE}"
 
 cd "${PROJECT_ROOT}"
 
-# Initialize Terraform
-terraform init
+# Initialize Terraform (use backend config if environment is provided)
+if [ -n "${ENVIRONMENT}" ] && [ -f "${PROJECT_ROOT}/backend/${ENVIRONMENT}.hcl" ]; then
+  terraform init -backend-config="${PROJECT_ROOT}/backend/${ENVIRONMENT}.hcl" -reconfigure
+else
+  terraform init
+fi
 
 # Show current workspace
 echo ""

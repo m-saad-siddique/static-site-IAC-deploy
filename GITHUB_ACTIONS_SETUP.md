@@ -19,32 +19,28 @@ When you enable GitHub Actions OIDC:
 aws sts get-caller-identity --query Account --output text
 ```
 
-### Step 2: Configure Terraform
+### Step 2: Configure remote state backend
 
-Edit `environments/prod/terraform.tfvars`:
+Update `backend/prod.hcl` with:
+- `bucket` → your Terraform state bucket (must exist and be unique)
+- `key` → `webgl-deploy/prod/terraform.tfstate` (or any structure you prefer)
+- `dynamodb_table` → table used for state locking
 
-```hcl
-# IAM Configuration
-create_iam_resources     = true
-create_deployment_policy = true
-create_deployment_role   = true
+### Step 3: Create IAM role and OIDC provider
 
-# Leave empty if using GitHub Actions
-assume_role_services = []
+Run the helper script (one-time):
 
-# GitHub Actions OIDC Configuration
-github_actions_oidc = {
-  account_id        = "123456789012"  # Your AWS Account ID
-  repository_filter = "repo:your-username/your-repo:*"  # Your GitHub repo
-}
+```bash
+./scripts/setup-iam-oidc.sh prod <aws_account_id> <github_owner/repo>
 ```
 
-**Repository filter examples:**
-- `"repo:owner/repo:*"` - All branches in one repo
-- `"repo:owner/repo:ref:refs/heads/main"` - Only main branch
-- `"repo:owner/repo:environment:production"` - Only production environment
+The script:
+- Creates the GitHub Actions OIDC provider (if needed)
+- Creates the deployment policy/role with full Terraform permissions
+- Prints the role ARN → add to GitHub secrets as `AWS_ROLE_ARN_PROD`
+- Reminds you to add `AWS_ACCOUNT_ID` secret
 
-### Step 3: Apply Terraform
+### Step 4: Apply Terraform
 
 ```bash
 ./scripts/plan.sh prod
@@ -52,17 +48,9 @@ github_actions_oidc = {
 ```
 
 This creates:
-- OIDC Provider: `token.actions.githubusercontent.com`
-- IAM Role: `webgl-prod-deployment-role`
-- Policy: `webgl-prod-deployment-policy`
-
-### Step 4: Get Role ARN
-
-```bash
-./scripts/outputs.sh prod
-# Look for: deployment_role_arn
-# Example: arn:aws:iam::123456789012:role/webgl-prod-deployment-role
-```
+- S3 bucket + CloudFront distribution
+- Remote state configuration remains in S3/DynamoDB
+- Deployment role is already available (from the script)
 
 ### Step 5: Configure GitHub Actions
 
@@ -147,10 +135,11 @@ git push
 ## Summary
 
 **What you need:**
-1. ✅ Configure `github_actions_oidc` in `terraform.tfvars`
-2. ✅ Run `terraform apply`
-3. ✅ Add GitHub Actions workflow with role ARN
-4. ✅ Push to GitHub
+1. ✅ Remote state backend configured (`backend/prod.hcl`)
+2. ✅ IAM role & policy created via `scripts/setup-iam-oidc.sh`
+3. ✅ Terraform applied (`./scripts/apply.sh prod`)
+4. ✅ GitHub secrets `AWS_ACCOUNT_ID` + `AWS_ROLE_ARN_PROD`
+5. ✅ GitHub Actions workflow using those secrets
 
-**That's it!** No separate IAM users, no manual setup. Terraform creates everything.
+**That's it!** No static IAM users, no long-lived keys—GitHub Actions authenticates via OIDC and assumes the role you created with the setup script.
 

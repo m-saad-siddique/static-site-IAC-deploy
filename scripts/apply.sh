@@ -44,8 +44,14 @@ export AWS_PROFILE="${PROFILE}"
 
 cd "${PROJECT_ROOT}"
 
-if [ ! -d .terraform ]; then
-  terraform init
+BACKEND_FILE="${PROJECT_ROOT}/backend/${ENVIRONMENT}.hcl"
+
+if [ -f "${BACKEND_FILE}" ]; then
+  terraform init -backend-config="${BACKEND_FILE}" -reconfigure
+else
+  if [ ! -d .terraform ]; then
+    terraform init
+  fi
 fi
 
 # Select or create workspace for this environment

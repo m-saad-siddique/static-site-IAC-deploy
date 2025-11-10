@@ -11,10 +11,12 @@ See the main [README.md](../README.md) for details on creating the profile.
 ## Available Scripts
 
 ### `init.sh`
-Initialise Terraform (safe to rerun).
+Initialise Terraform (safe to rerun). Pass an environment name to load the matching backend configuration.
 
 ```bash
-./scripts/init.sh
+./scripts/init.sh            # Local init (dev)
+./scripts/init.sh staging    # Uses backend/staging.hcl
+./scripts/init.sh prod       # Uses backend/prod.hcl
 ```
 
 ### `plan.sh`
@@ -52,14 +54,6 @@ Sync a local directory (your WebGL build) into the environment's S3 bucket, then
 ./scripts/upload.sh dev path/to/build [subfolder]
 ```
 
-## Quick Start
-
-```bash
-./scripts/init.sh
-./scripts/plan.sh dev
-./scripts/apply.sh dev
-```
-
 ## What Each Script Checks
 
 - Terraform CLI is installed
@@ -71,6 +65,7 @@ Sync a local directory (your WebGL build) into the environment's S3 bucket, then
 ## Notes
 
 - Run scripts from anywhere; they switch into the project root automatically
+- If `backend/<env>.hcl` exists, the scripts automatically initialize Terraform with that backend (S3 + DynamoDB)
 - `apply.sh` asks for confirmation before touching `prod` unless `--auto-approve` is used
 - `destroy.sh` always asks you to retype the environment name
 - Plan files are reused automatically if present

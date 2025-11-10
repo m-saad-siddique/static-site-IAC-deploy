@@ -5,6 +5,8 @@ terraform {
   # Minimum Terraform version required
   required_version = ">= 1.0"
 
+  backend "s3" {}
+
   # Required providers with version constraints
   required_providers {
     aws = {

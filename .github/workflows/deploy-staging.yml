@@ -82,7 +82,7 @@ jobs:
       - name: Upload to S3
         run: |
           if [ -d "./build" ]; then
-            aws s3 sync ./build s3://${{ steps.get-bucket.outputs.bucket }}/ --delete
+            aws s3 sync ./sample s3://${{ steps.get-bucket.outputs.bucket }}/ --delete
             echo "✅ Files uploaded to S3"
           else
             echo "⚠️ Build directory not found. Skipping upload."

@@ -11,10 +11,10 @@ Terraform workspaces allow you to manage multiple environments (dev, staging, pr
 
 ## How It Works
 
-Each environment uses its own workspace:
-- **dev** → `terraform.tfstate.d/dev/`
-- **staging** → `terraform.tfstate.d/staging/`
-- **prod** → `terraform.tfstate.d/prod/`
+Each environment maps to a dedicated workspace and backend:
+- **dev** → local state (`.terraform/terraform.tfstate.d/dev/`)
+- **staging** → remote S3 state defined in `backend/staging.hcl`
+- **prod** → remote S3 state defined in `backend/prod.hcl`
 
 ## Usage
 
@@ -91,18 +91,13 @@ Each environment is completely independent!
 ./scripts/destroy.sh prod
 ```
 
-## State File Structure
+## State Storage Locations
 
-```
-.terraform/
-└── terraform.tfstate.d/
-    ├── dev/
-    │   └── terraform.tfstate
-    ├── staging/
-    │   └── terraform.tfstate
-    └── prod/
-        └── terraform.tfstate
-```
+- **dev** → Local file: `.terraform/terraform.tfstate.d/dev/terraform.tfstate`
+- **staging** → Remote S3 object: `s3://<state-bucket>/webgl-deploy/staging/terraform.tfstate`
+- **prod** → Remote S3 object: `s3://<state-bucket>/webgl-deploy/prod/terraform.tfstate`
+
+Remote backends also use DynamoDB for state locking (see `backend/*.hcl`).
 
 ## Benefits
 
@@ -123,11 +118,11 @@ Each environment is completely independent!
 ```bash
 # Deploy staging
 ./scripts/apply.sh staging
-# Creates: S3 bucket, CloudFront, IAM (for staging)
+# Creates: S3 bucket + CloudFront (IAM role provided separately by setup script)
 
 # Deploy prod
 ./scripts/apply.sh prod
-# Creates: Different S3 bucket, CloudFront, IAM (for prod)
+# Creates: Different S3 bucket + CloudFront (IAM role provided separately by setup script)
 
 # Check what's deployed
 terraform workspace select staging
@@ -145,7 +140,7 @@ terraform state list  # Shows prod resources
 
 1. **Workspace is created automatically** - First time you run `plan.sh` or `apply.sh` for an environment, the workspace is created
 
-2. **State files are local** - Workspace state files are stored in `.terraform/terraform.tfstate.d/` (excluded from git)
+2. **State backend depends on environment** - dev uses local files, staging/prod use S3 (configured in `backend/<env>.hcl`)
 
 3. **Each workspace is independent** - Resources in different workspaces don't conflict, even if they have similar names
 

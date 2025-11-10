@@ -6,7 +6,7 @@ This Terraform configuration deploys a WebGL application to AWS S3 with CloudFro
 
 - **S3 Bucket**: Private bucket storing WebGL build files (not publicly accessible)
 - **CloudFront**: CDN distribution with OAC to securely access S3 bucket
-- **IAM**: Optional roles and policies for automated deployments (GitHub Actions, EC2)
+- **IAM (via scripts)**: Deployment roles and policies created with `./scripts/setup-iam-oidc.sh`
 - **Workspaces**: Separate state files for each environment (dev, staging, prod)
 
 ## Directory Structure
@@ -17,6 +17,7 @@ This Terraform configuration deploys a WebGL application to AWS S3 with CloudFro
 ├── variables.tf            # Root variables
 ├── outputs.tf             # Root outputs
 ├── versions.tf             # Terraform version constraints
+├── backend/               # Remote state backend configuration (per environment)
 ├── modules/
 │   ├── s3/                # S3 bucket module
 │   ├── cloudfront/        # CloudFront distribution module
@@ -93,6 +94,39 @@ See [AWS_PROFILE_SETUP.md](AWS_PROFILE_SETUP.md) for detailed instructions.
 ./scripts/outputs.sh dev
 ```
 
+## Remote State (staging & prod)
+
+Staging and production environments store their Terraform state in S3 for safe collaboration and CI/CD support.
+
+1. **Create an S3 bucket and DynamoDB table** (one-time):
+   ```bash
+   aws s3api create-bucket --bucket <state-bucket-name> --region us-east-1
+   aws dynamodb create-table \
+     --table-name <lock-table-name> \
+     --attribute-definitions AttributeName=LockID,AttributeType=S \
+     --key-schema AttributeName=LockID,KeyType=HASH \
+     --billing-mode PAY_PER_REQUEST
+   ```
+   > Replace the bucket and table names with values that match your naming standards. Buckets must be globally unique.
+
+2. **Update backend configuration files:**
+   - `backend/staging.hcl`
+   - `backend/prod.hcl`
+
+   Set `bucket`, `key`, `region`, and `dynamodb_table` to the resources you created. Leave `encrypt = true`.
+
+3. **Run Terraform scripts normally.** The helper scripts detect the backend files and automatically pass `-backend-config` during `terraform init`.
+
+4. **Developer workflow:**
+   ```bash
+   ./scripts/plan.sh staging   # Uses remote state backend/staging.hcl
+   ./scripts/apply.sh staging
+   ./scripts/plan.sh prod
+   ./scripts/apply.sh prod
+   ```
+
+> Development (`dev`) continues to use local state by default. Add a `backend/dev.hcl` if you prefer remote state for dev as well.
+
 ## Multiple Environments
 
 This project uses **Terraform workspaces** to manage multiple environments independently. Each environment has its own state file, allowing you to deploy and destroy them separately.
@@ -163,27 +197,18 @@ aws configure --profile deploy-config
 
 **Setup:**
 
-1. **Configure OIDC in Terraform** - Edit `environments/prod/terraform.tfvars`:
-   ```hcl
-   create_iam_resources = true
-   create_deployment_role = true
-   github_actions_oidc = {
-     account_id        = "123456789012"  # Your AWS Account ID
-     repository_filter = "repo:your-username/your-repo:*"
-   }
-   ```
-
-2. **Apply Terraform:**
+1. **Configure remote state:** Update `backend/prod.hcl` with your Terraform state bucket and DynamoDB lock table.
+2. **Create IAM role & policy:**  
    ```bash
+   ./scripts/setup-iam-oidc.sh prod <aws_account_id> <github_owner/repo>
+   ```
+   The script prints the role ARN and reminds you to add `AWS_ACCOUNT_ID` + `AWS_ROLE_ARN_PROD` to GitHub secrets.
+3. **Deploy infrastructure:**  
+   ```bash
+   ./scripts/plan.sh prod
    ./scripts/apply.sh prod
    ```
-
-3. **Get Role ARN:**
-   ```bash
-   ./scripts/outputs.sh prod | grep deployment_role_arn
-   ```
-
-4. **Create GitHub Actions Workflow** - See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)
+4. **Reference workflow template:** See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md) for GitHub Actions configuration.
 
 **Pros:**
 - ✅ No AWS keys stored in GitHub
@@ -197,26 +222,14 @@ aws configure --profile deploy-config
 
 **Setup:**
 
-1. **Configure for EC2** - Edit `environments/prod/terraform.tfvars`:
-   ```hcl
-   create_deployment_role = true
-   assume_role_services = ["ec2.amazonaws.com"]
-   ```
-
-2. **Apply Terraform:**
+1. **Create a deployment IAM role** (custom trust policy for EC2). You can adapt `scripts/setup-iam-oidc.sh` or create the role manually via IAM.
+2. **Configure remote state:** Update `backend/prod.hcl` to point at your state bucket/table.
+3. **Deploy infrastructure:**  
    ```bash
+   ./scripts/plan.sh prod
    ./scripts/apply.sh prod
    ```
-
-3. **Attach Role to EC2 Instance:**
-   - AWS Console → EC2 → Instances
-   - Select instance → Actions → Security → Modify IAM role
-   - Select: `webgl-prod-deployment-role`
-
-4. **Deploy from EC2** (no keys needed):
-   ```bash
-   aws s3 sync ./build s3://bucket-name
-   ```
+4. **Attach the IAM role to your EC2 instance** so Terraform/CLI commands can run without long-lived credentials.
 
 See [IAM_ROLE_GUIDE.md](IAM_ROLE_GUIDE.md) for detailed IAM setup instructions.
 
@@ -247,13 +260,13 @@ Edit the `terraform.tfvars` files in `environments/` directory:
 - Lower cache TTL
 
 **Staging (`environments/staging/terraform.tfvars`):**
-- GitHub Actions OIDC enabled
-- IAM role for automated deployment
+- Remote state configured via `backend/staging.hcl`
+- IAM role created with `./scripts/setup-iam-oidc.sh staging ...`
 - Medium cache TTL
 
 **Production (`environments/prod/terraform.tfvars`):**
-- GitHub Actions OIDC enabled
-- IAM role for automated deployment
+- Remote state configured via `backend/prod.hcl`
+- IAM role created with `./scripts/setup-iam-oidc.sh prod ...`
 - Long cache TTL
 - Global CloudFront distribution
 

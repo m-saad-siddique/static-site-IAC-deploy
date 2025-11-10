@@ -3,90 +3,58 @@
 ## Overview
 
 This project supports three environments:
-- **dev** - Development (manual deployment, no IAM roles)
-- **staging** - Staging (GitHub Actions OIDC enabled)
-- **prod** - Production (GitHub Actions OIDC enabled)
+- **dev** – Local state, manual deployments with the `deploy-config` AWS profile.
+- **staging** – Remote state + GitHub Actions OIDC (IAM role created by helper script).
+- **prod** – Remote state + GitHub Actions OIDC (IAM role created by helper script).
 
-## Configuration Status
+## One-Time Setup for Staging & Production
 
-### Development (dev)
-- ✅ Manual deployment only
-- ❌ IAM resources disabled
-- ✅ Uses AWS profile (`deploy-config`)
+1. **Gather account details**
+   ```bash
+   AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+   ```
 
-### Staging (staging)
-- ✅ GitHub Actions OIDC enabled
-- ✅ IAM role for automated deployment
-- ⚠️ **Action Required**: Update `github_actions_oidc` with your values
+2. **Create remote state resources** (S3 bucket + DynamoDB table)
+   ```bash
+   aws s3api create-bucket --bucket <state-bucket-name> --region us-east-1
+   aws dynamodb create-table \
+     --table-name <lock-table-name> \
+     --attribute-definitions AttributeName=LockID,AttributeType=S \
+     --key-schema AttributeName=LockID,KeyType=HASH \
+     --billing-mode PAY_PER_REQUEST
+   ```
 
-### Production (prod)
-- ✅ GitHub Actions OIDC enabled
-- ✅ IAM role for automated deployment
-- ⚠️ **Action Required**: Update `github_actions_oidc` with your values
+3. **Update backend configuration files**
+   - `backend/staging.hcl`
+   - `backend/prod.hcl`
 
-## Setup Instructions
+   Set the `bucket`, `key`, `region`, and `dynamodb_table` values to match the resources you just created. Keep `encrypt = true`.
 
-### Step 1: Get Your AWS Account ID
+4. **Create IAM role & policy for GitHub Actions**
+   ```bash
+   ./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID <github_owner/repo>
+   ./scripts/setup-iam-oidc.sh prod     $AWS_ACCOUNT_ID <github_owner/repo>
+   ```
 
-```bash
-aws sts get-caller-identity --query Account --output text
-```
+   The script outputs the role ARN for each environment. Add the following GitHub secrets:
+   - `AWS_ACCOUNT_ID`
+   - `AWS_ROLE_ARN_STAGING`
+   - `AWS_ROLE_ARN_PROD`
 
-### Step 2: Update Staging Configuration
+5. **Deploy infrastructure**
+   ```bash
+   ./scripts/plan.sh staging
+   ./scripts/apply.sh staging
 
-Edit `environments/staging/terraform.tfvars`:
+   ./scripts/plan.sh prod
+   ./scripts/apply.sh prod
+   ```
 
-```hcl
-github_actions_oidc = {
-  account_id        = "123456789012"  # Your AWS Account ID
-  repository_filter = "repo:your-username/your-repo:*"  # Your GitHub repo
-}
-```
-
-**Repository Filter Options:**
-- `"repo:owner/repo:*"` - All branches in the repository
-- `"repo:owner/repo:ref:refs/heads/staging"` - Only staging branch
-- `"repo:owner/repo:environment:staging"` - Only staging environment
-
-### Step 3: Update Production Configuration
-
-Edit `environments/prod/terraform.tfvars`:
-
-```hcl
-github_actions_oidc = {
-  account_id        = "123456789012"  # Your AWS Account ID
-  repository_filter = "repo:your-username/your-repo:*"  # Your GitHub repo
-}
-```
-
-**Repository Filter Options:**
-- `"repo:owner/repo:*"` - All branches
-- `"repo:owner/repo:ref:refs/heads/main"` - Only main branch
-- `"repo:owner/repo:environment:production"` - Only production environment
-
-### Step 4: Apply Terraform
-
-```bash
-# Staging
-./scripts/plan.sh staging
-./scripts/apply.sh staging
-
-# Production
-./scripts/plan.sh prod
-./scripts/apply.sh prod
-```
-
-### Step 5: Get Role ARNs
-
-```bash
-# Staging role ARN
-./scripts/outputs.sh staging | grep deployment_role_arn
-
-# Production role ARN
-./scripts/outputs.sh prod | grep deployment_role_arn
-```
-
-Use these ARNs in your GitHub Actions workflows.
+6. **Optional:** Tighten IAM policy ARNs after deployment
+   ```bash
+   ./scripts/update-iam-policy.sh staging
+   ./scripts/update-iam-policy.sh prod
+   ```
 
 ## GitHub Actions Workflow Example
 
@@ -94,8 +62,7 @@ See `GITHUB_ACTIONS_SETUP.md` for complete workflow examples.
 
 ## Notes
 
-- **Dev environment**: No changes needed - uses AWS profile for manual deployment
-- **Staging/Prod**: Must configure `github_actions_oidc` before applying
-- Each environment gets its own IAM role
-- OIDC provider is created automatically (one per AWS account)
+- **Dev environment**: Local state only, IAM role not required.
+- **Staging/Prod**: Remote state + IAM role via `scripts/setup-iam-oidc.sh`.
+- Remote state files live in S3 with locking handled by DynamoDB.
 

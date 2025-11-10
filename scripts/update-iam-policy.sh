@@ -54,8 +54,19 @@ export AWS_PROFILE="${PROFILE}"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${PROJECT_ROOT}"
 
+# Initialize Terraform with backend configuration if available
+BACKEND_FILE="${PROJECT_ROOT}/backend/${ENVIRONMENT}.hcl"
+
+if [ -f "${BACKEND_FILE}" ]; then
+    terraform init -backend-config="${BACKEND_FILE}" -reconfigure >/dev/null
+else
+    if [ ! -d .terraform ]; then
+        terraform init >/dev/null
+    fi
+fi
+
 # Select workspace
-if terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
+if terraform workspace list | grep -qE "^\s*\*?\s*${ENVIRONMENT}$"; then
     terraform workspace select "${ENVIRONMENT}"
 else
     print_error "Workspace '${ENVIRONMENT}' does not exist. Run './scripts/apply.sh ${ENVIRONMENT}' first."

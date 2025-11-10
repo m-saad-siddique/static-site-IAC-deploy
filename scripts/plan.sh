@@ -36,16 +36,23 @@ export AWS_PROFILE="${PROFILE}"
 
 cd "${PROJECT_ROOT}"
 
-if [ ! -d .terraform ]; then
-  terraform init
+BACKEND_FILE="${PROJECT_ROOT}/backend/${ENVIRONMENT}.hcl"
+
+if [ -f "${BACKEND_FILE}" ]; then
+  terraform init -backend-config="${BACKEND_FILE}" -reconfigure
+else
+  if [ ! -d .terraform ]; then
+    terraform init
+  fi
 fi
 
 # Select or create workspace for this environment
-if ! terraform workspace list | grep -q "^\s*${ENVIRONMENT}$"; then
-  echo "Creating new workspace: ${ENVIRONMENT}"
-  terraform workspace new "${ENVIRONMENT}"
-else
+if terraform workspace list | grep -qE "^\s*\*?\s*${ENVIRONMENT}$"; then
+  echo "Selecting existing workspace: ${ENVIRONMENT}"
   terraform workspace select "${ENVIRONMENT}"
+else
+  echo "Creating new workspace: ${ENVIRONMENT}"
+  terraform workspace new "${ENVIRONMENT}" || terraform workspace select "${ENVIRONMENT}"
 fi
 
 echo "Using workspace: $(terraform workspace show)"

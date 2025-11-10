@@ -2,6 +2,8 @@
 
 This guide explains how IAM roles work in this project and when you need them.
 
+> **Update:** IAM roles and policies are now provisioned with `./scripts/setup-iam-oidc.sh`. The sections below provide background context and legacy Terraform examples. Follow the script-based workflow in the main README for production use.
+
 ## Understanding the Components
 
 When you enable IAM resources, Terraform creates:
