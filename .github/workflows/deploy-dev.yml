@@ -61,6 +61,7 @@ jobs:
           # Create temporary tfvars file with environment-specific values
           cat > /tmp/dev.tfvars <<EOF
           environment = "dev"
+          aws_profile = ""  # Empty in CI/CD - uses OIDC credentials from environment
           create_iam_resources = false
           create_deployment_policy = false
           create_deployment_role = false

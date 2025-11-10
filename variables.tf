@@ -26,9 +26,10 @@ variable "aws_region" {
 
 # AWS profile
 variable "aws_profile" {
-  description = "AWS profile to use for authentication (defaults to deploy-config)"
+  description = "AWS profile to use for authentication (defaults to deploy-config). Set to empty string in CI/CD to use environment variables."
   type        = string
   default     = "deploy-config"
+  # Allow empty string for CI/CD environments that use OIDC
 }
 
 # Common tags

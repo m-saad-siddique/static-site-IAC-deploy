@@ -12,12 +12,23 @@
 #   }
 # }
 
+# Local value to determine if profile should be used
+# In CI/CD, aws_profile is empty string, so we omit the profile attribute
+locals {
+  # Only use profile if it's not empty (for local deployments)
+  # In CI/CD, credentials come from environment variables (AWS_ACCESS_KEY_ID, etc.)
+  use_profile = var.aws_profile != "" && var.aws_profile != null
+}
+
 # Configure AWS provider
 # Uses AWS_PROFILE environment variable set by deployment scripts
 # Default profile name: deploy-config (can be overridden with AWS_PROFILE_NAME env var)
+# In CI/CD (GitHub Actions), profile is empty and credentials come from OIDC
 provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
+  region = var.aws_region
+  # Conditionally set profile - only if use_profile is true
+  # When false, Terraform will use credentials from environment variables
+  profile = local.use_profile ? var.aws_profile : null
 
   # Optional: Set default tags for all resources
   default_tags {

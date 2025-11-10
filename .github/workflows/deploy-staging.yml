@@ -60,6 +60,7 @@ jobs:
           # Create temporary tfvars file with environment-specific values
           cat > /tmp/staging.tfvars <<EOF
           environment = "staging"
+          aws_profile = ""  # Empty in CI/CD - uses OIDC credentials from environment
           create_iam_resources = true
           create_deployment_policy = true
           create_deployment_role = true
