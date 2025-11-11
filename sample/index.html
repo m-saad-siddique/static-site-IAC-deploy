@@ -50,14 +50,17 @@
 
     .content {
       padding: 2rem;
+      /* max-width: 1000px; */
+      margin: 0 auto;
     }
 
     .toc {
       background: #f8f9fa;
       border-left: 4px solid #667eea;
-      padding: 1.5rem;
+      padding: 2rem;
       margin: 2rem 0;
-      border-radius: 6px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .toc h2 {
@@ -86,68 +89,130 @@
     }
 
     section {
-      margin-bottom: 3rem;
+      margin-bottom: 4rem;
       scroll-margin-top: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    section:last-child {
+      border-bottom: none;
     }
 
     h2 {
       color: #667eea;
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      margin-top: 2rem;
+      padding-bottom: 0.75rem;
       border-bottom: 3px solid #667eea;
+      font-weight: 700;
     }
 
     h3 {
       color: #764ba2;
-      font-size: 1.4rem;
-      margin: 1.5rem 0 1rem;
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      font-weight: 600;
+      padding-left: 0.5rem;
+      border-left: 4px solid #764ba2;
     }
 
     h4 {
       color: #555;
-      font-size: 1.1rem;
-      margin: 1rem 0 0.5rem;
+      font-size: 1.2rem;
+      margin: 1.5rem 0 0.75rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 1rem 0;
+      line-height: 1.8;
+      font-size: 1.05rem;
     }
 
     .info-box {
       background: #e7f3ff;
       border-left: 4px solid #2196F3;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 4px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .warning-box {
       background: #fff3cd;
       border-left: 4px solid #ffc107;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 4px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .success-box {
       background: #d4edda;
       border-left: 4px solid #28a745;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 4px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .code-block {
       background: #2d2d2d;
       color: #f8f8f2;
-      padding: 1rem;
-      border-radius: 6px;
+      padding: 1.5rem;
+      border-radius: 8px;
       overflow-x: auto;
-      margin: 1rem 0;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      white-space: pre;
+      tab-size: 2;
+      -moz-tab-size: 2;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #404040;
     }
 
     .code-block code {
       color: #f8f8f2;
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      white-space: pre;
+      overflow-wrap: anywhere;
+    }
+
+    /* Better spacing for code blocks */
+    .code-block + p,
+    p + .code-block,
+    .code-block + ul,
+    ul + .code-block {
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .code-block {
+        padding: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: pre;
+        word-wrap: break-word;
+      }
+      
+      .code-block code {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
     }
 
     .step-list {
@@ -181,19 +246,29 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 1rem 0;
+      margin: 1.5rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     table th {
       background: #667eea;
       color: white;
-      padding: 1rem;
+      padding: 1.25rem;
       text-align: left;
+      font-weight: 600;
+      font-size: 1.05rem;
     }
 
     table td {
-      padding: 1rem;
+      padding: 1.25rem;
       border-bottom: 1px solid #dee2e6;
+      background: white;
+    }
+
+    table tr:last-child td {
+      border-bottom: none;
     }
 
     table tr:hover {
@@ -205,7 +280,8 @@
       border-left: 4px solid #667eea;
       padding: 1.5rem;
       margin: 1.5rem 0;
-      border-radius: 4px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .flow-step {
@@ -228,12 +304,19 @@
     }
 
     ul, ol {
-      margin-left: 1.5rem;
-      margin-top: 0.5rem;
+      margin-left: 2rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
     }
 
     li {
-      margin: 0.5rem 0;
+      margin: 0.75rem 0;
+      line-height: 1.8;
+    }
+
+    ul li, ol li {
+      padding-left: 0.5rem;
     }
 
     footer {
@@ -244,13 +327,57 @@
       border-top: 1px solid #dee2e6;
     }
 
+    /* Better spacing for sections */
+    section > p:first-of-type {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+
+    /* Clear visual separation */
+    .code-block + h3,
+    .code-block + h4,
+    h3 + .code-block,
+    h4 + .code-block {
+      margin-top: 2rem;
+    }
+
+    /* Better table of contents spacing */
+    .toc li {
+      padding: 0.5rem 0;
+      line-height: 1.8;
+    }
+
+    .toc a {
+      display: block;
+      padding: 0.25rem 0;
+    }
+
     @media (max-width: 768px) {
       header h1 {
         font-size: 1.8rem;
       }
 
       .content {
+        padding: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+
+      h3 {
+        font-size: 1.3rem;
+      }
+
+      section {
+        padding: 1.5rem 0;
+        margin-bottom: 3rem;
+      }
+
+      .code-block {
         padding: 1rem;
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -258,8 +385,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>🚀 WebGL Deployment Guide</h1>
-      <p>Complete Tutorial - Terraform + S3 + CloudFront with CI/CD</p>
+      <h1>🚀 Static Site Deployment Tutorial</h1>
+      <p>Learn Infrastructure as Code with Terraform + AWS S3 + CloudFront</p>
     </header>
 
     <div class="content">
@@ -267,368 +394,1985 @@
       <section id="toc" class="toc">
         <h2>📑 Table of Contents</h2>
         <ul>
-          <li><a href="#about-project">1. About the Project</a></li>
-          <li><a href="#about-services">2. About the Services</a></li>
-          <li><a href="#local-setup">3. Local Setup & AWS Keys</a></li>
-          <li><a href="#deploy-local">4. Deploy to Dev (Local)</a></li>
-          <li><a href="#cicd-setup">5. CI/CD Setup (GitHub Actions)</a></li>
-          <li><a href="#workflows">6. Workflows & Environments</a></li>
-          <li><a href="#troubleshooting">7. Troubleshooting</a></li>
+          <li><a href="#what-is-terraform">1. What is Terraform?</a></li>
+          <li><a href="#about-project">2. About This Project</a></li>
+          <li><a href="#best-structure">3. Best Practices: Project Structure</a></li>
+          <li><a href="#environments-workspaces">4. How to Handle Environments & Workspaces</a></li>
+          <li><a href="#aws-services">5. Understanding AWS Services</a></li>
+          <li><a href="#code-snippets">6. Code Snippets: Configuring Different Services</a></li>
+          <li><a href="#configure-aws-local">7. Configure AWS on Local Machine</a></li>
+          <li><a href="#prerequisites">8. Prerequisites & Setup</a></li>
+          <li><a href="#step1-initialize">9. Step 1: Initialize Terraform</a></li>
+          <li><a href="#step2-plan">10. Step 2: Plan Your Deployment</a></li>
+          <li><a href="#step3-apply">11. Step 3: Apply Infrastructure</a></li>
+          <li><a href="#step4-upload">12. Step 4: Upload Your Static Site</a></li>
+          <li><a href="#step5-verify">13. Step 5: Verify Deployment</a></li>
+          <li><a href="#cicd-setup">14. CI/CD Setup (Advanced)</a></li>
+          <li><a href="#best-practices">15. Best Practices & Recommendations</a></li>
+          <li><a href="#troubleshooting">16. Troubleshooting</a></li>
+          <li><a href="#faq">17. Frequently Asked Questions (FAQ)</a></li>
+          <li><a href="#quick-reference">18. Command Reference</a></li>
+          <li><a href="#additional-resources">19. Additional Resources</a></li>
         </ul>
+      </section>
+
+      <!-- What is Terraform -->
+      <section id="what-is-terraform">
+        <h2>1. Quick Start: What is Terraform?</h2>
+        
+        <p><strong>Terraform</strong> lets you create AWS infrastructure (S3, CloudFront, etc.) by writing code instead of clicking in the AWS Console.</p>
+
+        <h3>Basic Workflow</h3>
+        <div class="code-block">
+<code># 1. Write infrastructure code (.tf files)
+# 2. Run: terraform init    # Downloads AWS provider
+# 3. Run: terraform plan     # Shows what will be created
+# 4. Run: terraform apply    # Actually creates resources</code>
+        </div>
+
+        <h3>Quick Example</h3>
+        <p>Create an S3 bucket with code:</p>
+        <div class="code-block">
+<code># main.tf
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "my-static-site-123"
+}
+
+# Run: terraform init && terraform apply
+# Result: S3 bucket created in AWS!</code>
+        </div>
+
+        <h3>Key Concepts (Quick Reference)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Example</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Provider</strong></td>
+              <td><code>provider "aws"</code></td>
+              <td>Connects to AWS</td>
+            </tr>
+            <tr>
+              <td><strong>Resource</strong></td>
+              <td><code>resource "aws_s3_bucket"</code></td>
+              <td>Creates AWS resource</td>
+            </tr>
+            <tr>
+              <td><strong>Variable</strong></td>
+              <td><code>variable "bucket_name"</code></td>
+              <td>Makes code reusable</td>
+            </tr>
+            <tr>
+              <td><strong>Module</strong></td>
+              <td><code>module "s3" { source = "./modules/s3" }</code></td>
+              <td>Reusable code blocks</td>
+            </tr>
+            <tr>
+              <td><strong>Output</strong></td>
+              <td><code>output "url" { value = ... }</code></td>
+              <td>Shows results after deploy</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <strong>💡 In Simple Terms:</strong> Write code → Terraform creates AWS resources → Your site is deployed!
+        </div>
       </section>
 
       <!-- About the Project -->
       <section id="about-project">
-        <h2>1. About the Project</h2>
+        <h2>2. What This Project Does</h2>
         
-        <p>This project provides a complete infrastructure-as-code solution for deploying WebGL applications to AWS using Terraform. It automates the creation and management of:</p>
+        <p>This project deploys static websites to AWS using Terraform. <strong>What you'll actually do:</strong></p>
         
-        <ul>
-          <li><strong>Private S3 Buckets</strong> - Secure storage for WebGL build files</li>
-          <li><strong>CloudFront Distributions</strong> - Global CDN for fast content delivery</li>
-          <li><strong>IAM Roles & Policies</strong> - Secure access for automated deployments</li>
-          <li><strong>Multiple Environments</strong> - Dev, Staging, and Production with isolated state</li>
-        </ul>
-
-        <h3>Key Features</h3>
-        <ul>
-          <li>✅ <strong>Infrastructure as Code</strong> - Everything defined in Terraform</li>
-          <li>✅ <strong>Secure by Default</strong> - Private S3 buckets with OAC (Origin Access Control)</li>
-          <li>✅ <strong>Multi-Environment</strong> - Separate dev, staging, and prod environments</li>
-          <li>✅ <strong>CI/CD Ready</strong> - GitHub Actions workflows included</li>
-          <li>✅ <strong>Workspace Isolation</strong> - Each environment has separate state</li>
-          <li>✅ <strong>Automated Deployment</strong> - Upload and CloudFront invalidation in one command</li>
-        </ul>
-
-        <h3>Project Structure</h3>
+        <h3>What Gets Created</h3>
         <div class="code-block">
-<code>static-site-deploy/
-├── main.tf              # Root Terraform configuration
-├── variables.tf          # Variable definitions
-├── outputs.tf           # Output values
-├── modules/             # Reusable modules
-│   ├── s3/              # S3 bucket module
-│   ├── cloudfront/      # CloudFront module
-│   └── iam/             # IAM roles/policies module
-├── environments/        # Environment configurations
-│   ├── dev/
-│   ├── staging/
-│   └── prod/
-├── scripts/             # Deployment helper scripts
-└── .github/workflows/   # CI/CD workflows</code>
+<code># When you run: terraform apply
+
+✅ S3 Bucket (private)      → Stores your HTML/CSS/JS files
+✅ CloudFront Distribution  → Serves files globally via CDN
+✅ Security (OAC)            → Only CloudFront can access S3
+✅ HTTPS URL                → Your site is live!</code>
+        </div>
+
+        <h3>Project Files You'll Use</h3>
+        <div class="code-block">
+<code>webgl-deploy/
+├── main.tf                 # Main config (uses modules)
+├── variables.tf            # Configurable values
+├── environments/dev/       # Dev settings
+│   └── terraform.tfvars    # Edit this for your config
+└── modules/                # Reusable code
+    ├── s3/                # S3 bucket code
+    └── cloudfront/        # CloudFront code</code>
+        </div>
+
+        <h3>Quick Workflow</h3>
+        <div class="code-block">
+<code># 1. Initialize Terraform
+terraform init
+
+# 2. Plan deployment
+terraform plan -var-file=environments/dev/terraform.tfvars
+
+# 3. Apply infrastructure
+terraform apply -var-file=environments/dev/terraform.tfvars
+
+# 4. Upload files
+BUCKET=$(terraform output -raw s3_bucket_id)
+aws s3 sync ./build s3://$BUCKET/ --delete
+
+# 5. Get URL
+terraform output deployment_url</code>
+        </div>
+
+        <div class="success-box">
+          <strong>🎯 Result:</strong> Your static site is live on a CloudFront URL in about 5 minutes!
         </div>
       </section>
 
-      <!-- About the Services -->
-      <section id="about-services">
-        <h2>2. About the Services</h2>
+      <!-- Best Practices: Project Structure -->
+      <section id="best-structure">
+        <h2>3. Project Structure (Quick Guide)</h2>
+        
+        <h3>📁 File Organization</h3>
+        <div class="code-block">
+<code>webgl-deploy/
+├── main.tf              # Uses modules to create resources
+├── variables.tf         # Configurable values
+├── outputs.tf           # Shows URLs after deploy
+├── environments/
+│   └── dev/terraform.tfvars  # Your settings
+└── modules/             # Reusable code
+    ├── s3/              # Creates S3 bucket
+    └── cloudfront/       # Creates CloudFront</code>
+        </div>
 
-        <h3>Amazon S3 (Simple Storage Service)</h3>
-        <p><strong>Purpose:</strong> Stores your WebGL build files (HTML, JS, WASM, assets)</p>
+        <h3>How to Use Files</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>What You Do</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>environments/dev/terraform.tfvars</code></td>
+              <td>Edit this to change settings (bucket name, region, etc.)</td>
+            </tr>
+            <tr>
+              <td><code>main.tf</code></td>
+              <td>Uses modules - usually don't need to edit</td>
+            </tr>
+            <tr>
+              <td><code>modules/s3/main.tf</code></td>
+              <td>Edit if you need to customize S3 bucket</td>
+            </tr>
+            <tr>
+              <td><code>scripts/*.sh</code></td>
+              <td>Optional helper scripts (see manual steps in tutorial)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Quick Example: Change Bucket Name</h3>
+        <div class="code-block">
+<code># Edit: environments/dev/terraform.tfvars
+bucket_name = "my-custom-bucket-name"
+
+# Then deploy
+./scripts/apply.sh dev</code>
+        </div>
+
+        <h3>Essential Rules</h3>
         <ul>
-          <li><strong>Private Bucket</strong> - Not publicly accessible</li>
-          <li><strong>Server-Side Encryption</strong> - AES256 encryption enabled</li>
-          <li><strong>Versioning</strong> - Optional (enabled in staging/prod)</li>
-          <li><strong>CORS</strong> - Configured for WebGL applications</li>
+          <li>✅ <strong>Never commit</strong> <code>terraform.tfvars</code> with real secrets</li>
+          <li>✅ <strong>Always run</strong> <code>terraform plan</code> before <code>apply</code></li>
+          <li>✅ <strong>Use modules</strong> - Don't put everything in one file</li>
+          <li>✅ <strong>Format code</strong> - Run <code>terraform fmt</code> before commit</li>
+        </ul>
+      </section>
+
+      <!-- Environments and Workspaces -->
+      <section id="environments-workspaces">
+        <h2>4. Working with Environments</h2>
+        
+        <p>Use different environments (dev, staging, prod) with separate infrastructure. Workspaces keep them isolated.</p>
+
+        <h3>Quick Example</h3>
+        <div class="code-block">
+<code># Deploy to dev
+terraform workspace select dev
+terraform apply -var-file=environments/dev/terraform.tfvars
+
+# Deploy to staging  
+terraform workspace select staging
+terraform apply -var-file=environments/staging/terraform.tfvars
+
+# Deploy to prod
+terraform workspace select prod
+terraform apply -var-file=environments/prod/terraform.tfvars
+
+# Each environment is separate - safe to destroy one!</code>
+        </div>
+
+        <h3>How Workspaces Work</h3>
+        <div class="code-block">
+<code># Workspace = Separate state file per environment
+dev workspace     → .terraform/terraform.tfstate.d/dev/
+staging workspace → S3: terraform-state-staging/...
+prod workspace    → S3: terraform-state-prod/...
+
+# Scripts handle this automatically - you just specify environment!</code>
+        </div>
+
+        <h3>Environment Configuration Files</h3>
+        <div class="code-block">
+<code># Edit: environments/dev/terraform.tfvars
+environment = "dev"
+aws_region  = "us-east-1"
+bucket_name = "my-site-dev"
+
+# Edit: environments/prod/terraform.tfvars  
+environment = "prod"
+aws_region  = "us-east-1"
+bucket_name = "my-site-prod"</code>
+        </div>
+
+        <h3>Practical Commands</h3>
+        <div class="code-block">
+<code># Deploy to different environments
+terraform workspace select dev
+terraform apply -var-file=environments/dev/terraform.tfvars
+
+terraform workspace select staging
+terraform apply -var-file=environments/staging/terraform.tfvars
+
+terraform workspace select prod
+terraform apply -var-file=environments/prod/terraform.tfvars
+
+# View what's deployed
+terraform workspace select dev
+terraform output
+
+# Destroy specific environment
+terraform workspace select dev
+terraform destroy -var-file=environments/dev/terraform.tfvars</code>
+        </div>
+
+        <h3>Manual Workspace Commands (If Needed)</h3>
+        <div class="code-block">
+<code>terraform workspace list        # List all
+terraform workspace show          # Current workspace
+terraform workspace select dev    # Switch workspace</code>
+        </div>
+      </section>
+
+      <!-- Understanding AWS Services -->
+      <section id="aws-services">
+        <h2>5. AWS Services (What They Do)</h2>
+        
+        <h3>Quick Overview</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>What It Does</th>
+              <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>S3</strong></td>
+              <td>Stores your files (HTML, CSS, JS)</td>
+              <td>~$0.023/GB/month</td>
+            </tr>
+            <tr>
+              <td><strong>CloudFront</strong></td>
+              <td>Serves files globally (CDN)</td>
+              <td>~$0.085/GB transfer</td>
+            </tr>
+            <tr>
+              <td><strong>OAC</strong></td>
+              <td>Security - only CloudFront can access S3</td>
+              <td>Free</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>How It Works (Simple)</h3>
+        <div class="code-block">
+<code>1. You upload files → S3 bucket (private)
+2. CloudFront reads from S3 → Serves to users
+3. Users access → CloudFront URL (https://xxx.cloudfront.net)
+4. Result → Fast, secure, global website</code>
+        </div>
+
+        <h3>Why Private S3 + CloudFront?</h3>
+        <ul>
+          <li>✅ <strong>Security</strong> - S3 bucket is private (can't be accessed directly)</li>
+          <li>✅ <strong>Speed</strong> - CloudFront CDN is faster than direct S3</li>
+          <li>✅ <strong>HTTPS</strong> - Free SSL certificate from CloudFront</li>
+          <li>✅ <strong>Global</strong> - Files cached worldwide for fast access</li>
+        </ul>
+
+        <h3>What You Need to Know</h3>
+        <div class="code-block">
+<code># S3 Bucket
+- Stores your static files
+- Private (not publicly accessible)
+- Encrypted by default
+
+# CloudFront
+- Global CDN (Content Delivery Network)
+- Serves files from S3
+- Provides HTTPS URL
+- Takes 15-20 min to deploy
+
+# OAC (Origin Access Control)
+- Security feature
+- Only CloudFront can access S3
+- Configured automatically</code>
+        </div>
+      </section>
+
+      <!-- Code Snippets: Configuring Services -->
+      <section id="code-snippets">
+        <h2>6. Code Snippets: Configuring Different Services</h2>
+        
+        <p>Now let's look at actual Terraform code for configuring each service. These examples show you how to write infrastructure as code.</p>
+
+        <h3>📦 1. S3 Bucket Configuration</h3>
+        <p>Here's how to create a private S3 bucket with security best practices:</p>
+
+        <h4>Basic S3 Bucket</h4>
+        <div class="code-block">
+<code># Create S3 bucket
+resource "aws_s3_bucket" "webgl_bucket" {
+  bucket = "${var.project_name}-${var.environment}-${random_id.bucket_suffix.hex}"
+  
+  # Allow bucket deletion even with objects (useful for dev/staging)
+  force_destroy = true
+  
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}
+
+# Block all public access
+resource "aws_s3_bucket_public_access_block" "webgl_bucket_pab" {
+  bucket = aws_s3_bucket.webgl_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}</code>
+        </div>
+
+        <h4>Enable Encryption</h4>
+        <div class="code-block">
+<code># Server-side encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "webgl_bucket_encryption" {
+  bucket = aws_s3_bucket.webgl_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"  # Free, managed by AWS
+    }
+  }
+}</code>
+        </div>
+
+        <h4>Enable Versioning</h4>
+        <div class="code-block">
+<code># Enable versioning for rollback capability
+resource "aws_s3_bucket_versioning" "webgl_bucket_versioning" {
+  bucket = aws_s3_bucket.webgl_bucket.id
+
+  versioning_configuration {
+    status = var.enable_versioning ? "Enabled" : "Disabled"
+  }
+}</code>
+        </div>
+
+        <h4>Configure CORS (for WebGL/Web Apps)</h4>
+        <div class="code-block">
+<code># CORS configuration for cross-origin requests
+resource "aws_s3_bucket_cors_configuration" "webgl_bucket_cors" {
+  bucket = aws_s3_bucket.webgl_bucket.id
+
+  cors_rule {
+    allowed_origins = ["*"]  # Or specify your domain
+    allowed_methods = ["GET", "HEAD"]
+    allowed_headers = ["*"]
+    max_age_seconds = 3600
+  }
+}</code>
+        </div>
+
+        <h4>S3 Bucket Policy (Allow CloudFront Access)</h4>
+        <div class="code-block">
+<code># Bucket policy that allows only CloudFront to access S3
+resource "aws_s3_bucket_policy" "webgl_bucket_policy" {
+  bucket = aws_s3_bucket.webgl_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontServicePrincipal"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.webgl_bucket.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = var.cloudfront_distribution_arn
+          }
+        }
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.webgl_bucket_pab]
+}</code>
+        </div>
+
+        <h3>🌐 2. CloudFront Distribution Configuration</h3>
+        <p>Here's how to create a CloudFront distribution with Origin Access Control:</p>
+
+        <h4>Create Origin Access Control (OAC)</h4>
+        <div class="code-block">
+<code># Origin Access Control - modern replacement for OAI
+resource "aws_cloudfront_origin_access_control" "webgl_oac" {
+  name                              = "${var.distribution_name}-oac"
+  description                       = "OAC for secure S3 access"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}</code>
+        </div>
+
+        <h4>CloudFront Distribution</h4>
+        <div class="code-block">
+<code># CloudFront distribution
+resource "aws_cloudfront_distribution" "webgl_distribution" {
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+  comment             = "WebGL Distribution for ${var.environment}"
+
+  # Origin - S3 bucket with OAC
+  origin {
+    domain_name              = aws_s3_bucket.webgl_bucket.bucket_regional_domain_name
+    origin_id                = "S3-${aws_s3_bucket.webgl_bucket.id}"
+    origin_access_control_id = aws_cloudfront_origin_access_control.webgl_oac.id
+  }
+
+  # Default cache behavior
+  default_cache_behavior {
+    target_origin_id = "S3-${aws_s3_bucket.webgl_bucket.id}"
+    
+    # Redirect HTTP to HTTPS
+    viewer_protocol_policy = "redirect-to-https"
+    
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
+    cached_methods  = ["GET", "HEAD"]
+    
+    # Use managed cache policy
+    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"  # CachingOptimized
+    
+    # Compress objects automatically
+    compress = true
+    
+    # Cache TTL settings
+    min_ttl     = 0
+    default_ttl = 3600      # 1 hour
+    max_ttl     = 86400    # 1 day
+  }
+
+  # Custom error responses for SPA routing
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+    error_caching_min_ttl = 300
+  }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+    error_caching_min_ttl = 300
+  }
+
+  # Viewer certificate (use CloudFront default)
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  # Restrictions
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}</code>
+        </div>
+
+        <h3>🔐 3. IAM Roles and Policies</h3>
+        <p>Here's how to create IAM roles for CI/CD deployments:</p>
+
+        <h4>IAM Role for GitHub Actions (OIDC)</h4>
+        <div class="code-block">
+<code># IAM role that can be assumed by GitHub Actions
+resource "aws_iam_role" "deployment_role" {
+  name = "${var.project_name}-${var.environment}-deployment-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = "arn:aws:iam::${var.aws_account_id}:oidc-provider/token.actions.githubusercontent.com"
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Environment = var.environment
+    ManagedBy  = "Terraform"
+  }
+}</code>
+        </div>
+
+        <h4>IAM Policy for Deployment</h4>
+        <div class="code-block">
+<code># IAM policy with permissions for S3 and CloudFront
+resource "aws_iam_role_policy" "deployment_policy" {
+  name = "${var.project_name}-${var.environment}-deployment-policy"
+  role = aws_iam_role.deployment_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "${aws_s3_bucket.webgl_bucket.arn}",
+          "${aws_s3_bucket.webgl_bucket.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation",
+          "cloudfront:ListInvalidations"
+        ]
+        Resource = "${aws_cloudfront_distribution.webgl_distribution.arn}"
+      }
+    ]
+  })
+}</code>
+        </div>
+
+        <h3>📝 4. Variables Configuration</h3>
+        <p>Define variables to make your code reusable:</p>
+
+        <h4>Variable Definitions</h4>
+        <div class="code-block">
+<code># variables.tf
+
+# Project name
+variable "project_name" {
+  description = "Name of the project"
+  type        = string
+  default     = "webgl"
+}
+
+# Environment
+variable "environment" {
+  description = "Environment name (dev, staging, prod)"
+  type        = string
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be one of: dev, staging, prod"
+  }
+}
+
+# AWS Region
+variable "aws_region" {
+  description = "AWS region for resources"
+  type        = string
+  default     = "us-east-1"
+}
+
+# S3 Versioning
+variable "enable_s3_versioning" {
+  description = "Enable S3 bucket versioning"
+  type        = bool
+  default     = false
+}
+
+# CloudFront Cache TTL
+variable "default_ttl" {
+  description = "Default TTL for CloudFront cache (in seconds)"
+  type        = number
+  default     = 3600  # 1 hour
+}
+
+# Common Tags
+variable "common_tags" {
+  description = "Common tags for all resources"
+  type        = map(string)
+  default = {
+    Project     = "WebGL Deployment"
+    ManagedBy   = "Terraform"
+  }
+}</code>
+        </div>
+
+        <h4>Environment-Specific Values</h4>
+        <div class="code-block">
+<code># environments/dev/terraform.tfvars
+environment          = "dev"
+aws_region          = "us-east-1"
+enable_s3_versioning = false
+default_ttl         = 3600  # 1 hour (faster iteration)
+
+# environments/prod/terraform.tfvars
+environment          = "prod"
+aws_region          = "us-east-1"
+enable_s3_versioning = true   # Enable for rollback
+default_ttl         = 31536000  # 1 year (longer cache)</code>
+        </div>
+
+        <h3>📤 5. Outputs Configuration</h3>
+        <p>Define outputs to get important values after deployment:</p>
+
+        <div class="code-block">
+<code># outputs.tf
+
+# S3 Bucket ID
+output "s3_bucket_id" {
+  description = "Name of the S3 bucket"
+  value       = aws_s3_bucket.webgl_bucket.id
+}
+
+# CloudFront Distribution Domain
+output "cloudfront_distribution_domain_name" {
+  description = "CloudFront distribution domain name"
+  value       = aws_cloudfront_distribution.webgl_distribution.domain_name
+}
+
+# CloudFront Distribution ID
+output "cloudfront_distribution_id" {
+  description = "CloudFront distribution ID"
+  value       = aws_cloudfront_distribution.webgl_distribution.id
+}
+
+# Full Deployment URL
+output "deployment_url" {
+  description = "Full HTTPS URL to access the site"
+  value       = "https://${aws_cloudfront_distribution.webgl_distribution.domain_name}"
+}
+
+# IAM Role ARN (for CI/CD)
+output "deployment_role_arn" {
+  description = "ARN of the IAM role for deployments"
+  value       = aws_iam_role.deployment_role.arn
+}</code>
+        </div>
+
+        <h3>🧩 6. Using Modules</h3>
+        <p>Organize code into reusable modules:</p>
+
+        <h4>Module Structure</h4>
+        <div class="code-block">
+<code>modules/
+├── s3/
+│   ├── main.tf      # S3 resources
+│   ├── variables.tf # Module inputs
+│   └── outputs.tf   # Module outputs
+└── cloudfront/
+    ├── main.tf
+    ├── variables.tf
+    └── outputs.tf</code>
+        </div>
+
+        <h4>Using a Module</h4>
+        <div class="code-block">
+<code># main.tf - Root module
+
+# Use S3 module
+module "s3" {
+  source = "./modules/s3"
+
+  bucket_name                 = "${var.project_name}-${var.environment}"
+  environment                 = var.environment
+  cloudfront_distribution_arn = module.cloudfront.distribution_arn
+  enable_versioning           = var.enable_s3_versioning
+  enable_cors                 = true
+  common_tags                 = var.common_tags
+}
+
+# Use CloudFront module
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  distribution_name               = "${var.project_name}-${var.environment}"
+  s3_bucket_regional_domain_name  = module.s3.bucket_regional_domain_name
+  default_root_object             = var.default_root_object
+  default_ttl                     = var.default_ttl
+  common_tags                     = var.common_tags
+}</code>
+        </div>
+
+        <h3>🔧 7. Provider Configuration</h3>
+        <p>Configure the AWS provider:</p>
+
+        <div class="code-block">
+<code># versions.tf
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+}
+
+# Provider configuration
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile != "" ? var.aws_profile : null
+
+  default_tags {
+    tags = var.common_tags
+  }
+}</code>
+        </div>
+
+        <h3>🎯 8. Complete Example: Main Configuration</h3>
+        <p>Here's a complete example combining everything:</p>
+
+        <div class="code-block">
+<code># main.tf - Complete example
+
+# Random ID for unique bucket names
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
+
+# S3 Bucket Module
+module "s3" {
+  source = "./modules/s3"
+
+  bucket_name                 = "${var.project_name}-${var.environment}-${random_id.bucket_suffix.hex}"
+  environment                 = var.environment
+  cloudfront_distribution_arn = module.cloudfront.distribution_arn
+  enable_versioning           = var.enable_s3_versioning
+  enable_cors                 = true
+  common_tags                 = var.common_tags
+}
+
+# CloudFront Module
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  distribution_name               = "${var.project_name}-${var.environment}"
+  environment                     = var.environment
+  unique_suffix                   = random_id.bucket_suffix.hex
+  s3_bucket_regional_domain_name  = module.s3.bucket_regional_domain_name
+  default_root_object             = var.default_root_object
+  default_ttl                     = var.default_ttl
+  common_tags                     = var.common_tags
+}
+
+# Outputs
+output "cloudfront_url" {
+  value = "https://${module.cloudfront.distribution_domain_name}"
+}
+
+output "s3_bucket_name" {
+  value = module.s3.bucket_id
+}</code>
+        </div>
+
+        <h3>💡 Best Practices in Code</h3>
+        <ul>
+          <li>✅ <strong>Use Variables</strong> - Don't hardcode values</li>
+          <li>✅ <strong>Add Descriptions</strong> - Document all variables</li>
+          <li>✅ <strong>Use Modules</strong> - Organize code into reusable components</li>
+          <li>✅ <strong>Tag Resources</strong> - Add tags for organization</li>
+          <li>✅ <strong>Validate Inputs</strong> - Use validation blocks</li>
+          <li>✅ <strong>Use Locals</strong> - Calculate values once, reuse multiple times</li>
+          <li>✅ <strong>Add Dependencies</strong> - Use <code>depends_on</code> when needed</li>
         </ul>
 
         <div class="info-box">
-          <strong>🔒 Security:</strong> The S3 bucket is completely private. Users cannot access files directly. Only CloudFront can access the bucket using OAC (Origin Access Control).
-        </div>
-
-        <h3>Amazon CloudFront</h3>
-        <p><strong>Purpose:</strong> Global CDN that serves your WebGL application to users worldwide</p>
-        <ul>
-          <li><strong>Global Distribution</strong> - Content cached at edge locations</li>
-          <li><strong>HTTPS Only</strong> - Automatic HTTP to HTTPS redirect</li>
-          <li><strong>OAC Integration</strong> - Securely accesses private S3 bucket</li>
-          <li><strong>Custom Error Pages</strong> - Handles SPA routing (403/404 → index.html)</li>
-          <li><strong>Automatic Compression</strong> - Gzip compression enabled</li>
-        </ul>
-
-        <h3>Origin Access Control (OAC)</h3>
-        <p><strong>Purpose:</strong> Modern security mechanism replacing OAI (Origin Access Identity)</p>
-        <ul>
-          <li><strong>Secure Access</strong> - Only CloudFront can access S3</li>
-          <li><strong>No Public Access</strong> - S3 bucket remains completely private</li>
-          <li><strong>Automatic</strong> - Configured automatically by Terraform</li>
-        </ul>
-
-        <h3>IAM Roles & Policies</h3>
-        <p><strong>Purpose:</strong> Secure access for automated deployments (CI/CD)</p>
-        <ul>
-          <li><strong>Deployment Policy</strong> - Permissions for S3 upload and CloudFront invalidation</li>
-          <li><strong>IAM Role</strong> - Can be assumed by GitHub Actions (OIDC) or EC2</li>
-          <li><strong>Temporary Credentials</strong> - No permanent keys stored</li>
-        </ul>
-
-        <h3>Architecture Flow</h3>
-        <div class="flow-diagram">
-          <div class="flow-step"><strong>Developer</strong> - Creates WebGL build</div>
-          <div class="flow-step"><strong>Upload</strong> - Files synced to S3 bucket (private)</div>
-          <div class="flow-step"><strong>CloudFront</strong> - Serves files via OAC (secure connection)</div>
-          <div class="flow-step"><strong>Users</strong> - Access via CloudFront URL (fast, global)</div>
+          <strong>💡 Tip:</strong> Start with simple configurations and gradually add complexity. Use modules to keep your code organized and reusable across environments.
         </div>
       </section>
 
-      <!-- Local Setup -->
-      <section id="local-setup">
-        <h2>3. Local Setup & AWS Keys</h2>
+      <!-- Configure AWS Locally -->
+      <section id="configure-aws-local">
+        <h2>7. Configure AWS on Local Machine</h2>
+        
+        <p>Before you can deploy infrastructure with Terraform, you need to configure AWS authentication on your local machine. This section covers everything you need to set up AWS CLI and authenticate with your AWS account.</p>
 
-        <h3>Prerequisites</h3>
+        <h3>📋 Prerequisites</h3>
         <ol class="step-list">
-          <li><strong>AWS CLI</strong> - Install from <a href="https://aws.amazon.com/cli/" target="_blank">aws.amazon.com/cli</a></li>
-          <li><strong>Terraform</strong> - Install from <a href="https://www.terraform.io/downloads" target="_blank">terraform.io/downloads</a></li>
-          <li><strong>AWS Account</strong> - With appropriate permissions</li>
+          <li><strong>AWS Account</strong> - You need an active AWS account</li>
+          <li><strong>AWS CLI</strong> - Command-line tool for interacting with AWS</li>
+          <li><strong>IAM User with Access Keys</strong> - For programmatic access</li>
         </ol>
 
-        <h3>Step 1: Configure AWS Profile</h3>
-        <p>This project uses an AWS profile named <code>deploy-config</code> for authentication.</p>
+        <h3>🔧 Step 1: Install AWS CLI</h3>
+        <p>First, install the AWS Command Line Interface (CLI) on your machine.</p>
 
-        <h4>Interactive Setup (Recommended)</h4>
+        <h4>macOS Installation</h4>
+        <div class="code-block">
+<code># Using Homebrew (recommended)
+brew install awscli
+
+# Or using pip
+pip3 install awscli</code>
+        </div>
+
+        <h4>Linux Installation</h4>
+        <div class="code-block">
+<code># Download and install
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install</code>
+        </div>
+
+        <h4>Windows Installation</h4>
+        <p>Download the AWS CLI MSI installer from <a href="https://aws.amazon.com/cli/" target="_blank">aws.amazon.com/cli</a> and run it.</p>
+
+        <h4>Verify Installation</h4>
+        <div class="code-block">
+<code># Check AWS CLI version
+aws --version
+
+# Should output something like: aws-cli/2.x.x</code>
+        </div>
+
+        <h3>👤 Step 2: Create IAM User and Access Keys</h3>
+        <p>You need an IAM user with programmatic access (access keys) to use with Terraform.</p>
+
+        <h4>Create IAM User in AWS Console</h4>
+        <ol class="step-list">
+          <li>Log in to <a href="https://console.aws.amazon.com" target="_blank">AWS Console</a></li>
+          <li>Navigate to <strong>IAM</strong> → <strong>Users</strong></li>
+          <li>Click <strong>Create user</strong></li>
+          <li>Enter username (e.g., <code>terraform-deploy</code>)</li>
+          <li>Select <strong>Provide user access to the AWS Management Console</strong> (optional) or <strong>Access key - Programmatic access</strong></li>
+          <li>Click <strong>Next</strong></li>
+        </ol>
+
+        <h4>Attach Permissions</h4>
+        <p>Attach policies that grant necessary permissions. For this project, you need:</p>
+        <ul>
+          <li><strong>S3</strong> - Full access (for bucket creation and file uploads)</li>
+          <li><strong>CloudFront</strong> - Full access (for distribution creation and invalidation)</li>
+          <li><strong>IAM</strong> - Limited access (for role creation, if using CI/CD)</li>
+        </ul>
+
+        <div class="code-block">
+<code># Recommended: Attach these managed policies
+- AmazonS3FullAccess
+- CloudFrontFullAccess
+- IAMFullAccess (or create custom policy with least privilege)</code>
+        </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Security Best Practice:</strong> For production, create a custom IAM policy with only the minimum required permissions instead of using full access policies.
+        </div>
+
+        <h4>Create Access Keys</h4>
+        <ol class="step-list">
+          <li>After creating the user, go to the <strong>Security credentials</strong> tab</li>
+          <li>Scroll to <strong>Access keys</strong> section</li>
+          <li>Click <strong>Create access key</strong></li>
+          <li>Select <strong>Command Line Interface (CLI)</strong> as the use case</li>
+          <li>Click <strong>Next</strong> and then <strong>Create access key</strong></li>
+          <li><strong>IMPORTANT:</strong> Download or copy both:
+            <ul>
+              <li><strong>Access Key ID</strong></li>
+              <li><strong>Secret Access Key</strong></li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="warning-box">
+          <strong>🔒 Critical:</strong> The Secret Access Key is shown only once! Save it securely. If you lose it, you'll need to create a new access key.
+        </div>
+
+        <h3>⚙️ Step 3: Configure AWS CLI Profile</h3>
+        <p>This project uses an AWS profile named <code>deploy-config</code> for authentication. You can configure it interactively or non-interactively.</p>
+
+        <h4>Method 1: Interactive Setup (Recommended)</h4>
+        <p>This is the easiest method - AWS CLI will prompt you for each value:</p>
         <div class="code-block">
 <code>aws configure --profile deploy-config</code>
         </div>
 
-        <p>You will be prompted for:</p>
+        <p>You will be prompted to enter:</p>
         <ul>
-          <li><strong>AWS Access Key ID</strong> - Your AWS access key</li>
-          <li><strong>AWS Secret Access Key</strong> - Your AWS secret key</li>
-          <li><strong>Default region</strong> - e.g., <code>us-east-1</code></li>
-          <li><strong>Default output format</strong> - <code>json</code> (recommended)</li>
+          <li><strong>AWS Access Key ID:</strong> Your access key ID (e.g., <code>AKIAIOSFODNN7EXAMPLE</code>)</li>
+          <li><strong>AWS Secret Access Key:</strong> Your secret access key</li>
+          <li><strong>Default region name:</strong> e.g., <code>us-east-1</code> (recommended for CloudFront)</li>
+          <li><strong>Default output format:</strong> <code>json</code> (recommended)</li>
         </ul>
 
-        <h4>Non-Interactive Setup</h4>
+        <h4>Method 2: Non-Interactive Setup</h4>
+        <p>Use this method if you want to configure via command line or scripts:</p>
         <div class="code-block">
-<code>aws configure set aws_access_key_id YOUR_ACCESS_KEY --profile deploy-config
-aws configure set aws_secret_access_key YOUR_SECRET_KEY --profile deploy-config
+<code># Set access key ID
+aws configure set aws_access_key_id YOUR_ACCESS_KEY_ID --profile deploy-config
+
+# Set secret access key
+aws configure set aws_secret_access_key YOUR_SECRET_ACCESS_KEY --profile deploy-config
+
+# Set default region
 aws configure set region us-east-1 --profile deploy-config
+
+# Set output format
 aws configure set output json --profile deploy-config</code>
         </div>
 
-        <h3>Step 2: Verify Profile Configuration</h3>
+        <div class="info-box">
+          <strong>💡 Tip:</strong> Replace <code>YOUR_ACCESS_KEY_ID</code> and <code>YOUR_SECRET_ACCESS_KEY</code> with your actual keys from Step 2.
+        </div>
+
+        <h4>Method 3: Manual Configuration Files</h4>
+        <p>You can also edit the configuration files directly:</p>
+
+        <h5>Edit Credentials File</h5>
         <div class="code-block">
-<code># List all profiles
-aws configure list-profiles
+<code># Open credentials file
+nano ~/.aws/credentials  # or use your preferred editor
 
-# Verify profile exists
-aws configure list-profiles | grep deploy-config
+# Add the following section:
+[deploy-config]
+aws_access_key_id = YOUR_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY</code>
+        </div>
 
-# Test the profile
+        <h5>Edit Config File</h5>
+        <div class="code-block">
+<code># Open config file
+nano ~/.aws/config  # or use your preferred editor
+
+# Add the following section:
+[profile deploy-config]
+region = us-east-1
+output = json</code>
+        </div>
+
+        <div class="warning-box">
+          <strong>🔒 Security:</strong> The credentials file contains sensitive information. Never commit it to version control! It should already be in your <code>.gitignore</code>.
+        </div>
+
+        <h3>✅ Step 4: Verify AWS Configuration</h3>
+        <p>Verify that your AWS profile is configured correctly:</p>
+
+        <h4>List All Profiles</h4>
+        <div class="code-block">
+<code># List all configured profiles
+aws configure list-profiles</code>
+        </div>
+        <p>Output should include <code>deploy-config</code>:</p>
+        <div class="code-block">
+<code>default
+deploy-config</code>
+        </div>
+
+        <h4>Check Profile Configuration</h4>
+        <div class="code-block">
+<code># View profile settings
+aws configure list --profile deploy-config</code>
+        </div>
+
+        <h4>Test Authentication</h4>
+        <div class="code-block">
+<code># Test the profile - this should return your AWS account info
 aws sts get-caller-identity --profile deploy-config</code>
         </div>
 
-        <div class="success-box">
-          <strong>✅ Success:</strong> If the last command returns your AWS account ID, the profile is configured correctly.
+        <p>Expected output:</p>
+        <div class="code-block">
+<code>{
+    "UserId": "AIDAXXXXXXXXXXXXXXXXX",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/terraform-deploy"
+}</code>
         </div>
 
-        <h3>Step 3: Clone Repository</h3>
+        <div class="success-box">
+          <strong>✅ Success!</strong> If you see your account ID and user ARN, your AWS profile is configured correctly and you're ready to use Terraform!
+        </div>
+
+        <h3>🔍 Step 5: Test AWS Access</h3>
+        <p>Test that you have the necessary permissions:</p>
+
+        <h4>Test S3 Access</h4>
+        <div class="code-block">
+<code># List S3 buckets (should work if you have S3 permissions)
+aws s3 ls --profile deploy-config</code>
+        </div>
+
+        <h4>Test IAM Access</h4>
+        <div class="code-block">
+<code># Get your IAM user info
+aws iam get-user --profile deploy-config</code>
+        </div>
+
+        <h3>🌍 Using Different AWS Regions</h3>
+        <p>You can configure different regions for different profiles or override the region per command:</p>
+
+        <div class="code-block">
+<code># Use a different region for a specific command
+aws s3 ls --profile deploy-config --region eu-west-1
+
+# Or set region in environment variable
+export AWS_DEFAULT_REGION=eu-west-1
+aws s3 ls --profile deploy-config</code>
+        </div>
+
+        <h3>🔄 Using a Different Profile Name</h3>
+        <p>If you want to use a different profile name instead of <code>deploy-config</code>:</p>
+
+        <div class="code-block">
+<code># Set environment variable before running scripts
+export AWS_PROFILE_NAME=my-custom-profile
+
+# Then run your scripts normally
+./scripts/plan.sh dev</code>
+        </div>
+
+        <h3>📁 Configuration File Locations</h3>
+        <p>AWS CLI stores configuration in these files:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Location</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>credentials</code></td>
+              <td><code>~/.aws/credentials</code></td>
+              <td>Stores access keys (sensitive!)</td>
+            </tr>
+            <tr>
+              <td><code>config</code></td>
+              <td><code>~/.aws/config</code></td>
+              <td>Stores region and output format</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🔒 Security Best Practices</h3>
+        <ul>
+          <li>✅ <strong>Never Commit Credentials</strong> - Add <code>~/.aws/</code> to <code>.gitignore</code></li>
+          <li>✅ <strong>Use Least Privilege</strong> - Grant only necessary permissions</li>
+          <li>✅ <strong>Rotate Access Keys</strong> - Change keys regularly (every 90 days recommended)</li>
+          <li>✅ <strong>Use IAM Roles</strong> - For production, prefer IAM roles over access keys</li>
+          <li>✅ <strong>Enable MFA</strong> - Use Multi-Factor Authentication for your AWS account</li>
+          <li>✅ <strong>Monitor Usage</strong> - Check CloudTrail logs for unusual activity</li>
+          <li>✅ <strong>Separate Accounts</strong> - Use different AWS accounts for dev/staging/prod</li>
+        </ul>
+
+        <h3>🔧 Troubleshooting</h3>
+
+        <h4>Issue: "Unable to locate credentials"</h4>
+        <p><strong>Solution:</strong> Make sure you've configured the profile:</p>
+        <div class="code-block">
+<code>aws configure --profile deploy-config</code>
+        </div>
+
+        <h4>Issue: "Access Denied"</h4>
+        <p><strong>Solution:</strong> Check that your IAM user has the necessary permissions. Verify with:</p>
+        <div class="code-block">
+<code>aws iam list-attached-user-policies --user-name terraform-deploy --profile deploy-config</code>
+        </div>
+
+        <h4>Issue: "Invalid credentials"</h4>
+        <p><strong>Solution:</strong> Your access keys may have been rotated or deleted. Create new access keys in the IAM console and reconfigure:</p>
+        <div class="code-block">
+<code>aws configure --profile deploy-config</code>
+        </div>
+
+        <h4>Issue: "Profile not found"</h4>
+        <p><strong>Solution:</strong> Verify the profile exists:</p>
+        <div class="code-block">
+<code># List profiles
+aws configure list-profiles
+
+# If deploy-config is missing, configure it
+aws configure --profile deploy-config</code>
+        </div>
+
+        <h3>📋 Quick Reference</h3>
+        <div class="code-block">
+<code># Configure AWS profile
+aws configure --profile deploy-config
+
+# Verify profile
+aws sts get-caller-identity --profile deploy-config
+
+# List all profiles
+aws configure list-profiles
+
+# View profile configuration
+aws configure list --profile deploy-config
+
+# Test S3 access
+aws s3 ls --profile deploy-config
+
+# Use different region
+aws s3 ls --profile deploy-config --region eu-west-1</code>
+        </div>
+
+        <div class="success-box">
+          <strong>✅ Next Steps:</strong> Once AWS is configured, you can proceed to install Terraform and start deploying infrastructure!
+        </div>
+      </section>
+
+      <!-- Prerequisites -->
+      <section id="prerequisites">
+        <h2>8. Prerequisites & Setup</h2>
+        
+        <p>Now that AWS is configured, let's set up the rest of your local environment:</p>
+
+        <h3>Prerequisites</h3>
+        <ol class="step-list">
+          <li><strong>AWS CLI</strong> - ✅ Should be installed and configured (see previous section)</li>
+          <li><strong>Terraform</strong> - Install from <a href="https://www.terraform.io/downloads" target="_blank">terraform.io/downloads</a></li>
+          <li><strong>Git</strong> - For cloning the repository</li>
+        </ol>
+
+        <h3>Install Terraform</h3>
+        <h4>macOS Installation</h4>
+        <div class="code-block">
+<code># Using Homebrew (recommended)
+brew install terraform
+
+# Verify installation
+terraform version</code>
+        </div>
+
+        <h4>Linux Installation</h4>
+        <div class="code-block">
+<code># Download Terraform
+wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+unzip terraform_1.6.0_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+
+# Verify installation
+terraform version</code>
+        </div>
+
+        <h4>Windows Installation</h4>
+        <p>Download Terraform from <a href="https://www.terraform.io/downloads" target="_blank">terraform.io/downloads</a> and add it to your PATH.</p>
+
+        <h3>Clone Repository</h3>
         <div class="code-block">
 <code>git clone https://github.com/your-username/static-site-deploy.git
 cd static-site-deploy</code>
         </div>
 
-        <h3>Step 4: Initialize Terraform</h3>
+        <h3>Verify Setup</h3>
+        <div class="code-block">
+<code># Check AWS CLI
+aws --version
+
+# Check Terraform
+terraform version
+
+# Verify AWS profile
+aws sts get-caller-identity --profile deploy-config</code>
+        </div>
+
+        <div class="success-box">
+          <strong>✅ Ready!</strong> If all commands work, you're ready to start deploying infrastructure!
+        </div>
+      </section>
+
+      <!-- Step 1: Initialize -->
+      <section id="step1-initialize">
+        <h2>9. Step 1: Initialize Terraform</h2>
+        
+        <p>Before you can deploy anything, you need to initialize Terraform. This downloads the AWS provider plugin and sets up your workspace.</p>
+
+        <h3>Manual Steps</h3>
+        <p>Run these commands to initialize Terraform:</p>
+        <div class="code-block">
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Initialize Terraform (downloads AWS provider)
+terraform init
+
+# Check current workspace
+terraform workspace show</code>
+        </div>
+
+        <h3>Expected Output</h3>
+        <div class="code-block">
+<code>Initializing Terraform...
+Downloading AWS provider...
+Terraform has been successfully initialized!
+
+Current workspace: default</code>
+        </div>
+
+        <h3>Quick Script (Optional)</h3>
+        <p>Or use the helper script that does the same:</p>
         <div class="code-block">
 <code>./scripts/init.sh</code>
         </div>
-
-        <p>This will:</p>
-        <ul>
-          <li>Download required Terraform providers</li>
-          <li>Initialize the backend (if configured)</li>
-          <li>Show available workspaces</li>
-        </ul>
       </section>
 
-      <!-- Deploy to Dev (Local) -->
-      <section id="deploy-local">
-        <h2>4. Deploy to Dev Environment (Local)</h2>
+      <!-- Step 2: Plan -->
+      <section id="step2-plan">
+        <h2>10. Step 2: Plan Your Deployment</h2>
+        
+        <p>Before creating resources, always run a plan. This shows you exactly what Terraform will create, modify, or destroy in AWS.</p>
 
-        <h3>Step 1: Plan Deployment</h3>
-        <p>Review what will be created before applying:</p>
+        <h3>Manual Steps</h3>
+        <p>Create a plan to preview what Terraform will create:</p>
+        <div class="code-block">
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Initialize (if using remote backend)
+terraform init -backend-config=backend/dev.hcl
+
+# Select or create workspace
+terraform workspace select dev || terraform workspace new dev
+
+# Create plan with environment variables
+terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan-dev.out</code>
+        </div>
+
+        <h3>What You'll See</h3>
+        <div class="code-block">
+<code>Terraform will perform the following actions:
+
+  # module.s3.aws_s3_bucket.main will be created
+  + resource "aws_s3_bucket" "main" {
+      + bucket = "webgl-deploy-dev-abc123"
+    }
+
+  # module.cloudfront.aws_cloudfront_distribution.main will be created
+  + resource "aws_cloudfront_distribution" "main" {
+      + domain_name = "..."
+    }
+
+Plan: 5 to add, 0 to change, 0 to destroy.</code>
+        </div>
+
+        <h3>Understanding the Symbols</h3>
+        <div class="code-block">
+<code>+  = Will be created
+-  = Will be destroyed  
+~  = Will be modified
+-/+ = Will be destroyed and recreated</code>
+        </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Always review the plan!</strong> Check that the right resources are being created for the correct environment.
+        </div>
+
+        <h3>Quick Script (Optional)</h3>
+        <p>Or use the helper script:</p>
         <div class="code-block">
 <code>./scripts/plan.sh dev</code>
         </div>
+      </section>
 
-        <p>This will:</p>
-        <ul>
-          <li>Select/create <code>dev</code> workspace</li>
-          <li>Show planned infrastructure changes</li>
-          <li>Save plan to <code>tfplan-dev.out</code></li>
-        </ul>
+      <!-- Step 3: Apply -->
+      <section id="step3-apply">
+        <h2>11. Step 3: Apply Infrastructure</h2>
+        
+        <p>After reviewing the plan, apply it to actually create the resources in AWS. This will create your S3 bucket and CloudFront distribution.</p>
 
-        <h3>Step 2: Apply Deployment</h3>
-        <p>Create the infrastructure:</p>
+        <h3>Manual Steps</h3>
+        <p>Apply the plan to create resources in AWS:</p>
+        <div class="code-block">
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Select workspace
+terraform workspace select dev
+
+# Apply using saved plan (recommended)
+terraform apply tfplan-dev.out
+
+# OR apply directly (will prompt for confirmation)
+terraform apply -var-file=environments/dev/terraform.tfvars
+
+# View outputs
+terraform output</code>
+        </div>
+
+        <h3>What Happens</h3>
+        <div class="code-block">
+<code># Terraform will:
+1. Create S3 bucket (takes ~10 seconds)
+2. Create CloudFront distribution (takes ~2 minutes)
+3. Configure security (OAC, policies)
+4. Show you the URLs</code>
+        </div>
+
+        <h3>Expected Output</h3>
+        <div class="code-block">
+<code>aws_s3_bucket.main: Creating...
+aws_s3_bucket.main: Creation complete
+aws_cloudfront_distribution.main: Creating...
+aws_cloudfront_distribution.main: Creation complete
+
+Apply complete! Resources: 5 added.
+
+Outputs:
+s3_bucket_id = "webgl-deploy-dev-abc123"
+deployment_url = "https://d1234567890.cloudfront.net"</code>
+        </div>
+
+        <div class="warning-box">
+          <strong>⏱️ Wait Time:</strong> CloudFront takes 15-20 minutes to fully deploy. URL works immediately but may show "not ready" until complete.
+        </div>
+
+        <h3>Quick Script (Optional)</h3>
+        <p>Or use the helper script:</p>
         <div class="code-block">
 <code>./scripts/apply.sh dev</code>
         </div>
+      </section>
 
-        <p>This will:</p>
-        <ul>
-          <li>Create S3 bucket (private)</li>
-          <li>Create CloudFront distribution</li>
-          <li>Configure OAC for secure access</li>
-          <li>Display outputs (bucket name, CloudFront URL)</li>
-        </ul>
+      <!-- Step 4: Upload -->
+      <section id="step4-upload">
+        <h2>12. Step 4: Upload Your Static Site</h2>
+        
+        <p>Now that your infrastructure is ready, upload your static website files (HTML, CSS, JS) to the S3 bucket. Then invalidate the CloudFront cache so users see the latest version.</p>
 
-        <div class="warning-box">
-          <strong>⏱️ Note:</strong> CloudFront distributions take 15-20 minutes to fully deploy. The URL will be available immediately but may show "Distribution not ready" until deployment completes.
-        </div>
-
-        <h3>Step 3: Upload Your WebGL Build</h3>
-        <p>Upload your build files to S3:</p>
+        <h3>Manual Steps</h3>
+        <p>Upload your static site files to S3 and invalidate CloudFront cache:</p>
         <div class="code-block">
-<code>./scripts/upload.sh dev ./WebGLBuild</code>
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Select workspace
+terraform workspace select dev
+
+# Get bucket name from Terraform output
+BUCKET=$(terraform output -raw s3_bucket_id)
+
+# Upload files to S3 (replace ./build with your build directory)
+aws s3 sync ./build s3://$BUCKET/ --delete
+
+# Get CloudFront distribution ID
+DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+
+# Invalidate CloudFront cache
+aws cloudfront create-invalidation \
+  --distribution-id $DIST_ID \
+  --paths "/*"</code>
         </div>
 
-        <p>This will:</p>
-        <ul>
-          <li>Sync files to S3 bucket</li>
-          <li>Create CloudFront invalidation</li>
-          <li>Clear cache so users get latest version</li>
-        </ul>
+        <h3>Common Build Directories</h3>
+        <div class="code-block">
+<code># React/Vue/Angular
+aws s3 sync ./build s3://$BUCKET/ --delete
+aws s3 sync ./dist s3://$BUCKET/ --delete
 
-        <h3>Step 4: View Outputs</h3>
-        <p>Get deployment information:</p>
+# WebGL (Unity/Unreal)
+aws s3 sync ./WebGLBuild s3://$BUCKET/ --delete
+
+# Static HTML
+aws s3 sync ./public s3://$BUCKET/ --delete</code>
+        </div>
+
+        <h3>Expected Output</h3>
+        <div class="code-block">
+<code>upload: build/index.html to s3://webgl-deploy-dev-abc123/index.html
+upload: build/style.css to s3://webgl-deploy-dev-abc123/style.css
+...
+CloudFront invalidation created: I1234567890</code>
+        </div>
+
+        <h3>Quick Script (Optional)</h3>
+        <p>Or use the helper script:</p>
+        <div class="code-block">
+<code>./scripts/upload.sh dev ./build</code>
+        </div>
+      </section>
+
+      <!-- Step 5: Verify -->
+      <section id="step5-verify">
+        <h2>13. Step 5: Verify Deployment</h2>
+        
+        <p>Finally, get your CloudFront URL and verify that your site is live and working correctly.</p>
+
+        <h3>Manual Steps</h3>
+        <p>Get your deployment URL and verify everything works:</p>
+        <div class="code-block">
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Select workspace
+terraform workspace select dev
+
+# View all outputs (includes your CloudFront URL)
+terraform output
+
+# Get just the deployment URL
+terraform output -raw deployment_url
+
+# List files in S3 bucket
+BUCKET=$(terraform output -raw s3_bucket_id)
+aws s3 ls s3://$BUCKET/ --recursive</code>
+        </div>
+
+        <h3>Expected Output</h3>
+        <div class="code-block">
+<code>s3_bucket_id = "webgl-deploy-dev-abc123"
+deployment_url = "https://d1234567890.cloudfront.net"
+
+# Copy the deployment_url and open in browser!</code>
+        </div>
+
+        <h3>Quick Tests</h3>
+        <div class="code-block">
+<code># 1. Open URL in browser
+# 2. Check it loads (may take 15-20 min for CloudFront)
+# 3. Check HTTPS (should be secure)
+# 4. Test all pages work</code>
+        </div>
+
+        <h3>Quick Script (Optional)</h3>
+        <p>Or use the helper script:</p>
         <div class="code-block">
 <code>./scripts/outputs.sh dev</code>
         </div>
 
-        <p>Key outputs:</p>
-        <ul>
-          <li><strong>s3_bucket_id</strong> - S3 bucket name</li>
-          <li><strong>cloudfront_distribution_domain_name</strong> - CloudFront URL</li>
-          <li><strong>deployment_url</strong> - Full HTTPS URL to access your app</li>
-        </ul>
-
-        <h3>Complete Local Deployment Workflow</h3>
-        <div class="code-block">
-<code># 1. Initialize (first time only)
-./scripts/init.sh
-
-# 2. Plan deployment
-./scripts/plan.sh dev
-
-# 3. Apply infrastructure
-./scripts/apply.sh dev
-
-# 4. Upload build files
-./scripts/upload.sh dev ./WebGLBuild
-
-# 5. Get deployment URL
-./scripts/outputs.sh dev</code>
+        <div class="success-box">
+          <strong>✅ Done!</strong> Your site is live at the CloudFront URL! 🎉
         </div>
       </section>
 
       <!-- CI/CD Setup -->
       <section id="cicd-setup">
-        <h2>5. CI/CD Setup (GitHub Actions)</h2>
+        <h2>14. Configure CI/CD with GitHub Actions</h2>
+        
+        <p>Set up automated deployments using GitHub Actions. This allows your infrastructure and site to deploy automatically when you push code to GitHub, without storing AWS credentials in GitHub.</p>
 
-        <h3>Overview</h3>
-        <p>CI/CD allows automatic deployment when you push code to GitHub. No manual deployment needed!</p>
-
-        <div class="info-box">
-          <strong>🔐 Security:</strong> CI/CD uses IAM roles (OIDC) instead of AWS keys. No secrets stored in GitHub!
-        </div>
-
-        <h3>Step 1: Configure Remote State & IAM</h3>
-        <p>Update the backend files and create IAM roles with the helper script.</p>
-        <div class="code-block">
-<code># 1. Edit backend/staging.hcl and backend/prod.hcl
-#    - bucket: your Terraform state bucket
-#    - dynamodb_table: your lock table
-
-# 2. Create IAM role + policy for GitHub Actions (one-time)
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-org/your-repo
-./scripts/setup-iam-oidc.sh prod     $AWS_ACCOUNT_ID your-org/your-repo
-</code>
-        </div>
-
-        <h3>Step 2: Add GitHub Secrets</h3>
-        <p>Create repository secrets for:</p>
+        <h3>🎯 What is CI/CD?</h3>
+        <p><strong>CI/CD</strong> (Continuous Integration/Continuous Deployment) automates your deployment process:</p>
         <ul>
-          <li><code>AWS_ACCOUNT_ID</code></li>
-          <li><code>AWS_ROLE_ARN_STAGING</code></li>
-          <li><code>AWS_ROLE_ARN_PROD</code></li>
+          <li>✅ <strong>Automatic Deployment</strong> - Deploys when you push code</li>
+          <li>✅ <strong>No Manual Steps</strong> - No need to run scripts locally</li>
+          <li>✅ <strong>Secure</strong> - Uses OIDC (OpenID Connect) instead of storing AWS keys</li>
+          <li>✅ <strong>Consistent</strong> - Same process every time</li>
+          <li>✅ <strong>Traceable</strong> - All deployments logged in GitHub Actions</li>
         </ul>
 
-        <h3>Step 3: Apply Terraform</h3>
-        <div class="code-block">
-<code># Deploy staging infrastructure with IAM roles
-./scripts/plan.sh staging
-./scripts/apply.sh staging
+        <div class="info-box">
+          <strong>🔐 Security:</strong> CI/CD uses IAM roles with OIDC (OpenID Connect) instead of AWS access keys. This means no secrets are stored in GitHub - authentication happens securely through AWS!
+        </div>
 
-# Deploy production infrastructure with IAM roles
+        <h3>📋 Prerequisites</h3>
+        <p>Before setting up CI/CD, ensure you have:</p>
+        <ul>
+          <li>✅ AWS account configured locally (see Section 7)</li>
+          <li>✅ GitHub repository with your code</li>
+          <li>✅ Admin access to the GitHub repository</li>
+          <li>✅ Terraform infrastructure already deployed (or ready to deploy)</li>
+        </ul>
+
+        <h3>🔧 Step 1: Set Up Remote State Backend</h3>
+        <p>CI/CD requires remote state (S3 + DynamoDB) so multiple deployments can share the same state file.</p>
+
+        <h4>Create Remote State Resources</h4>
+        <p>Use the helper script to create S3 bucket and DynamoDB table for Terraform state:</p>
+        <div class="code-block">
+<code># For staging environment
+./scripts/setup-remote-state.sh staging
+
+# For production environment
+./scripts/setup-remote-state.sh prod</code>
+        </div>
+
+        <p>This script:</p>
+        <ul>
+          <li>Creates S3 bucket for state storage</li>
+          <li>Creates DynamoDB table for state locking</li>
+          <li>Updates <code>backend/staging.hcl</code> or <code>backend/prod.hcl</code> automatically</li>
+        </ul>
+
+        <h4>Verify Backend Configuration</h4>
+        <p>Check that the backend files are updated:</p>
+        <div class="code-block">
+<code># Check staging backend
+cat backend/staging.hcl
+
+# Should show:
+# bucket         = "terraform-state-staging-..."
+# key            = "static-site-deploy/staging/terraform.tfstate"
+# region         = "us-east-1"
+# dynamodb_table = "terraform-state-lock-staging-..."
+# encrypt        = true</code>
+        </div>
+
+        <h3>🔐 Step 2: Create IAM Roles with OIDC</h3>
+        <p>Create IAM roles that GitHub Actions can assume using OIDC (no AWS keys needed!).</p>
+
+        <h4>Get Your AWS Account ID</h4>
+        <div class="code-block">
+<code># Get your AWS account ID
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+echo $AWS_ACCOUNT_ID</code>
+        </div>
+
+        <h4>Get Your GitHub Repository</h4>
+        <p>Your repository should be in the format: <code>owner/repository-name</code></p>
+        <p>Example: <code>myusername/static-site-deploy</code> or <code>myorg/webgl-deploy</code></p>
+
+        <h4>Create IAM Roles</h4>
+        <p>Run the setup script for each environment:</p>
+        <div class="code-block">
+<code># Create staging IAM role
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-username/your-repo
+
+# Create production IAM role
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID your-username/your-repo</code>
+        </div>
+
+        <p><strong>Replace:</strong></p>
+        <ul>
+          <li><code>$AWS_ACCOUNT_ID</code> - Your AWS account ID from the previous step</li>
+          <li><code>your-username/your-repo</code> - Your GitHub repository (owner/repo)</li>
+        </ul>
+
+        <h4>What the Script Creates</h4>
+        <p>The script automatically creates:</p>
+        <ul>
+          <li>✅ <strong>OIDC Provider</strong> - Connects AWS to GitHub (created once per AWS account)</li>
+          <li>✅ <strong>IAM Policy</strong> - Permissions for S3, CloudFront, and Terraform operations</li>
+          <li>✅ <strong>IAM Role</strong> - Can be assumed by GitHub Actions</li>
+          <li>✅ <strong>Trust Policy</strong> - Allows GitHub Actions to assume the role</li>
+        </ul>
+
+        <h4>Capture Role ARNs</h4>
+        <p>The script will output the role ARN. <strong>Copy this value</strong> - you'll need it for GitHub Secrets:</p>
+        <div class="code-block">
+<code>✅ IAM Role created successfully!
+
+Role ARN: arn:aws:iam::123456789012:role/webgl-staging-deployment-role
+
+📝 Next steps:
+1. Add this ARN to GitHub Secrets as: AWS_ROLE_ARN_STAGING
+2. Add AWS_ACCOUNT_ID to GitHub Secrets: 123456789012</code>
+        </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Important:</strong> Save the Role ARN from the script output. You'll need it in the next step!
+        </div>
+
+        <h3>🔑 Step 3: Configure GitHub Secrets</h3>
+        <p>Add secrets to your GitHub repository so workflows can authenticate with AWS.</p>
+
+        <h4>Navigate to GitHub Secrets</h4>
+        <ol class="step-list">
+          <li>Go to your GitHub repository</li>
+          <li>Click <strong>Settings</strong> (top menu)</li>
+          <li>Click <strong>Secrets and variables</strong> → <strong>Actions</strong> (left sidebar)</li>
+          <li>Click <strong>New repository secret</strong></li>
+        </ol>
+
+        <h4>Add Required Secrets</h4>
+        <p>Add these three secrets:</p>
+
+        <h5>Secret 1: AWS_ACCOUNT_ID</h5>
+        <ul>
+          <li><strong>Name:</strong> <code>AWS_ACCOUNT_ID</code></li>
+          <li><strong>Value:</strong> Your AWS account ID (e.g., <code>123456789012</code>)</li>
+        </ul>
+
+        <h5>Secret 2: AWS_ROLE_ARN_STAGING</h5>
+        <ul>
+          <li><strong>Name:</strong> <code>AWS_ROLE_ARN_STAGING</code></li>
+          <li><strong>Value:</strong> The staging role ARN from Step 2 (e.g., <code>arn:aws:iam::123456789012:role/webgl-staging-deployment-role</code>)</li>
+        </ul>
+
+        <h5>Secret 3: AWS_ROLE_ARN_PROD</h5>
+        <ul>
+          <li><strong>Name:</strong> <code>AWS_ROLE_ARN_PROD</code></li>
+          <li><strong>Value:</strong> The production role ARN from Step 2 (e.g., <code>arn:aws:iam::123456789012:role/webgl-prod-deployment-role</code>)</li>
+        </ul>
+
+        <div class="success-box">
+          <strong>✅ Security Note:</strong> GitHub Secrets are encrypted and never exposed in logs. They're only available to GitHub Actions workflows.
+        </div>
+
+        <h3>📝 Step 4: Deploy Infrastructure with Terraform</h3>
+        <p>Deploy your infrastructure using Terraform. The IAM roles are already created, so Terraform can use them.</p>
+
+        <h4>Deploy Staging</h4>
+        <div class="code-block">
+<code># Plan staging deployment
+./scripts/plan.sh staging
+
+# Apply staging infrastructure
+./scripts/apply.sh staging</code>
+        </div>
+
+        <h4>Deploy Production</h4>
+        <div class="code-block">
+<code># Plan production deployment
 ./scripts/plan.sh prod
+
+# Apply production infrastructure
 ./scripts/apply.sh prod</code>
         </div>
 
-        <h3>Step 4: Capture the Role ARNs</h3>
-        <p>The setup script prints the role ARNs. Copy them when <code>setup-iam-oidc.sh</code> finishes or retrieve them later from the IAM console.</p>
+        <h3>⚙️ Step 5: Understand GitHub Actions Workflows</h3>
+        <p>The project includes pre-configured workflows in <code>.github/workflows/</code>:</p>
 
-        <h3>Step 5: Add GitHub Secrets</h3>
+        <h4>Workflow Files</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Triggers On</th>
+              <th>Environment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>deploy-staging.yml</code></td>
+              <td>Push to <code>staging</code> branch</td>
+              <td>Staging</td>
+            </tr>
+            <tr>
+              <td><code>deploy-prod.yml</code></td>
+              <td>Push to <code>main</code> branch</td>
+              <td>Production</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>What Workflows Do</h4>
+        <p>Each workflow performs these steps:</p>
         <ol class="step-list">
-          <li>Go to your GitHub repository</li>
-          <li>Click <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong></li>
-          <li>Click <strong>New repository secret</strong></li>
-          <li>Add these secrets:
-            <ul>
-              <li><strong>Name:</strong> <code>AWS_ACCOUNT_ID</code><br>
-                  <strong>Value:</strong> <code>123456789012</code> (your AWS account ID)</li>
-              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_STAGING</code><br>
-                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-staging-deployment-role</code></li>
-              <li><strong>Name:</strong> <code>AWS_ROLE_ARN_PROD</code><br>
-                  <strong>Value:</strong> <code>arn:aws:iam::ACCOUNT:role/webgl-prod-deployment-role</code></li>
-            </ul>
-          </li>
+          <li><strong>Checkout Code</strong> - Gets code from repository</li>
+          <li><strong>Configure AWS Credentials</strong> - Uses OIDC to assume IAM role</li>
+          <li><strong>Setup Terraform</strong> - Installs Terraform</li>
+          <li><strong>Initialize Terraform</strong> - Downloads providers, configures backend</li>
+          <li><strong>Select Workspace</strong> - Chooses environment workspace</li>
+          <li><strong>Plan & Apply</strong> - Creates/updates infrastructure</li>
+          <li><strong>Upload Files</strong> - Syncs build files to S3</li>
+          <li><strong>Invalidate CloudFront</strong> - Clears cache</li>
         </ol>
 
-        <h3>Step 6: Workflows Are Already Configured!</h3>
-        <p>The CI/CD workflows are already in <code>.github/workflows/</code>:</p>
-        <ul>
-          <li><code>deploy-dev.yml</code> - Deploys on push to <code>dev</code> branch</li>
-          <li><code>deploy-staging.yml</code> - Deploys on push to <code>staging</code> branch</li>
-          <li><code>deploy-prod.yml</code> - Deploys on push to <code>main</code> branch</li>
-        </ul>
-
-        <h3>Step 7: Test CI/CD</h3>
-        <p>Push code to trigger deployment:</p>
+        <h4>Example Workflow Structure</h4>
         <div class="code-block">
-<code># Push to dev branch
-git push origin dev
-# → Triggers dev deployment workflow
+<code>name: Deploy to Staging
 
-# Merge dev to staging
-git checkout staging
-git merge dev
-git push origin staging
-# → Triggers staging deployment workflow
+on:
+  push:
+    branches: [staging]
 
-# Merge staging to main
-git checkout main
-git merge staging
-git push origin main
-# → Triggers production deployment workflow</code>
+permissions:
+  id-token: write   # Required for OIDC
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: us-east-1
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      - name: Terraform Init
+        run: terraform init -backend-config=backend/staging.hcl
+      
+      - name: Terraform Apply
+        run: terraform apply -auto-approve</code>
         </div>
 
-        <h3>How CI/CD Works</h3>
+        <h3>🚀 Step 6: Test CI/CD</h3>
+        <p>Test your CI/CD setup by pushing code to trigger a deployment.</p>
+
+        <h4>Test Staging Deployment</h4>
+        <div class="code-block">
+<code># Make a small change (e.g., update a comment)
+echo "# Test CI/CD" >> README.md
+
+# Commit and push to staging branch
+git add README.md
+git commit -m "Test CI/CD deployment"
+git push origin staging</code>
+        </div>
+
+        <h4>Monitor Deployment</h4>
+        <ol class="step-list">
+          <li>Go to your GitHub repository</li>
+          <li>Click <strong>Actions</strong> tab</li>
+          <li>You should see "Deploy to Staging" workflow running</li>
+          <li>Click on the workflow to see detailed logs</li>
+        </ol>
+
+        <h4>Verify Deployment</h4>
+        <p>Once the workflow completes:</p>
+        <ul>
+          <li>✅ Check the workflow shows green checkmark (success)</li>
+          <li>✅ Verify your site is updated at the CloudFront URL</li>
+          <li>✅ Check workflow logs for any warnings</li>
+        </ul>
+
+        <h3>🔄 How CI/CD Works (OIDC Flow)</h3>
+        <p>Here's how the secure authentication works:</p>
         <div class="flow-diagram">
-          <div class="flow-step"><strong>Push to GitHub</strong> - Code pushed to branch</div>
-          <div class="flow-step"><strong>GitHub Actions Triggers</strong> - Workflow starts automatically</div>
-          <div class="flow-step"><strong>OIDC Authentication</strong> - GitHub requests token from AWS</div>
-          <div class="flow-step"><strong>Assume IAM Role</strong> - Gets temporary credentials</div>
-          <div class="flow-step"><strong>Terraform Deploys</strong> - Creates/updates infrastructure</div>
-          <div class="flow-step"><strong>Upload to S3</strong> - Build files uploaded</div>
-          <div class="flow-step"><strong>Invalidate CloudFront</strong> - Cache cleared</div>
-          <div class="flow-step"><strong>Deployment Complete</strong> - Your app is live!</div>
+          <div class="flow-step"><strong>1. Push to GitHub</strong> - You push code to a branch</div>
+          <div class="flow-step"><strong>2. GitHub Actions Starts</strong> - Workflow is triggered automatically</div>
+          <div class="flow-step"><strong>3. Request OIDC Token</strong> - GitHub generates a JWT token with repo info</div>
+          <div class="flow-step"><strong>4. Assume IAM Role</strong> - AWS validates token and issues temporary credentials</div>
+          <div class="flow-step"><strong>5. Deploy Infrastructure</strong> - Terraform uses credentials to create/update resources</div>
+          <div class="flow-step"><strong>6. Upload Files</strong> - Build files synced to S3</div>
+          <div class="flow-step"><strong>7. Invalidate Cache</strong> - CloudFront cache cleared</div>
+          <div class="flow-step"><strong>8. Deployment Complete</strong> - Your site is live!</div>
+        </div>
+
+        <div class="info-box">
+          <strong>🔐 Security Benefits:</strong>
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <li>No AWS keys stored in GitHub</li>
+            <li>Temporary credentials (expire after 1 hour)</li>
+            <li>Scoped to specific repository</li>
+            <li>Can restrict to specific branches</li>
+            <li>All actions logged in CloudTrail</li>
+          </ul>
+        </div>
+
+        <h3>🌿 Branch Strategy</h3>
+        <p>This project uses a three-branch workflow:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Branch</th>
+              <th>Environment</th>
+              <th>CI/CD</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>dev</code></td>
+              <td>Development</td>
+              <td>Optional</td>
+              <td>Local testing and development</td>
+            </tr>
+            <tr>
+              <td><code>staging</code></td>
+              <td>Staging</td>
+              <td>✅ Auto-deploy</td>
+              <td>Pre-production testing</td>
+            </tr>
+            <tr>
+              <td><code>main</code></td>
+              <td>Production</td>
+              <td>✅ Auto-deploy</td>
+              <td>Live production environment</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🔧 Step 7: Customize Workflows (Optional)</h3>
+        <p>You can customize workflows to match your needs:</p>
+
+        <h4>Change Build Directory</h4>
+        <p>If your build files are in a different directory:</p>
+        <div class="code-block">
+<code># In .github/workflows/deploy-staging.yml
+# Find the "Upload to S3" step and change:
+- name: Upload to S3
+  run: |
+    aws s3 sync ./your-build-directory s3://$BUCKET/ --delete</code>
+        </div>
+
+        <h4>Add Build Step</h4>
+        <p>If you need to build your site before deploying:</p>
+        <div class="code-block">
+<code># Add before "Upload to S3" step:
+- name: Build Static Site
+  run: |
+    npm install
+    npm run build
+    # Or your build commands</code>
+        </div>
+
+        <h4>Add Notifications</h4>
+        <p>Get notified when deployments complete:</p>
+        <div class="code-block">
+<code># Add at the end of workflow:
+- name: Notify on Success
+  if: success()
+  run: |
+    echo "✅ Deployment successful!"
+    # Add Slack/Discord/email notification here</code>
+        </div>
+
+        <h3>🔍 Troubleshooting CI/CD</h3>
+
+        <h4>Issue: "Not authorized to perform sts:AssumeRoleWithWebIdentity"</h4>
+        <p><strong>Solution:</strong></p>
+        <ul>
+          <li>Verify OIDC provider exists: <code>aws iam list-open-id-connect-providers</code></li>
+          <li>Check repository name matches in IAM role trust policy</li>
+          <li>Ensure <code>id-token: write</code> permission is in workflow</li>
+        </ul>
+
+        <h4>Issue: "Role ARN not found"</h4>
+        <p><strong>Solution:</strong></p>
+        <ul>
+          <li>Verify GitHub Secret <code>AWS_ROLE_ARN_STAGING</code> or <code>AWS_ROLE_ARN_PROD</code> exists</li>
+          <li>Check the ARN is correct (no typos)</li>
+          <li>Verify the role exists in AWS: <code>aws iam get-role --role-name webgl-staging-deployment-role</code></li>
+        </ul>
+
+        <h4>Issue: "State lock error"</h4>
+        <p><strong>Solution:</strong></p>
+        <ul>
+          <li>Another deployment might be running - wait for it to complete</li>
+          <li>If stuck, manually unlock: Check DynamoDB table for lock entry</li>
+        </ul>
+
+        <h4>Issue: "Backend configuration not found"</h4>
+        <p><strong>Solution:</strong></p>
+        <ul>
+          <li>Verify <code>backend/staging.hcl</code> or <code>backend/prod.hcl</code> exists</li>
+          <li>Check the file contains valid bucket and table names</li>
+          <li>Ensure remote state resources were created with <code>setup-remote-state.sh</code></li>
+        </ul>
+
+        <h4>Issue: "Workflow not triggering"</h4>
+        <p><strong>Solution:</strong></p>
+        <ul>
+          <li>Check workflow file is in <code>.github/workflows/</code> directory</li>
+          <li>Verify branch name matches workflow trigger (e.g., <code>staging</code> or <code>main</code>)</li>
+          <li>Check GitHub Actions is enabled in repository settings</li>
+        </ul>
+
+        <h3>📋 Quick Reference</h3>
+        <div class="code-block">
+<code># 1. Setup remote state
+./scripts/setup-remote-state.sh staging
+./scripts/setup-remote-state.sh prod
+
+# 2. Get AWS account ID
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# 3. Create IAM roles
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-username/your-repo
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID your-username/your-repo
+
+# 4. Add GitHub Secrets:
+#    - AWS_ACCOUNT_ID
+#    - AWS_ROLE_ARN_STAGING
+#    - AWS_ROLE_ARN_PROD
+
+# 5. Deploy infrastructure
+./scripts/apply.sh staging
+./scripts/apply.sh prod
+
+# 6. Test CI/CD
+git push origin staging  # Triggers staging deployment
+git push origin main     # Triggers production deployment</code>
+        </div>
+
+        <h3>✅ CI/CD Checklist</h3>
+        <div class="success-box">
+          <ul style="margin-left: 1.5rem;">
+            <li>✅ Remote state backend configured (S3 + DynamoDB)</li>
+            <li>✅ IAM roles created with OIDC</li>
+            <li>✅ GitHub Secrets added (AWS_ACCOUNT_ID, role ARNs)</li>
+            <li>✅ Infrastructure deployed with Terraform</li>
+            <li>✅ Workflow files in <code>.github/workflows/</code></li>
+            <li>✅ Tested deployment by pushing to branch</li>
+            <li>✅ Verified deployment in GitHub Actions</li>
+          </ul>
+        </div>
+
+        <div class="success-box">
+          <strong>🎉 Congratulations!</strong> Your CI/CD pipeline is now configured! Every push to <code>staging</code> or <code>main</code> will automatically deploy your infrastructure and site.
         </div>
       </section>
 
       <!-- Workflows & Environments -->
       <section id="workflows">
-        <h2>6. Workflows & Different Environments</h2>
+        <h3>Workflows & Different Environments</h3>
+        
+        <p>This project supports multiple environments (dev, staging, production) with separate infrastructure for each.</p>
 
         <h3>Branch Strategy</h3>
         <p>This project uses a three-branch workflow:</p>
@@ -796,9 +2540,64 @@ git push origin main
         </table>
       </section>
 
+      <!-- Best Practices -->
+      <section id="best-practices">
+        <h2>15. Essential Best Practices</h2>
+        
+        <h3>🔒 Security (Must Do)</h3>
+        <div class="code-block">
+<code># 1. Never commit secrets
+echo "*.tfvars" >> .gitignore
+echo ".aws/" >> .gitignore
+
+# 2. Always plan before apply
+terraform plan -var-file=environments/dev/terraform.tfvars
+terraform apply -var-file=environments/dev/terraform.tfvars
+
+# 3. Use separate environments
+terraform workspace select dev
+terraform apply -var-file=environments/dev/terraform.tfvars</code>
+        </div>
+
+        <h3>📝 Code Quality (Quick Wins)</h3>
+        <div class="code-block">
+<code># Format code before committing
+terraform fmt
+
+# Validate syntax
+terraform validate
+
+# Check what will change
+terraform plan</code>
+        </div>
+
+        <h3>💰 Cost Saving Tips</h3>
+        <div class="code-block">
+<code># Use cheaper CloudFront price class for dev
+# In environments/dev/terraform.tfvars:
+price_class = "PriceClass_100"  # US/Europe only
+
+# Use longer cache for production (fewer requests)
+# In environments/prod/terraform.tfvars:
+default_ttl = 31536000  # 1 year</code>
+        </div>
+
+        <h3>✅ Quick Checklist</h3>
+        <div class="code-block">
+<code>Before deploying:
+□ Run terraform fmt
+□ Run terraform validate  
+□ Run terraform plan (review output)
+□ Test in dev first
+□ Never commit .tfvars with secrets</code>
+        </div>
+      </section>
+
       <!-- Troubleshooting -->
       <section id="troubleshooting">
-        <h2>7. Troubleshooting</h2>
+        <h2>16. Troubleshooting</h2>
+        
+        <p>Common issues and how to resolve them:</p>
 
         <h3>Common Issues</h3>
 
@@ -850,58 +2649,688 @@ aws sts get-caller-identity --profile deploy-config</code>
         </div>
       </section>
 
-      <!-- Quick Reference -->
-      <section>
-        <h2>📚 Quick Reference</h2>
+      <!-- Questions and Answers -->
+      <section id="faq">
+        <h2>17. Frequently Asked Questions (FAQ)</h2>
         
-        <h3>Local Deployment Commands</h3>
-        <div class="code-block">
-<code>./scripts/init.sh              # Initialize Terraform
-./scripts/plan.sh dev            # Plan dev deployment
-./scripts/apply.sh dev           # Deploy to dev
-./scripts/upload.sh dev ./build  # Upload files
-./scripts/outputs.sh dev         # View outputs
-./scripts/destroy.sh dev         # Destroy dev</code>
-        </div>
+        <p>Common questions and answers about Terraform, AWS, and this deployment project.</p>
 
-        <h3>Git Workflow</h3>
-        <div class="code-block">
-<code># Work on feature
-git checkout -b feature/my-feature dev
-# ... make changes ...
-git push origin feature/my-feature
+        <h3>🤔 General Questions</h3>
 
-# Merge to dev
-git checkout dev
-git merge feature/my-feature
-git push origin dev  # → Auto-deploys to dev
+        <h4>Q: What is Infrastructure as Code (IaC)?</h4>
+        <p><strong>A:</strong> Infrastructure as Code is the practice of managing and provisioning infrastructure through machine-readable definition files, rather than through manual processes. Terraform is an IaC tool that lets you define infrastructure in code and version control it.</p>
 
-# Merge to staging
-git checkout staging
-git merge dev
-git push origin staging  # → Auto-deploys to staging
-
-# Merge to main
-git checkout main
-git merge staging
-git push origin main  # → Auto-deploys to prod</code>
-        </div>
-
-        <h3>Documentation Files</h3>
+        <h4>Q: Why use Terraform instead of AWS Console?</h4>
+        <p><strong>A:</strong> Terraform provides:</p>
         <ul>
-          <li><code>README.md</code> - Main documentation</li>
-          <li><code>WORKSPACES_GUIDE.md</code> - Workspace management</li>
-          <li><code>GITHUB_ACTIONS_SETUP.md</code> - CI/CD setup</li>
-          <li><code>IAM_ROLE_GUIDE.md</code> - IAM roles explained</li>
-          <li><code>.github/BRANCH_PROTECTION_SETUP.md</code> - Branch protection</li>
+          <li>✅ Version control for infrastructure</li>
+          <li>✅ Reproducible deployments</li>
+          <li>✅ Ability to review changes before applying</li>
+          <li>✅ Documentation of your infrastructure</li>
+          <li>✅ Multi-cloud support</li>
+          <li>✅ Team collaboration</li>
+        </ul>
+
+        <h4>Q: Do I need to know programming to use Terraform?</h4>
+        <p><strong>A:</strong> No! Terraform uses HCL (HashiCorp Configuration Language), which is declarative and easy to learn. You describe what you want, and Terraform figures out how to create it.</p>
+
+        <h4>Q: How much does this cost?</h4>
+        <p><strong>A:</strong> AWS charges for:</p>
+        <ul>
+          <li><strong>S3:</strong> ~$0.023 per GB/month storage + data transfer</li>
+          <li><strong>CloudFront:</strong> ~$0.085 per GB data transfer (first 10TB)</li>
+          <li><strong>DynamoDB:</strong> ~$0.25 per million write units (for state locking)</li>
+        </ul>
+        <p>For a small static site, expect to pay a few dollars per month. AWS Free Tier may cover some costs for the first year.</p>
+
+        <h3>🔧 Terraform Questions</h3>
+
+        <h4>Q: What's the difference between terraform plan and terraform apply?</h4>
+        <p><strong>A:</strong></p>
+        <ul>
+          <li><strong><code>terraform plan</code>:</strong> Shows what changes will be made without actually making them. Safe to run multiple times.</li>
+          <li><strong><code>terraform apply</code>:</strong> Actually creates, modifies, or destroys resources. This makes real changes to your infrastructure.</li>
+        </ul>
+        <p>Always run <code>plan</code> before <code>apply</code> to review changes!</p>
+
+        <h4>Q: What is a Terraform workspace?</h4>
+        <p><strong>A:</strong> A workspace is a named state container. Each workspace has its own state file, allowing you to manage multiple environments (dev, staging, prod) with the same Terraform code but separate infrastructure.</p>
+
+        <h4>Q: Can I use the same Terraform code for multiple environments?</h4>
+        <p><strong>A:</strong> Yes! That's one of Terraform's strengths. Use:</p>
+        <ul>
+          <li>Different <code>.tfvars</code> files per environment</li>
+          <li>Different workspaces per environment</li>
+          <li>Different backend configurations per environment</li>
+        </ul>
+        <p>This keeps your code DRY (Don't Repeat Yourself).</p>
+
+        <h4>Q: What happens if I delete a resource manually in AWS Console?</h4>
+        <p><strong>A:</strong> Terraform will detect the resource is missing on the next <code>plan</code> or <code>apply</code> and try to recreate it. To sync Terraform state with reality, use <code>terraform refresh</code> or <code>terraform import</code>.</p>
+
+        <h4>Q: How do I update Terraform provider versions?</h4>
+        <p><strong>A:</strong> Update the version constraint in <code>versions.tf</code>:</p>
+        <div class="code-block">
+<code>required_providers {
+  aws = {
+    source  = "hashicorp/aws"
+    version = "~> 5.0"  # Update this
+  }
+}</code>
+        </div>
+        <p>Then run <code>terraform init -upgrade</code> to download the new version.</p>
+
+        <h3>☁️ AWS Questions</h3>
+
+        <h4>Q: Why is my S3 bucket private? Can't I make it public?</h4>
+        <p><strong>A:</strong> This project uses a private S3 bucket with CloudFront for security and performance:</p>
+        <ul>
+          <li>✅ <strong>Security:</strong> Private buckets are more secure</li>
+          <li>✅ <strong>Performance:</strong> CloudFront CDN is faster than direct S3 access</li>
+          <li>✅ <strong>HTTPS:</strong> CloudFront provides free SSL certificates</li>
+          <li>✅ <strong>Cost:</strong> CloudFront data transfer can be cheaper than S3</li>
+        </ul>
+        <p>You can make S3 public, but it's not recommended for production.</p>
+
+        <h4>Q: What is Origin Access Control (OAC)?</h4>
+        <p><strong>A:</strong> OAC is AWS's modern way to securely connect CloudFront to private S3 buckets. It replaces the older OAI (Origin Access Identity). OAC ensures only CloudFront can access your S3 bucket, keeping it private while allowing CloudFront to serve content.</p>
+
+        <h4>Q: How long does CloudFront take to deploy?</h4>
+        <p><strong>A:</strong> CloudFront distributions typically take 15-20 minutes to fully deploy globally. The URL is available immediately, but it may show "Distribution not ready" until deployment completes.</p>
+
+        <h4>Q: Why do I need DynamoDB for Terraform state?</h4>
+        <p><strong>A:</strong> DynamoDB provides state locking, which prevents multiple people (or CI/CD runs) from modifying infrastructure simultaneously. This prevents conflicts and corruption of your Terraform state.</p>
+
+        <h4>Q: Can I use a custom domain with CloudFront?</h4>
+        <p><strong>A:</strong> Yes! You need to:</p>
+        <ol>
+          <li>Request an SSL certificate in AWS Certificate Manager (ACM)</li>
+          <li>Add the certificate ARN to your CloudFront configuration</li>
+          <li>Add your domain as an alias in CloudFront</li>
+          <li>Create a CNAME record in your DNS pointing to CloudFront</li>
+        </ol>
+
+        <h3>🔐 Security Questions</h3>
+
+        <h4>Q: Is it safe to store Terraform state in S3?</h4>
+        <p><strong>A:</strong> Yes, if you:</p>
+        <ul>
+          <li>✅ Enable encryption at rest</li>
+          <li>✅ Enable versioning</li>
+          <li>✅ Use bucket policies to restrict access</li>
+          <li>✅ Never commit state files to version control</li>
+        </ul>
+        <p>State files may contain sensitive data, so always encrypt them.</p>
+
+        <h4>Q: How does OIDC authentication work?</h4>
+        <p><strong>A:</strong> OIDC (OpenID Connect) allows GitHub Actions to request temporary AWS credentials without storing AWS keys:</p>
+        <ol>
+          <li>GitHub generates a JWT token with repository information</li>
+          <li>AWS validates the token against the OIDC provider</li>
+          <li>AWS issues temporary credentials (valid for 1 hour)</li>
+          <li>GitHub Actions uses these credentials to deploy</li>
+        </ol>
+        <p>This is more secure than storing long-lived AWS access keys.</p>
+
+        <h4>Q: Should I use the same AWS account for dev, staging, and prod?</h4>
+        <p><strong>A:</strong> For production, it's best practice to use separate AWS accounts:</p>
+        <ul>
+          <li>✅ Better security isolation</li>
+          <li>✅ Easier cost tracking</li>
+          <li>✅ Prevents accidental production changes</li>
+          <li>✅ Easier compliance and auditing</li>
+        </ul>
+        <p>For learning or small projects, separate accounts per environment is fine.</p>
+
+        <h3>🚀 Deployment Questions</h3>
+
+        <h4>Q: How do I update my static site after deployment?</h4>
+        <p><strong>A:</strong> Upload new files:</p>
+        <div class="code-block">
+<code># Local deployment
+./scripts/upload.sh dev ./build
+
+# Or manually
+aws s3 sync ./build s3://your-bucket/ --delete
+aws cloudfront create-invalidation --distribution-id YOUR_DIST_ID --paths "/*"</code>
+        </div>
+        <p>Or push to GitHub if CI/CD is configured - it will deploy automatically!</p>
+
+        <h4>Q: Why do I need to invalidate CloudFront cache?</h4>
+        <p><strong>A:</strong> CloudFront caches files at edge locations. After uploading new files to S3, you need to invalidate the cache so users get the latest version. Without invalidation, users might see old cached content.</p>
+
+        <h4>Q: Can I deploy to multiple regions?</h4>
+        <p><strong>A:</strong> CloudFront is global, so you don't need multiple regions. However, if you want S3 buckets in multiple regions, you can:</p>
+        <ul>
+          <li>Create separate Terraform configurations per region</li>
+          <li>Use Terraform workspaces with region-specific backends</li>
+          <li>Use CloudFront with multiple origins</li>
+        </ul>
+
+        <h4>Q: How do I rollback a deployment?</h4>
+        <p><strong>A:</strong> Several options:</p>
+        <ul>
+          <li><strong>Upload previous version:</strong> Upload the previous build files to S3</li>
+          <li><strong>Terraform rollback:</strong> Use <code>terraform state</code> commands or restore from state backup</li>
+          <li><strong>S3 versioning:</strong> If enabled, restore previous object versions</li>
+        </ul>
+
+        <h3>🛠️ Troubleshooting Questions</h3>
+
+        <h4>Q: Terraform says "state is locked" - what do I do?</h4>
+        <p><strong>A:</strong> Another operation is running. Options:</p>
+        <ul>
+          <li>Wait for the other operation to complete</li>
+          <li>If stuck, manually unlock: <code>terraform force-unlock LOCK_ID</code></li>
+          <li>For remote state, check DynamoDB table for lock entries</li>
+        </ul>
+        <p><strong>Warning:</strong> Only unlock if you're sure no operation is running!</p>
+
+        <h4>Q: My CloudFront URL shows "Access Denied" - why?</h4>
+        <p><strong>A:</strong> Common causes:</p>
+        <ul>
+          <li>CloudFront distribution not fully deployed (wait 15-20 minutes)</li>
+          <li>OAC not properly configured</li>
+          <li>S3 bucket policy missing or incorrect</li>
+          <li>No files uploaded to S3 yet</li>
+        </ul>
+
+        <h4>Q: How do I see what Terraform will change before applying?</h4>
+        <p><strong>A:</strong> Always use <code>terraform plan</code>:</p>
+        <div class="code-block">
+<code>./scripts/plan.sh dev  # Shows planned changes</code>
+        </div>
+        <p>The plan shows what will be created (+), modified (~), or destroyed (-).</p>
+
+        <h4>Q: Can I destroy everything and start over?</h4>
+        <p><strong>A:</strong> Yes, but be careful:</p>
+        <div class="code-block">
+<code># Destroy specific environment
+./scripts/destroy.sh dev
+
+# This removes ALL resources in that environment</code>
+        </div>
+        <p><strong>Warning:</strong> This is irreversible! Make sure you have backups if needed.</p>
+
+        <h3>💡 Tips & Tricks</h3>
+
+        <h4>Q: How can I speed up Terraform operations?</h4>
+        <p><strong>A:</strong></p>
+        <ul>
+          <li>Use <code>-parallelism</code> flag to run operations in parallel</li>
+          <li>Cache Terraform providers between runs</li>
+          <li>Use targeted operations: <code>terraform apply -target=resource</code></li>
+          <li>Avoid unnecessary <code>terraform refresh</code> calls</li>
+        </ul>
+
+        <h4>Q: How do I share Terraform state with my team?</h4>
+        <p><strong>A:</strong> Use remote state (S3 backend):</p>
+        <ul>
+          <li>Configure <code>backend/*.hcl</code> files</li>
+          <li>Use DynamoDB for state locking</li>
+          <li>All team members use the same backend</li>
+          <li>State is automatically shared and locked</li>
+        </ul>
+
+        <h4>Q: Can I use this for non-WebGL static sites?</h4>
+        <p><strong>A:</strong> Absolutely! This works for any static site:</p>
+        <ul>
+          <li>React, Vue, Angular apps</li>
+          <li>Jekyll, Hugo, Gatsby sites</li>
+          <li>Plain HTML/CSS/JS</li>
+          <li>Documentation sites</li>
+          <li>Any static content</li>
+        </ul>
+
+        <h4>Q: How do I add more AWS services?</h4>
+        <p><strong>A:</strong> Add resources to your Terraform configuration:</p>
+        <ul>
+          <li>Create new <code>.tf</code> files or add to existing ones</li>
+          <li>Use Terraform modules for reusable components</li>
+          <li>Update variables and outputs as needed</li>
+          <li>Test in dev environment first</li>
+        </ul>
+
+        <div class="info-box">
+          <strong>💡 Have More Questions?</strong> Check the official documentation:
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+            <li><a href="https://www.terraform.io/docs" target="_blank">Terraform Documentation</a></li>
+            <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs" target="_blank">AWS Provider Documentation</a></li>
+            <li><a href="https://docs.aws.amazon.com/" target="_blank">AWS Documentation</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Quick Reference -->
+      <section id="quick-reference">
+        <h2>18. Command Reference</h2>
+        
+        <h3>🔧 Terraform Commands</h3>
+        
+        <h4>Basic Commands</h4>
+        <div class="code-block">
+<code># Initialize Terraform
+terraform init
+terraform init -backend-config=backend/dev.hcl  # With remote backend
+
+# Format code
+terraform fmt                    # Format all .tf files
+terraform fmt -recursive        # Format recursively
+
+# Validate configuration
+terraform validate               # Check syntax
+
+# Show current state
+terraform show                   # Show current state
+terraform state list            # List all resources
+terraform state show resource   # Show specific resource</code>
+        </div>
+
+        <h4>Workspace Commands</h4>
+        <div class="code-block">
+<code># List workspaces
+terraform workspace list
+
+# Show current workspace
+terraform workspace show
+
+# Select workspace
+terraform workspace select dev
+
+# Create new workspace
+terraform workspace new staging
+
+# Delete workspace
+terraform workspace delete staging</code>
+        </div>
+
+        <h4>Plan & Apply Commands</h4>
+        <div class="code-block">
+<code># Create plan
+terraform plan
+terraform plan -var-file=environments/dev/terraform.tfvars
+terraform plan -out=tfplan.out  # Save plan to file
+
+# Apply changes
+terraform apply
+terraform apply -var-file=environments/dev/terraform.tfvars
+terraform apply tfplan.out      # Apply saved plan
+terraform apply -auto-approve   # Skip confirmation
+
+# Destroy resources
+terraform destroy
+terraform destroy -var-file=environments/dev/terraform.tfvars
+terraform destroy -target=resource  # Destroy specific resource</code>
+        </div>
+
+        <h4>Output Commands</h4>
+        <div class="code-block">
+<code># View all outputs
+terraform output
+
+# View specific output
+terraform output deployment_url
+terraform output -raw s3_bucket_id  # Raw value (no quotes)
+
+# View outputs in JSON
+terraform output -json</code>
+        </div>
+
+        <h4>State Management</h4>
+        <div class="code-block">
+<code># List resources in state
+terraform state list
+
+# Show resource details
+terraform state show aws_s3_bucket.main
+
+# Remove resource from state (doesn't destroy it)
+terraform state rm aws_s3_bucket.main
+
+# Import existing resource
+terraform import aws_s3_bucket.main bucket-name
+
+# Move resource
+terraform state mv old_address new_address
+
+# Unlock state (if stuck)
+terraform force-unlock LOCK_ID</code>
+        </div>
+
+        <h3>☁️ AWS CLI Commands</h3>
+        
+        <h4>Configuration</h4>
+        <div class="code-block">
+<code># Configure AWS CLI
+aws configure
+aws configure --profile deploy-config
+
+# List profiles
+aws configure list-profiles
+
+# Set default profile
+export AWS_PROFILE=deploy-config
+
+# Verify configuration
+aws sts get-caller-identity</code>
+        </div>
+
+        <h4>S3 Commands</h4>
+        <div class="code-block">
+<code># List buckets
+aws s3 ls
+
+# List objects in bucket
+aws s3 ls s3://bucket-name/
+aws s3 ls s3://bucket-name/ --recursive
+
+# Upload file
+aws s3 cp file.txt s3://bucket-name/
+
+# Upload directory
+aws s3 sync ./build s3://bucket-name/
+aws s3 sync ./build s3://bucket-name/ --delete  # Delete removed files
+
+# Download file
+aws s3 cp s3://bucket-name/file.txt ./
+
+# Download directory
+aws s3 sync s3://bucket-name/ ./download/
+
+# Delete file
+aws s3 rm s3://bucket-name/file.txt
+
+# Delete all files
+aws s3 rm s3://bucket-name/ --recursive
+
+# Create bucket
+aws s3 mb s3://bucket-name
+
+# Delete bucket
+aws s3 rb s3://bucket-name
+aws s3 rb s3://bucket-name --force  # Delete with contents</code>
+        </div>
+
+        <h4>CloudFront Commands</h4>
+        <div class="code-block">
+<code># List distributions
+aws cloudfront list-distributions
+
+# Get distribution details
+aws cloudfront get-distribution --id DISTRIBUTION_ID
+
+# Create invalidation
+aws cloudfront create-invalidation \
+  --distribution-id DISTRIBUTION_ID \
+  --paths "/*"
+
+# List invalidations
+aws cloudfront list-invalidations --distribution-id DISTRIBUTION_ID
+
+# Get invalidation status
+aws cloudfront get-invalidation \
+  --distribution-id DISTRIBUTION_ID \
+  --id INVALIDATION_ID</code>
+        </div>
+
+        <h4>IAM Commands</h4>
+        <div class="code-block">
+<code># Get current user/role
+aws sts get-caller-identity
+
+# List IAM users
+aws iam list-users
+
+# List IAM roles
+aws iam list-roles
+
+# Get role details
+aws iam get-role --role-name role-name
+
+# List policies
+aws iam list-policies
+
+# Attach policy to role
+aws iam attach-role-policy \
+  --role-name role-name \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess</code>
+        </div>
+
+        <h3>💻 Shell/Bash Commands</h3>
+        
+        <h4>Environment Variables</h4>
+        <div class="code-block">
+<code># Set AWS profile
+export AWS_PROFILE=deploy-config
+
+# Set AWS region
+export AWS_DEFAULT_REGION=us-east-1
+
+# Set AWS credentials (not recommended, use profiles instead)
+export AWS_ACCESS_KEY_ID=your-key
+export AWS_SECRET_ACCESS_KEY=your-secret
+
+# Check environment variables
+echo $AWS_PROFILE
+env | grep AWS</code>
+        </div>
+
+        <h4>File Operations</h4>
+        <div class="code-block">
+<code># Navigate directories
+cd /path/to/directory
+cd ..                    # Go up one level
+cd ~                     # Go to home directory
+
+# List files
+ls
+ls -la                   # List with details
+ls -lh                   # Human-readable sizes
+
+# Create directory
+mkdir directory-name
+mkdir -p path/to/directory  # Create parent directories
+
+# Remove file/directory
+rm file.txt
+rm -r directory/        # Remove directory recursively
+rm -rf directory/       # Force remove
+
+# Copy files
+cp source.txt dest.txt
+cp -r source/ dest/     # Copy directory
+
+# Move/rename files
+mv old.txt new.txt
+mv file.txt directory/</code>
+        </div>
+
+        <h4>Command Chaining & Variables</h4>
+        <div class="code-block">
+<code># Chain commands
+command1 && command2     # Run command2 if command1 succeeds
+command1 || command2     # Run command2 if command1 fails
+command1 ; command2      # Run both regardless
+
+# Store command output in variable
+BUCKET=$(terraform output -raw s3_bucket_id)
+DIST_ID=$(terraform output -raw cloudfront_distribution_id)
+
+# Use variables
+echo $BUCKET
+aws s3 ls s3://$BUCKET/
+
+# Check if command succeeded
+if [ $? -eq 0 ]; then
+  echo "Success"
+fi</code>
+        </div>
+
+        <h4>Script Execution</h4>
+        <div class="code-block">
+<code># Make script executable
+chmod +x script.sh
+
+# Run script
+./script.sh
+bash script.sh
+sh script.sh
+
+# Run script with arguments
+./script.sh dev ./build
+
+# Check script syntax
+bash -n script.sh</code>
+        </div>
+
+        <h4>Useful Utilities</h4>
+        <div class="code-block">
+<code># View file contents
+cat file.txt
+less file.txt           # Scrollable view
+head -n 20 file.txt     # First 20 lines
+tail -n 20 file.txt     # Last 20 lines
+
+# Search in files
+grep "pattern" file.txt
+grep -r "pattern" directory/  # Recursive search
+
+# Find files
+find . -name "*.tf"
+find . -type f -name "*.sh"
+
+# Check disk space
+df -h
+
+# Check file permissions
+ls -l file.txt
+
+# View command history
+history
+history | grep terraform</code>
+        </div>
+
+        <h3>📜 Helper Scripts (Optional Shortcuts)</h3>
+        <div class="code-block">
+<code># Initialize Terraform
+./scripts/init.sh
+
+# Plan deployment
+./scripts/plan.sh dev
+./scripts/plan.sh staging
+./scripts/plan.sh prod
+
+# Apply infrastructure
+./scripts/apply.sh dev
+./scripts/apply.sh staging
+./scripts/apply.sh prod
+
+# Upload files
+./scripts/upload.sh dev ./build
+./scripts/upload.sh staging ./build
+./scripts/upload.sh prod ./build
+
+# View outputs
+./scripts/outputs.sh dev
+./scripts/outputs.sh staging
+./scripts/outputs.sh prod
+
+# Destroy environment
+./scripts/destroy.sh dev
+./scripts/destroy.sh staging
+./scripts/destroy.sh prod
+
+# Setup remote state
+./scripts/setup-remote-state.sh staging
+./scripts/setup-remote-state.sh prod
+
+# Setup IAM OIDC
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID repo-name
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID repo-name</code>
+        </div>
+
+        <h3>🔀 Git Commands</h3>
+        <div class="code-block">
+<code># Clone repository
+git clone https://github.com/user/repo.git
+cd repo
+
+# Check status
+git status
+
+# Add files
+git add file.txt
+git add .                    # Add all changes
+
+# Commit changes
+git commit -m "Message"
+
+# Push to remote
+git push origin branch-name
+
+# Create and switch branch
+git checkout -b feature-name
+git switch -c feature-name   # Alternative syntax
+
+# Switch branch
+git checkout branch-name
+git switch branch-name
+
+# Merge branch
+git merge branch-name
+
+# Pull latest changes
+git pull origin branch-name
+
+# View history
+git log
+git log --oneline           # Compact view</code>
+        </div>
+      </section>
+
+      <!-- Additional Resources -->
+      <section id="additional-resources">
+        <h2>19. 📚 Additional Resources</h2>
+        
+        <h3>Official Documentation</h3>
+        <ul>
+          <li><a href="https://www.terraform.io/docs" target="_blank">Terraform Documentation</a> - Complete Terraform guide</li>
+          <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs" target="_blank">AWS Provider Documentation</a> - All AWS resources</li>
+          <li><a href="https://www.terraform.io/docs/language" target="_blank">Terraform Language Documentation</a> - HCL syntax</li>
+          <li><a href="https://www.terraform.io/docs/language/modules" target="_blank">Terraform Modules Guide</a> - Module development</li>
+          <li><a href="https://docs.aws.amazon.com/" target="_blank">AWS Documentation</a> - Complete AWS services docs</li>
+          <li><a href="https://docs.aws.amazon.com/cli/latest/userguide/" target="_blank">AWS CLI Documentation</a> - CLI reference</li>
+        </ul>
+
+        <h3>Learning Resources</h3>
+        <ul>
+          <li><a href="https://learn.hashicorp.com/terraform" target="_blank">HashiCorp Learn</a> - Free Terraform tutorials</li>
+          <li><a href="https://www.terraform.io/intro" target="_blank">Terraform Intro</a> - Getting started guide</li>
+          <li><a href="https://aws.amazon.com/getting-started/" target="_blank">AWS Getting Started</a> - AWS basics</li>
+        </ul>
+
+        <h3>Project Documentation</h3>
+        <ul>
+          <li><code>README.md</code> - Main project documentation</li>
+          <li><code>WORKSPACES_GUIDE.md</code> - Workspace management guide</li>
+          <li><code>GITHUB_ACTIONS_SETUP.md</code> - CI/CD setup instructions</li>
+          <li><code>IAM_ROLE_GUIDE.md</code> - IAM roles and policies explained</li>
+          <li><code>AWS_PROFILE_SETUP.md</code> - Local AWS configuration</li>
+        </ul>
+
+        <h3>Community & Support</h3>
+        <ul>
+          <li><a href="https://discuss.hashicorp.com/c/terraform-core" target="_blank">Terraform Community Forum</a> - Ask questions</li>
+          <li><a href="https://github.com/hashicorp/terraform" target="_blank">Terraform GitHub</a> - Source code and issues</li>
+          <li><a href="https://stackoverflow.com/questions/tagged/terraform" target="_blank">Stack Overflow - Terraform</a> - Q&A</li>
         </ul>
       </section>
     </div>
 
     <footer>
-      <p><strong>WebGL Deployment Infrastructure</strong></p>
-      <p>Served from Amazon S3 + CloudFront via Terraform</p>
-      <p>Replace this file with your actual WebGL build after deployment</p>
+      <p><strong>Static Site Deployment Tutorial</strong></p>
+      <p>Learn Infrastructure as Code with Terraform + AWS S3 + CloudFront</p>
+      <p>Replace this file with your actual static site build after deployment</p>
     </footer>
   </div>
 </body>
