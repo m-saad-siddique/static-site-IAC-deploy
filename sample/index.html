@@ -689,24 +689,20 @@ terraform workspace select dev    # Switch workspace</code>
             <tr>
               <th>Service</th>
               <th>What It Does</th>
-              <th>Cost</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>S3</strong></td>
               <td>Stores your files (HTML, CSS, JS)</td>
-              <td>~$0.023/GB/month</td>
             </tr>
             <tr>
               <td><strong>CloudFront</strong></td>
               <td>Serves files globally (CDN)</td>
-              <td>~$0.085/GB transfer</td>
             </tr>
             <tr>
               <td><strong>OAC</strong></td>
               <td>Security - only CloudFront can access S3</td>
-              <td>Free</td>
             </tr>
           </tbody>
         </table>
@@ -1628,8 +1624,8 @@ terraform version</code>
 
         <h3>Clone Repository</h3>
         <div class="code-block">
-<code>git clone https://github.com/your-username/static-site-deploy.git
-cd static-site-deploy</code>
+<code>git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git
+cd static-site-IAC-deploy</code>
         </div>
 
         <h3>Verify Setup</h3>
@@ -1987,22 +1983,22 @@ echo $AWS_ACCOUNT_ID</code>
 
         <h4>Get Your GitHub Repository</h4>
         <p>Your repository should be in the format: <code>owner/repository-name</code></p>
-        <p>Example: <code>myusername/static-site-deploy</code> or <code>myorg/webgl-deploy</code></p>
+        <p>Example: <code>m-saad-siddique/static-site-IAC-deploy</code></p>
 
         <h4>Create IAM Roles</h4>
         <p>Run the setup script for each environment:</p>
         <div class="code-block">
 <code># Create staging IAM role
-./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-username/your-repo
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy
 
 # Create production IAM role
-./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID your-username/your-repo</code>
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy</code>
         </div>
 
         <p><strong>Replace:</strong></p>
         <ul>
           <li><code>$AWS_ACCOUNT_ID</code> - Your AWS account ID from the previous step</li>
-          <li><code>your-username/your-repo</code> - Your GitHub repository (owner/repo)</li>
+          <li><code>m-saad-siddique/static-site-IAC-deploy</code> - Your GitHub repository (owner/repo)</li>
         </ul>
 
         <h4>What the Script Creates</h4>
@@ -2333,8 +2329,8 @@ git push origin staging</code>
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 3. Create IAM roles
-./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID your-username/your-repo
-./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID your-username/your-repo
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy
 
 # 4. Add GitHub Secrets:
 #    - AWS_ACCOUNT_ID
@@ -2525,12 +2521,6 @@ git push origin main     # Triggers production deployment</code>
               <td>1 year</td>
             </tr>
             <tr>
-              <td>Price Class</td>
-              <td>US/Europe</td>
-              <td>US/Europe</td>
-              <td>Global</td>
-            </tr>
-            <tr>
               <td>Versioning</td>
               <td>Disabled</td>
               <td>Enabled</td>
@@ -2569,17 +2559,6 @@ terraform validate
 
 # Check what will change
 terraform plan</code>
-        </div>
-
-        <h3>💰 Cost Saving Tips</h3>
-        <div class="code-block">
-<code># Use cheaper CloudFront price class for dev
-# In environments/dev/terraform.tfvars:
-price_class = "PriceClass_100"  # US/Europe only
-
-# Use longer cache for production (fewer requests)
-# In environments/prod/terraform.tfvars:
-default_ttl = 31536000  # 1 year</code>
         </div>
 
         <h3>✅ Quick Checklist</h3>
@@ -2674,15 +2653,6 @@ aws sts get-caller-identity --profile deploy-config</code>
         <h4>Q: Do I need to know programming to use Terraform?</h4>
         <p><strong>A:</strong> No! Terraform uses HCL (HashiCorp Configuration Language), which is declarative and easy to learn. You describe what you want, and Terraform figures out how to create it.</p>
 
-        <h4>Q: How much does this cost?</h4>
-        <p><strong>A:</strong> AWS charges for:</p>
-        <ul>
-          <li><strong>S3:</strong> ~$0.023 per GB/month storage + data transfer</li>
-          <li><strong>CloudFront:</strong> ~$0.085 per GB data transfer (first 10TB)</li>
-          <li><strong>DynamoDB:</strong> ~$0.25 per million write units (for state locking)</li>
-        </ul>
-        <p>For a small static site, expect to pay a few dollars per month. AWS Free Tier may cover some costs for the first year.</p>
-
         <h3>🔧 Terraform Questions</h3>
 
         <h4>Q: What's the difference between terraform plan and terraform apply?</h4>
@@ -2728,7 +2698,6 @@ aws sts get-caller-identity --profile deploy-config</code>
           <li>✅ <strong>Security:</strong> Private buckets are more secure</li>
           <li>✅ <strong>Performance:</strong> CloudFront CDN is faster than direct S3 access</li>
           <li>✅ <strong>HTTPS:</strong> CloudFront provides free SSL certificates</li>
-          <li>✅ <strong>Cost:</strong> CloudFront data transfer can be cheaper than S3</li>
         </ul>
         <p>You can make S3 public, but it's not recommended for production.</p>
 
@@ -2776,7 +2745,6 @@ aws sts get-caller-identity --profile deploy-config</code>
         <p><strong>A:</strong> For production, it's best practice to use separate AWS accounts:</p>
         <ul>
           <li>✅ Better security isolation</li>
-          <li>✅ Easier cost tracking</li>
           <li>✅ Prevents accidental production changes</li>
           <li>✅ Easier compliance and auditing</li>
         </ul>
@@ -3245,15 +3213,15 @@ history | grep terraform</code>
 ./scripts/setup-remote-state.sh prod
 
 # Setup IAM OIDC
-./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID repo-name
-./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID repo-name</code>
+./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy
+./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy</code>
         </div>
 
         <h3>🔀 Git Commands</h3>
         <div class="code-block">
 <code># Clone repository
-git clone https://github.com/user/repo.git
-cd repo
+git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git
+cd static-site-IAC-deploy
 
 # Check status
 git status
@@ -3296,11 +3264,7 @@ git log --oneline           # Compact view</code>
         <ul>
           <li><a href="https://www.terraform.io/docs" target="_blank">Terraform Documentation</a> - Complete Terraform guide</li>
           <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs" target="_blank">AWS Provider Documentation</a> - All AWS resources</li>
-          <li><a href="https://www.terraform.io/docs/language" target="_blank">Terraform Language Documentation</a> - HCL syntax</li>
-          <li><a href="https://www.terraform.io/docs/language/modules" target="_blank">Terraform Modules Guide</a> - Module development</li>
-          <li><a href="https://docs.aws.amazon.com/" target="_blank">AWS Documentation</a> - Complete AWS services docs</li>
-          <li><a href="https://docs.aws.amazon.com/cli/latest/userguide/" target="_blank">AWS CLI Documentation</a> - CLI reference</li>
-        </ul>
+         </ul>
 
         <h3>Learning Resources</h3>
         <ul>
@@ -3318,12 +3282,7 @@ git log --oneline           # Compact view</code>
           <li><code>AWS_PROFILE_SETUP.md</code> - Local AWS configuration</li>
         </ul>
 
-        <h3>Community & Support</h3>
-        <ul>
-          <li><a href="https://discuss.hashicorp.com/c/terraform-core" target="_blank">Terraform Community Forum</a> - Ask questions</li>
-          <li><a href="https://github.com/hashicorp/terraform" target="_blank">Terraform GitHub</a> - Source code and issues</li>
-          <li><a href="https://stackoverflow.com/questions/tagged/terraform" target="_blank">Stack Overflow - Terraform</a> - Q&A</li>
-        </ul>
+
       </section>
     </div>
 
