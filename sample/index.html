@@ -353,6 +353,52 @@
       padding: 0.25rem 0;
     }
 
+    /* Q&A Styling */
+    #faq h4 {
+      color: #667eea;
+      font-size: 1.3rem;
+      margin: 2rem 0 1rem;
+      font-weight: 600;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-left: 5px solid #667eea;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    #faq h4:first-of-type {
+      margin-top: 1rem;
+    }
+
+    #faq h4::before {
+      content: "❓ ";
+      margin-right: 0.5rem;
+    }
+
+    #faq p {
+      margin: 0.75rem 0 1.5rem;
+      padding: 1rem 1.25rem;
+      background: #ffffff;
+      border-left: 3px solid #28a745;
+      border-radius: 4px;
+      line-height: 1.8;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    #faq ul, #faq ol {
+      margin: 0.75rem 0 1.5rem 2rem;
+      padding: 1rem 1.5rem;
+      background: #ffffff;
+      border-left: 3px solid #28a745;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    #faq .code-block {
+      margin: 1rem 0 1.5rem 1rem;
+      border-left: 3px solid #667eea;
+    }
+
     @media (max-width: 768px) {
       header h1 {
         font-size: 1.8rem;
@@ -750,7 +796,7 @@ terraform workspace select dev    # Switch workspace</code>
         <p>Now let's look at actual Terraform code for configuring each service. These examples show you how to write infrastructure as code.</p>
 
         <h3>📦 1. S3 Bucket Configuration</h3>
-        <p>Here's how to create a private S3 bucket with security best practices:</p>
+        <p>Here's how to create a private S3 bucket with security best practices. <strong>Note:</strong> These are code examples showing Terraform syntax. This project uses modules (see section 6).</p>
 
         <h4>Basic S3 Bucket</h4>
         <div class="code-block">
@@ -850,7 +896,7 @@ resource "aws_s3_bucket_policy" "webgl_bucket_policy" {
         </div>
 
         <h3>🌐 2. CloudFront Distribution Configuration</h3>
-        <p>Here's how to create a CloudFront distribution with Origin Access Control:</p>
+        <p>Here's how to create a CloudFront distribution with Origin Access Control. <strong>Note:</strong> These are code examples. This project uses modules (see section 6).</p>
 
         <h4>Create Origin Access Control (OAC)</h4>
         <div class="code-block">
@@ -891,7 +937,7 @@ resource "aws_cloudfront_distribution" "webgl_distribution" {
     cached_methods  = ["GET", "HEAD"]
     
     # Use managed cache policy
-    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"  # CachingOptimized
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"  # CachingOptimized
     
     # Compress objects automatically
     compress = true
@@ -1082,40 +1128,39 @@ default_ttl         = 31536000  # 1 year (longer cache)</code>
         </div>
 
         <h3>📤 5. Outputs Configuration</h3>
-        <p>Define outputs to get important values after deployment:</p>
+        <p>Define outputs to get important values after deployment. <strong>Note:</strong> This project uses modules, so outputs reference module outputs:</p>
 
         <div class="code-block">
 <code># outputs.tf
 
-# S3 Bucket ID
+# S3 Bucket ID (from module)
 output "s3_bucket_id" {
   description = "Name of the S3 bucket"
-  value       = aws_s3_bucket.webgl_bucket.id
+  value       = module.s3.bucket_id
 }
 
-# CloudFront Distribution Domain
+# CloudFront Distribution Domain (from module)
 output "cloudfront_distribution_domain_name" {
   description = "CloudFront distribution domain name"
-  value       = aws_cloudfront_distribution.webgl_distribution.domain_name
+  value       = module.cloudfront.distribution_domain_name
 }
 
-# CloudFront Distribution ID
+# CloudFront Distribution ID (from module)
 output "cloudfront_distribution_id" {
   description = "CloudFront distribution ID"
-  value       = aws_cloudfront_distribution.webgl_distribution.id
+  value       = module.cloudfront.distribution_id
 }
 
 # Full Deployment URL
 output "deployment_url" {
   description = "Full HTTPS URL to access the site"
-  value       = "https://${aws_cloudfront_distribution.webgl_distribution.domain_name}"
+  value       = "https://${module.cloudfront.distribution_domain_name}"
 }
 
-# IAM Role ARN (for CI/CD)
-output "deployment_role_arn" {
-  description = "ARN of the IAM role for deployments"
-  value       = aws_iam_role.deployment_role.arn
-}</code>
+# Example: Direct resource output (if not using modules)
+# output "s3_bucket_id" {
+#   value = aws_s3_bucket.webgl_bucket.id
+# }</code>
         </div>
 
         <h3>🧩 6. Using Modules</h3>
@@ -2184,7 +2229,7 @@ git push origin staging</code>
           <li>✅ Check the workflow shows green checkmark (success)</li>
           <li>✅ Verify your site is updated at the CloudFront URL</li>
           <li>✅ Check workflow logs for any warnings</li>
-        </ul>
+            </ul>
 
         <h3>🔄 How CI/CD Works (OIDC Flow)</h3>
         <p>Here's how the secure authentication works:</p>
@@ -2676,7 +2721,7 @@ aws sts get-caller-identity --profile deploy-config</code>
         <p>This keeps your code DRY (Don't Repeat Yourself).</p>
 
         <h4>Q: What happens if I delete a resource manually in AWS Console?</h4>
-        <p><strong>A:</strong> Terraform will detect the resource is missing on the next <code>plan</code> or <code>apply</code> and try to recreate it. To sync Terraform state with reality, use <code>terraform refresh</code> or <code>terraform import</code>.</p>
+        <p><strong>A:</strong> Terraform will detect the resource is missing on the next <code>plan</code> or <code>apply</code> and try to recreate it. To sync Terraform state with reality, use <code>terraform apply -refresh-only</code> or <code>terraform import</code>.</p>
 
         <h4>Q: How do I update Terraform provider versions?</h4>
         <p><strong>A:</strong> Update the version constraint in <code>versions.tf</code>:</p>
@@ -2828,7 +2873,7 @@ aws cloudfront create-invalidation --distribution-id YOUR_DIST_ID --paths "/*"</
           <li>Use <code>-parallelism</code> flag to run operations in parallel</li>
           <li>Cache Terraform providers between runs</li>
           <li>Use targeted operations: <code>terraform apply -target=resource</code></li>
-          <li>Avoid unnecessary <code>terraform refresh</code> calls</li>
+          <li>Avoid unnecessary <code>terraform apply -refresh-only</code> calls</li>
         </ul>
 
         <h4>Q: How do I share Terraform state with my team?</h4>
@@ -2876,384 +2921,772 @@ aws cloudfront create-invalidation --distribution-id YOUR_DIST_ID --paths "/*"</
         <h3>🔧 Terraform Commands</h3>
         
         <h4>Basic Commands</h4>
-        <div class="code-block">
-<code># Initialize Terraform
-terraform init
-terraform init -backend-config=backend/dev.hcl  # With remote backend
-
-# Format code
-terraform fmt                    # Format all .tf files
-terraform fmt -recursive        # Format recursively
-
-# Validate configuration
-terraform validate               # Check syntax
-
-# Show current state
-terraform show                   # Show current state
-terraform state list            # List all resources
-terraform state show resource   # Show specific resource</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>terraform init</code></td>
+              <td>Initialize Terraform, download providers</td>
+            </tr>
+            <tr>
+              <td><code>terraform init -backend-config=backend/dev.hcl</code></td>
+              <td>Initialize with remote backend configuration</td>
+            </tr>
+            <tr>
+              <td><code>terraform fmt</code></td>
+              <td>Format all .tf files in current directory</td>
+            </tr>
+            <tr>
+              <td><code>terraform fmt -recursive</code></td>
+              <td>Format all .tf files recursively</td>
+            </tr>
+            <tr>
+              <td><code>terraform validate</code></td>
+              <td>Validate Terraform configuration syntax</td>
+            </tr>
+            <tr>
+              <td><code>terraform show</code></td>
+              <td>Show current state in human-readable format</td>
+            </tr>
+            <tr>
+              <td><code>terraform state list</code></td>
+              <td>List all resources in current state</td>
+            </tr>
+            <tr>
+              <td><code>terraform state show resource</code></td>
+              <td>Show details of specific resource</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Workspace Commands</h4>
-        <div class="code-block">
-<code># List workspaces
-terraform workspace list
-
-# Show current workspace
-terraform workspace show
-
-# Select workspace
-terraform workspace select dev
-
-# Create new workspace
-terraform workspace new staging
-
-# Delete workspace
-terraform workspace delete staging</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>terraform workspace list</code></td>
+              <td>List all available workspaces</td>
+            </tr>
+            <tr>
+              <td><code>terraform workspace show</code></td>
+              <td>Display current workspace name</td>
+            </tr>
+            <tr>
+              <td><code>terraform workspace select dev</code></td>
+              <td>Switch to specified workspace</td>
+            </tr>
+            <tr>
+              <td><code>terraform workspace new staging</code></td>
+              <td>Create new workspace</td>
+            </tr>
+            <tr>
+              <td><code>terraform workspace delete staging</code></td>
+              <td>Delete workspace (must destroy resources first)</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Plan & Apply Commands</h4>
-        <div class="code-block">
-<code># Create plan
-terraform plan
-terraform plan -var-file=environments/dev/terraform.tfvars
-terraform plan -out=tfplan.out  # Save plan to file
-
-# Apply changes
-terraform apply
-terraform apply -var-file=environments/dev/terraform.tfvars
-terraform apply tfplan.out      # Apply saved plan
-terraform apply -auto-approve   # Skip confirmation
-
-# Destroy resources
-terraform destroy
-terraform destroy -var-file=environments/dev/terraform.tfvars
-terraform destroy -target=resource  # Destroy specific resource</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>terraform plan</code></td>
+              <td>Create execution plan (preview changes)</td>
+            </tr>
+            <tr>
+              <td><code>terraform plan -var-file=environments/dev/terraform.tfvars</code></td>
+              <td>Plan with environment-specific variables</td>
+            </tr>
+            <tr>
+              <td><code>terraform plan -out=tfplan.out</code></td>
+              <td>Save plan to file for later use</td>
+            </tr>
+            <tr>
+              <td><code>terraform apply</code></td>
+              <td>Apply changes (will prompt for confirmation)</td>
+            </tr>
+            <tr>
+              <td><code>terraform apply -var-file=environments/dev/terraform.tfvars</code></td>
+              <td>Apply with environment-specific variables</td>
+            </tr>
+            <tr>
+              <td><code>terraform apply tfplan.out</code></td>
+              <td>Apply previously saved plan</td>
+            </tr>
+            <tr>
+              <td><code>terraform apply -auto-approve</code></td>
+              <td>Apply without confirmation prompt</td>
+            </tr>
+            <tr>
+              <td><code>terraform destroy</code></td>
+              <td>Destroy all resources in state</td>
+            </tr>
+            <tr>
+              <td><code>terraform destroy -var-file=environments/dev/terraform.tfvars</code></td>
+              <td>Destroy with environment-specific variables</td>
+            </tr>
+            <tr>
+              <td><code>terraform destroy -target=resource</code></td>
+              <td>Destroy only specific resource</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Output Commands</h4>
-        <div class="code-block">
-<code># View all outputs
-terraform output
-
-# View specific output
-terraform output deployment_url
-terraform output -raw s3_bucket_id  # Raw value (no quotes)
-
-# View outputs in JSON
-terraform output -json</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>terraform output</code></td>
+              <td>Display all output values</td>
+            </tr>
+            <tr>
+              <td><code>terraform output deployment_url</code></td>
+              <td>Display specific output value</td>
+            </tr>
+            <tr>
+              <td><code>terraform output -raw s3_bucket_id</code></td>
+              <td>Display raw output value (no quotes)</td>
+            </tr>
+            <tr>
+              <td><code>terraform output -json</code></td>
+              <td>Display outputs in JSON format</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>State Management</h4>
-        <div class="code-block">
-<code># List resources in state
-terraform state list
-
-# Show resource details
-terraform state show aws_s3_bucket.main
-
-# Remove resource from state (doesn't destroy it)
-terraform state rm aws_s3_bucket.main
-
-# Import existing resource
-terraform import aws_s3_bucket.main bucket-name
-
-# Move resource
-terraform state mv old_address new_address
-
-# Unlock state (if stuck)
-terraform force-unlock LOCK_ID</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>terraform state list</code></td>
+              <td>List all resources in current state</td>
+            </tr>
+            <tr>
+              <td><code>terraform state show aws_s3_bucket.main</code></td>
+              <td>Show detailed information about specific resource</td>
+            </tr>
+            <tr>
+              <td><code>terraform state rm aws_s3_bucket.main</code></td>
+              <td>Remove resource from state (doesn't destroy it in AWS)</td>
+            </tr>
+            <tr>
+              <td><code>terraform import aws_s3_bucket.main bucket-name</code></td>
+              <td>Import existing AWS resource into Terraform state</td>
+            </tr>
+            <tr>
+              <td><code>terraform state mv old_address new_address</code></td>
+              <td>Move resource to different address in state</td>
+            </tr>
+            <tr>
+              <td><code>terraform force-unlock LOCK_ID</code></td>
+              <td>Force unlock state (use with caution)</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h3>☁️ AWS CLI Commands</h3>
         
         <h4>Configuration</h4>
-        <div class="code-block">
-<code># Configure AWS CLI
-aws configure
-aws configure --profile deploy-config
-
-# List profiles
-aws configure list-profiles
-
-# Set default profile
-export AWS_PROFILE=deploy-config
-
-# Verify configuration
-aws sts get-caller-identity</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aws configure</code></td>
+              <td>Configure AWS CLI with default profile</td>
+            </tr>
+            <tr>
+              <td><code>aws configure --profile deploy-config</code></td>
+              <td>Configure named AWS profile</td>
+            </tr>
+            <tr>
+              <td><code>aws configure list-profiles</code></td>
+              <td>List all configured AWS profiles</td>
+            </tr>
+            <tr>
+              <td><code>export AWS_PROFILE=deploy-config</code></td>
+              <td>Set default AWS profile for current session</td>
+            </tr>
+            <tr>
+              <td><code>aws sts get-caller-identity</code></td>
+              <td>Verify AWS credentials and get account info</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>S3 Commands</h4>
-        <div class="code-block">
-<code># List buckets
-aws s3 ls
-
-# List objects in bucket
-aws s3 ls s3://bucket-name/
-aws s3 ls s3://bucket-name/ --recursive
-
-# Upload file
-aws s3 cp file.txt s3://bucket-name/
-
-# Upload directory
-aws s3 sync ./build s3://bucket-name/
-aws s3 sync ./build s3://bucket-name/ --delete  # Delete removed files
-
-# Download file
-aws s3 cp s3://bucket-name/file.txt ./
-
-# Download directory
-aws s3 sync s3://bucket-name/ ./download/
-
-# Delete file
-aws s3 rm s3://bucket-name/file.txt
-
-# Delete all files
-aws s3 rm s3://bucket-name/ --recursive
-
-# Create bucket
-aws s3 mb s3://bucket-name
-
-# Delete bucket
-aws s3 rb s3://bucket-name
-aws s3 rb s3://bucket-name --force  # Delete with contents</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aws s3 ls</code></td>
+              <td>List all S3 buckets</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 ls s3://bucket-name/</code></td>
+              <td>List objects in bucket</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 ls s3://bucket-name/ --recursive</code></td>
+              <td>List all objects recursively</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 cp file.txt s3://bucket-name/</code></td>
+              <td>Upload single file to S3</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 sync ./build s3://bucket-name/</code></td>
+              <td>Upload directory to S3 (sync)</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 sync ./build s3://bucket-name/ --delete</code></td>
+              <td>Sync directory and delete removed files</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 cp s3://bucket-name/file.txt ./</code></td>
+              <td>Download file from S3</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 sync s3://bucket-name/ ./download/</code></td>
+              <td>Download directory from S3</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 rm s3://bucket-name/file.txt</code></td>
+              <td>Delete file from S3</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 rm s3://bucket-name/ --recursive</code></td>
+              <td>Delete all files in bucket</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 mb s3://bucket-name</code></td>
+              <td>Create new S3 bucket</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 rb s3://bucket-name</code></td>
+              <td>Delete empty S3 bucket</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 rb s3://bucket-name --force</code></td>
+              <td>Delete bucket and all contents</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>CloudFront Commands</h4>
-        <div class="code-block">
-<code># List distributions
-aws cloudfront list-distributions
-
-# Get distribution details
-aws cloudfront get-distribution --id DISTRIBUTION_ID
-
-# Create invalidation
-aws cloudfront create-invalidation \
-  --distribution-id DISTRIBUTION_ID \
-  --paths "/*"
-
-# List invalidations
-aws cloudfront list-invalidations --distribution-id DISTRIBUTION_ID
-
-# Get invalidation status
-aws cloudfront get-invalidation \
-  --distribution-id DISTRIBUTION_ID \
-  --id INVALIDATION_ID</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aws cloudfront list-distributions</code></td>
+              <td>List all CloudFront distributions</td>
+            </tr>
+            <tr>
+              <td><code>aws cloudfront get-distribution --id DISTRIBUTION_ID</code></td>
+              <td>Get detailed information about distribution</td>
+            </tr>
+            <tr>
+              <td><code>aws cloudfront create-invalidation --distribution-id DIST_ID --paths "/*"</code></td>
+              <td>Invalidate CloudFront cache for specified paths</td>
+            </tr>
+            <tr>
+              <td><code>aws cloudfront list-invalidations --distribution-id DIST_ID</code></td>
+              <td>List all invalidations for distribution</td>
+            </tr>
+            <tr>
+              <td><code>aws cloudfront get-invalidation --distribution-id DIST_ID --id INV_ID</code></td>
+              <td>Get status of specific invalidation</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>IAM Commands</h4>
-        <div class="code-block">
-<code># Get current user/role
-aws sts get-caller-identity
-
-# List IAM users
-aws iam list-users
-
-# List IAM roles
-aws iam list-roles
-
-# Get role details
-aws iam get-role --role-name role-name
-
-# List policies
-aws iam list-policies
-
-# Attach policy to role
-aws iam attach-role-policy \
-  --role-name role-name \
-  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aws sts get-caller-identity</code></td>
+              <td>Get current AWS user/role identity</td>
+            </tr>
+            <tr>
+              <td><code>aws iam list-users</code></td>
+              <td>List all IAM users</td>
+            </tr>
+            <tr>
+              <td><code>aws iam list-roles</code></td>
+              <td>List all IAM roles</td>
+            </tr>
+            <tr>
+              <td><code>aws iam get-role --role-name role-name</code></td>
+              <td>Get details of specific IAM role</td>
+            </tr>
+            <tr>
+              <td><code>aws iam list-policies</code></td>
+              <td>List all IAM policies</td>
+            </tr>
+            <tr>
+              <td><code>aws iam attach-role-policy --role-name role-name --policy-arn POLICY_ARN</code></td>
+              <td>Attach policy to IAM role</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h3>💻 Shell/Bash Commands</h3>
         
         <h4>Environment Variables</h4>
-        <div class="code-block">
-<code># Set AWS profile
-export AWS_PROFILE=deploy-config
-
-# Set AWS region
-export AWS_DEFAULT_REGION=us-east-1
-
-# Set AWS credentials (not recommended, use profiles instead)
-export AWS_ACCESS_KEY_ID=your-key
-export AWS_SECRET_ACCESS_KEY=your-secret
-
-# Check environment variables
-echo $AWS_PROFILE
-env | grep AWS</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>export AWS_PROFILE=deploy-config</code></td>
+              <td>Set AWS profile for current session</td>
+            </tr>
+            <tr>
+              <td><code>export AWS_DEFAULT_REGION=us-east-1</code></td>
+              <td>Set default AWS region</td>
+            </tr>
+            <tr>
+              <td><code>export AWS_ACCESS_KEY_ID=your-key</code></td>
+              <td>Set AWS access key (not recommended, use profiles)</td>
+            </tr>
+            <tr>
+              <td><code>export AWS_SECRET_ACCESS_KEY=your-secret</code></td>
+              <td>Set AWS secret key (not recommended, use profiles)</td>
+            </tr>
+            <tr>
+              <td><code>echo $AWS_PROFILE</code></td>
+              <td>Display value of environment variable</td>
+            </tr>
+            <tr>
+              <td><code>env | grep AWS</code></td>
+              <td>List all AWS-related environment variables</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>File Operations</h4>
-        <div class="code-block">
-<code># Navigate directories
-cd /path/to/directory
-cd ..                    # Go up one level
-cd ~                     # Go to home directory
-
-# List files
-ls
-ls -la                   # List with details
-ls -lh                   # Human-readable sizes
-
-# Create directory
-mkdir directory-name
-mkdir -p path/to/directory  # Create parent directories
-
-# Remove file/directory
-rm file.txt
-rm -r directory/        # Remove directory recursively
-rm -rf directory/       # Force remove
-
-# Copy files
-cp source.txt dest.txt
-cp -r source/ dest/     # Copy directory
-
-# Move/rename files
-mv old.txt new.txt
-mv file.txt directory/</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>cd /path/to/directory</code></td>
+              <td>Change to specified directory</td>
+            </tr>
+            <tr>
+              <td><code>cd ..</code></td>
+              <td>Go up one directory level</td>
+            </tr>
+            <tr>
+              <td><code>cd ~</code></td>
+              <td>Go to home directory</td>
+            </tr>
+            <tr>
+              <td><code>ls</code></td>
+              <td>List files in current directory</td>
+            </tr>
+            <tr>
+              <td><code>ls -la</code></td>
+              <td>List files with details and hidden files</td>
+            </tr>
+            <tr>
+              <td><code>ls -lh</code></td>
+              <td>List files with human-readable sizes</td>
+            </tr>
+            <tr>
+              <td><code>mkdir directory-name</code></td>
+              <td>Create new directory</td>
+            </tr>
+            <tr>
+              <td><code>mkdir -p path/to/directory</code></td>
+              <td>Create directory and parent directories</td>
+            </tr>
+            <tr>
+              <td><code>rm file.txt</code></td>
+              <td>Remove file</td>
+            </tr>
+            <tr>
+              <td><code>rm -r directory/</code></td>
+              <td>Remove directory recursively</td>
+            </tr>
+            <tr>
+              <td><code>rm -rf directory/</code></td>
+              <td>Force remove directory</td>
+            </tr>
+            <tr>
+              <td><code>cp source.txt dest.txt</code></td>
+              <td>Copy file</td>
+            </tr>
+            <tr>
+              <td><code>cp -r source/ dest/</code></td>
+              <td>Copy directory recursively</td>
+            </tr>
+            <tr>
+              <td><code>mv old.txt new.txt</code></td>
+              <td>Move or rename file</td>
+            </tr>
+            <tr>
+              <td><code>mv file.txt directory/</code></td>
+              <td>Move file to directory</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Command Chaining & Variables</h4>
-        <div class="code-block">
-<code># Chain commands
-command1 && command2     # Run command2 if command1 succeeds
-command1 || command2     # Run command2 if command1 fails
-command1 ; command2      # Run both regardless
-
-# Store command output in variable
-BUCKET=$(terraform output -raw s3_bucket_id)
-DIST_ID=$(terraform output -raw cloudfront_distribution_id)
-
-# Use variables
-echo $BUCKET
-aws s3 ls s3://$BUCKET/
-
-# Check if command succeeded
-if [ $? -eq 0 ]; then
-  echo "Success"
-fi</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>command1 && command2</code></td>
+              <td>Run command2 only if command1 succeeds</td>
+            </tr>
+            <tr>
+              <td><code>command1 || command2</code></td>
+              <td>Run command2 only if command1 fails</td>
+            </tr>
+            <tr>
+              <td><code>command1 ; command2</code></td>
+              <td>Run both commands regardless of result</td>
+            </tr>
+            <tr>
+              <td><code>BUCKET=$(terraform output -raw s3_bucket_id)</code></td>
+              <td>Store command output in variable</td>
+            </tr>
+            <tr>
+              <td><code>echo $BUCKET</code></td>
+              <td>Display variable value</td>
+            </tr>
+            <tr>
+              <td><code>aws s3 ls s3://$BUCKET/</code></td>
+              <td>Use variable in command</td>
+            </tr>
+            <tr>
+              <td><code>if [ $? -eq 0 ]; then echo "Success"; fi</code></td>
+              <td>Check if previous command succeeded</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Script Execution</h4>
-        <div class="code-block">
-<code># Make script executable
-chmod +x script.sh
-
-# Run script
-./script.sh
-bash script.sh
-sh script.sh
-
-# Run script with arguments
-./script.sh dev ./build
-
-# Check script syntax
-bash -n script.sh</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>chmod +x script.sh</code></td>
+              <td>Make script executable</td>
+            </tr>
+            <tr>
+              <td><code>./script.sh</code></td>
+              <td>Run executable script</td>
+            </tr>
+            <tr>
+              <td><code>bash script.sh</code></td>
+              <td>Run script with bash interpreter</td>
+            </tr>
+            <tr>
+              <td><code>sh script.sh</code></td>
+              <td>Run script with sh interpreter</td>
+            </tr>
+            <tr>
+              <td><code>./script.sh dev ./build</code></td>
+              <td>Run script with arguments</td>
+            </tr>
+            <tr>
+              <td><code>bash -n script.sh</code></td>
+              <td>Check script syntax without executing</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Useful Utilities</h4>
-        <div class="code-block">
-<code># View file contents
-cat file.txt
-less file.txt           # Scrollable view
-head -n 20 file.txt     # First 20 lines
-tail -n 20 file.txt     # Last 20 lines
-
-# Search in files
-grep "pattern" file.txt
-grep -r "pattern" directory/  # Recursive search
-
-# Find files
-find . -name "*.tf"
-find . -type f -name "*.sh"
-
-# Check disk space
-df -h
-
-# Check file permissions
-ls -l file.txt
-
-# View command history
-history
-history | grep terraform</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>cat file.txt</code></td>
+              <td>Display entire file contents</td>
+            </tr>
+            <tr>
+              <td><code>less file.txt</code></td>
+              <td>View file with scrollable interface</td>
+            </tr>
+            <tr>
+              <td><code>head -n 20 file.txt</code></td>
+              <td>Display first 20 lines of file</td>
+            </tr>
+            <tr>
+              <td><code>tail -n 20 file.txt</code></td>
+              <td>Display last 20 lines of file</td>
+            </tr>
+            <tr>
+              <td><code>grep "pattern" file.txt</code></td>
+              <td>Search for pattern in file</td>
+            </tr>
+            <tr>
+              <td><code>grep -r "pattern" directory/</code></td>
+              <td>Search for pattern recursively in directory</td>
+            </tr>
+            <tr>
+              <td><code>find . -name "*.tf"</code></td>
+              <td>Find files matching pattern</td>
+            </tr>
+            <tr>
+              <td><code>find . -type f -name "*.sh"</code></td>
+              <td>Find files by type and name</td>
+            </tr>
+            <tr>
+              <td><code>df -h</code></td>
+              <td>Display disk space usage</td>
+            </tr>
+            <tr>
+              <td><code>ls -l file.txt</code></td>
+              <td>Display file permissions and details</td>
+            </tr>
+            <tr>
+              <td><code>history</code></td>
+              <td>Display command history</td>
+            </tr>
+            <tr>
+              <td><code>history | grep terraform</code></td>
+              <td>Search command history for pattern</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h3>📜 Helper Scripts (Optional Shortcuts)</h3>
-        <div class="code-block">
-<code># Initialize Terraform
-./scripts/init.sh
-
-# Plan deployment
-./scripts/plan.sh dev
-./scripts/plan.sh staging
-./scripts/plan.sh prod
-
-# Apply infrastructure
-./scripts/apply.sh dev
-./scripts/apply.sh staging
-./scripts/apply.sh prod
-
-# Upload files
-./scripts/upload.sh dev ./build
-./scripts/upload.sh staging ./build
-./scripts/upload.sh prod ./build
-
-# View outputs
-./scripts/outputs.sh dev
-./scripts/outputs.sh staging
-./scripts/outputs.sh prod
-
-# Destroy environment
-./scripts/destroy.sh dev
-./scripts/destroy.sh staging
-./scripts/destroy.sh prod
-
-# Setup remote state
-./scripts/setup-remote-state.sh staging
-./scripts/setup-remote-state.sh prod
-
-# Setup IAM OIDC
-./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy
-./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID m-saad-siddique/static-site-IAC-deploy</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>./scripts/init.sh</code></td>
+              <td>Initialize Terraform and setup workspace</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/plan.sh dev</code></td>
+              <td>Create execution plan for dev environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/plan.sh staging</code></td>
+              <td>Create execution plan for staging environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/plan.sh prod</code></td>
+              <td>Create execution plan for production environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/apply.sh dev</code></td>
+              <td>Apply infrastructure changes to dev</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/apply.sh staging</code></td>
+              <td>Apply infrastructure changes to staging</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/apply.sh prod</code></td>
+              <td>Apply infrastructure changes to production</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/upload.sh dev ./build</code></td>
+              <td>Upload files to dev S3 bucket and invalidate cache</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/upload.sh staging ./build</code></td>
+              <td>Upload files to staging S3 bucket and invalidate cache</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/upload.sh prod ./build</code></td>
+              <td>Upload files to production S3 bucket and invalidate cache</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/outputs.sh dev</code></td>
+              <td>Display Terraform outputs for dev environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/outputs.sh staging</code></td>
+              <td>Display Terraform outputs for staging environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/outputs.sh prod</code></td>
+              <td>Display Terraform outputs for production environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/destroy.sh dev</code></td>
+              <td>Destroy all resources in dev environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/destroy.sh staging</code></td>
+              <td>Destroy all resources in staging environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/destroy.sh prod</code></td>
+              <td>Destroy all resources in production environment</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/setup-remote-state.sh staging</code></td>
+              <td>Setup S3 and DynamoDB for remote state (staging)</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/setup-remote-state.sh prod</code></td>
+              <td>Setup S3 and DynamoDB for remote state (production)</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/setup-iam-oidc.sh staging $AWS_ACCOUNT_ID repo</code></td>
+              <td>Create IAM role for GitHub Actions OIDC (staging)</td>
+            </tr>
+            <tr>
+              <td><code>./scripts/setup-iam-oidc.sh prod $AWS_ACCOUNT_ID repo</code></td>
+              <td>Create IAM role for GitHub Actions OIDC (production)</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h3>🔀 Git Commands</h3>
-        <div class="code-block">
-<code># Clone repository
-git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git
-cd static-site-IAC-deploy
-
-# Check status
-git status
-
-# Add files
-git add file.txt
-git add .                    # Add all changes
-
-# Commit changes
-git commit -m "Message"
-
-# Push to remote
-git push origin branch-name
-
-# Create and switch branch
-git checkout -b feature-name
-git switch -c feature-name   # Alternative syntax
-
-# Switch branch
-git checkout branch-name
-git switch branch-name
-
-# Merge branch
-git merge branch-name
-
-# Pull latest changes
-git pull origin branch-name
-
-# View history
-git log
-git log --oneline           # Compact view</code>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git</code></td>
+              <td>Clone repository from GitHub</td>
+            </tr>
+            <tr>
+              <td><code>cd static-site-IAC-deploy</code></td>
+              <td>Navigate to cloned repository</td>
+            </tr>
+            <tr>
+              <td><code>git status</code></td>
+              <td>Check status of working directory</td>
+            </tr>
+            <tr>
+              <td><code>git add file.txt</code></td>
+              <td>Stage specific file for commit</td>
+            </tr>
+            <tr>
+              <td><code>git add .</code></td>
+              <td>Stage all changes for commit</td>
+            </tr>
+            <tr>
+              <td><code>git commit -m "Message"</code></td>
+              <td>Commit staged changes with message</td>
+            </tr>
+            <tr>
+              <td><code>git push origin branch-name</code></td>
+              <td>Push commits to remote repository</td>
+            </tr>
+            <tr>
+              <td><code>git checkout -b feature-name</code></td>
+              <td>Create and switch to new branch</td>
+            </tr>
+            <tr>
+              <td><code>git switch -c feature-name</code></td>
+              <td>Create and switch to new branch (alternative)</td>
+            </tr>
+            <tr>
+              <td><code>git checkout branch-name</code></td>
+              <td>Switch to existing branch</td>
+            </tr>
+            <tr>
+              <td><code>git switch branch-name</code></td>
+              <td>Switch to existing branch (alternative)</td>
+            </tr>
+            <tr>
+              <td><code>git merge branch-name</code></td>
+              <td>Merge branch into current branch</td>
+            </tr>
+            <tr>
+              <td><code>git pull origin branch-name</code></td>
+              <td>Pull latest changes from remote</td>
+            </tr>
+            <tr>
+              <td><code>git log</code></td>
+              <td>View commit history</td>
+            </tr>
+            <tr>
+              <td><code>git log --oneline</code></td>
+              <td>View compact commit history</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- Additional Resources -->
