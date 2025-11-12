@@ -26,7 +26,7 @@
       margin: 0 auto;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 4px rgba(0, 0, 0, 0.3);
       overflow: hidden;
     }
 
@@ -671,6 +671,11 @@
 
       <!-- Quick Links -->
       <div class="quick-links">
+        <div class="quick-link-item" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%); border-left: 4px solid #667eea;">
+          <a href="https://github.com/m-saad-siddique/static-site-IAC-deploy" target="_blank">📦 GitHub Repository</a>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">Clone the project</p>
+          <code style="display: block; margin-top: 0.5rem; font-size: 0.8rem; color: #667eea; word-break: break-all;">git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git</code>
+        </div>
         <div class="quick-link-item">
           <a href="#step1-initialize">🚀 Quick Start</a>
           <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">Get started in 5 steps</p>
@@ -767,6 +772,23 @@ resource "aws_s3_bucket" "my_bucket" {
       <!-- About the Project -->
       <section id="about-project" class="section">
         <h2 class="h2_class">2. What This Project Does</h2>
+        
+        <div class="success-box" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%); border-left: 4px solid #667eea; margin-bottom: 2rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+              <strong style="display: block; margin-bottom: 0.5rem; color: #667eea; font-size: 1.1rem;">📦 Get the Project</strong>
+              <p style="margin: 0; color: #666;">Clone the repository to get started:</p>
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+              <div class="code-block" style="margin: 0; padding: 1rem; background: #2d2d2d; border-radius: 6px;">
+                <code style="color: #f8f8f2; font-size: 0.9rem; word-break: break-all;">git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git</code>
+              </div>
+              <a href="https://github.com/m-saad-siddique/static-site-IAC-deploy" target="_blank" style="display: inline-block; margin-top: 0.5rem; color: #667eea; text-decoration: none; font-weight: 600;">
+                🔗 View on GitHub →
+              </a>
+            </div>
+          </div>
+        </div>
         
         <p class="p_class">This project deploys static websites to AWS using Terraform. <strong>What you'll actually do:</strong></p>
         
@@ -1938,10 +1960,16 @@ terraform version</code>
         <p class="p_class">Download Terraform from <a href="https://www.terraform.io/downloads" target="_blank">terraform.io/downloads</a> and add it to your PATH.</p>
 
         <h3 class="h3_class">Clone Repository</h3>
+        <p class="p_class">Clone the project repository from GitHub:</p>
         <div class="code-block">
 <code>git clone https://github.com/m-saad-siddique/static-site-IAC-deploy.git
 cd static-site-IAC-deploy</code>
         </div>
+        <p class="p_class" style="margin-top: 1rem;">
+          <a href="https://github.com/m-saad-siddique/static-site-IAC-deploy" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 600;">
+            🔗 View Repository on GitHub →
+          </a>
+        </p>
 
         <h3 class="h3_class">Verify Setup</h3>
         <div class="code-block">
